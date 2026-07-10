@@ -17,3 +17,6 @@ npm-debug.log*
 
 # Vercel
 .vercel/
+
+# Deploy scripts (contain tokens temporarily)
+PUSH-TO-GITHUB.bat
