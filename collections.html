@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Collections — VIREON Luxury Couture</title>
+<meta name="description" content="Explore VIREON's curated luxury collections — Signature Series, Limited Drops, Night Luxe, and more.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,600&family=Montserrat:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="css/vireon.css"><link rel="stylesheet" href="css/animations.css">
+</head>
+<body>
+<div id="v-cursor"></div><div id="v-cursor-ring"></div>
+<div class="page-transition" id="page-transition"></div>
+<canvas id="v-particles" style="position:fixed;top:0;left:0;pointer-events:none;z-index:0;opacity:.3"></canvas>
+<div id="v-loader"><div class="loader-logo"><span class="loader-logo-v">V</span><span class="loader-logo-text">IREON</span></div><div class="loader-bar"><div class="loader-fill" id="loader-fill"></div></div><span class="loader-label">LUXURY COUTURE</span><span class="loader-pct" id="loader-pct">0%</span></div>
+<div id="ann-bar"><div class="ann-ticker"><span>FREE WORLDWIDE SHIPPING ON ORDERS OVER $500</span><span class="ann-gem">◆</span><span>NEW COLLECTION 2026 — NOW LIVE</span><span class="ann-gem">◆</span><span>VIREON ELITE — 20% OFF EVERY ORDER</span><span class="ann-gem">◆</span><span>FREE WORLDWIDE SHIPPING ON ORDERS OVER $500</span><span class="ann-gem">◆</span><span>NEW COLLECTION 2026 — NOW LIVE</span></div><button id="ann-close"><i class="fas fa-times"></i></button></div>
+
+<nav id="navbar">
+  <div class="nav-wrap">
+    <div class="nav-links">
+      <a href="shop.html?cat=men" class="nav-a">MEN</a>
+      <a href="shop.html?cat=women" class="nav-a">WOMEN</a>
+      <div class="mega-wrap">
+        <a href="shop.html" class="nav-a">SHOP <i class="fas fa-chevron-down" style="font-size:.5rem"></i></a>
+        <div class="mega-panel">
+          <div class="mega-col"><p class="mega-h">CLOTHING</p><a href="shop.html?cat=Coats">Coats</a><a href="shop.html?cat=Shirts">Shirts</a><a href="shop.html?cat=Dresses">Dresses</a><a href="shop.html?cat=Suits">Suits</a></div>
+          <div class="mega-col"><p class="mega-h">ACCESSORIES</p><a href="shop.html?cat=Bags">Bags</a><a href="shop.html?cat=Eyewear">Eyewear</a><a href="shop.html?cat=Accessories">Belts</a></div>
+          <div class="mega-col"><p class="mega-h">DISCOVER</p><a href="collections.html">All Collections</a><a href="shop.html?badge=LIMITED">Limited Drops</a><a href="shop.html?badge=NEW">New Arrivals</a><a href="shop.html?badge=SALE" style="color:var(--gold)">SALE</a></div>
+          <div class="mega-visual"><div style="width:100%;height:100%;background:linear-gradient(160deg,#1a0800,#2a1200,#0d0500)"></div><p class="mega-visual-label">NEW COLLECTION 2026</p></div>
+        </div>
+      </div>
+      <a href="collections.html" class="nav-a active">COLLECTIONS</a>
+    </div>
+    <div class="nav-logo"><a href="index.html"><span class="nav-v">V</span><span class="nav-ireon">IREON</span><span class="nav-sub">LUXURY COUTURE</span></a></div>
+    <div class="nav-links nav-links--right">
+      <a href="about.html" class="nav-a">ABOUT</a><a href="contact.html" class="nav-a">CONTACT</a>
+      <div class="nav-icons">
+        <button class="nav-icon" id="search-icon"><i class="fas fa-search"></i></button>
+        <a href="wishlist.html" class="nav-icon"><i class="far fa-heart"></i><span class="nav-badge wish-badge">0</span></a>
+        <button class="nav-icon" id="cart-icon"><i class="fas fa-shopping-bag"></i><span class="nav-badge cart-badge">0</span></button>
+        <a href="login.html" class="nav-icon"><i class="far fa-user"></i></a>
+        <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+      </div>
+    </div>
+  </div>
+</nav>
+<div id="mobile-menu"><button id="mobile-close">&times;</button><nav class="mob-nav"><a href="index.html">HOME</a><a href="shop.html">SHOP</a><a href="collections.html">COLLECTIONS</a><a href="about.html">ABOUT</a><a href="contact.html">CONTACT</a></nav></div>
+<div id="search-overlay"><button id="search-close-btn">&times;</button><div class="search-inner"><p class="search-heading">SEARCH VIREON</p><div class="search-row"><i class="fas fa-search"></i><input type="text" id="search-main-input" placeholder="Search pieces, collections..." autocomplete="off"></div><div class="search-chips"><button class="search-chip" onclick="fillSearch('Coat')">Coats</button><button class="search-chip" onclick="fillSearch('Dress')">Dresses</button><button class="search-chip" onclick="fillSearch('Limited')">Limited</button></div><div class="search-results-drop" id="search-results-drop"></div></div></div>
+
+<!-- HERO -->
+<section style="min-height:65vh;display:flex;align-items:flex-end;padding:0 0 5rem;position:relative;overflow:hidden">
+  <div style="position:absolute;inset:0;background:linear-gradient(160deg,#1a0800 0%,#2a1200 35%,#0d0500 60%,#0B0B0B 100%)"></div>
+  <div style="position:absolute;inset:0;background:linear-gradient(to right,rgba(11,11,11,.82) 40%,rgba(11,11,11,.3));"></div>
+  <div style="position:absolute;inset:0;background-image:repeating-linear-gradient(0deg,transparent,transparent 59px,rgba(212,175,55,.03) 60px),repeating-linear-gradient(90deg,transparent,transparent 59px,rgba(212,175,55,.03) 60px)"></div>
+  <div class="v-wrap" style="position:relative;z-index:2">
+    <p class="eyebrow reveal">VIREON</p>
+    <h1 style="font-family:var(--font-serif);font-size:clamp(5rem,12vw,10rem);font-weight:300;color:var(--white);line-height:.95;letter-spacing:-.02em" class="reveal d1">Collections</h1>
+    <p style="font-size:.9rem;color:var(--text-2);max-width:480px;line-height:1.9;margin-top:1.5rem" class="reveal d2">Six curated worlds of fashion artistry — each a universe unto itself, each a statement of who you are.</p>
+  </div>
+</section>
+
+<!-- COLLECTIONS MAGAZINE GRID -->
+<section class="section">
+  <div class="v-wrap">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem">
+
+      <!-- SIGNATURE — large left -->
+      <a href="shop.html" style="display:block;position:relative;overflow:hidden;border:1px solid var(--border);cursor:pointer;transition:all .3s;grid-row:span 2" class="reveal reveal--left" onmouseover="this.style.borderColor='var(--gold)';this.style.boxShadow='0 0 30px rgba(212,175,55,.08)'" onmouseout="this.style.borderColor='var(--border)';this.style.boxShadow=''">
+        <div style="height:100%;min-height:620px;background:linear-gradient(160deg,#1a0800,#2d1200,#0d0500);transition:transform .8s" class="coll-img-inner"></div>
+        <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(11,11,11,.88),transparent 55%);pointer-events:none"></div>
+        <div style="position:absolute;top:1.5rem;left:1.5rem"><span style="font-size:.52rem;font-weight:700;letter-spacing:.25em;color:var(--gold);background:rgba(11,11,11,.8);border:1px solid rgba(212,175,55,.3);padding:.3rem .8rem;text-transform:uppercase">01 — FLAGSHIP</span></div>
+        <div style="position:absolute;bottom:0;left:0;right:0;padding:2.5rem">
+          <p style="font-size:.55rem;letter-spacing:.3em;color:var(--gold);text-transform:uppercase;margin-bottom:.5rem">THE PINNACLE</p>
+          <h3 style="font-family:var(--font-serif);font-size:2.2rem;color:var(--white);font-weight:300;margin-bottom:1rem">Signature Series</h3>
+          <p style="font-size:.82rem;color:var(--text-2);line-height:1.8;margin-bottom:1.5rem;max-width:380px">The pinnacle of VIREON craftsmanship — pieces designed for those who settle for nothing less than absolute perfection. 200+ hours per creation.</p>
+          <span style="font-size:.6rem;letter-spacing:.22em;color:var(--gold);text-transform:uppercase;display:inline-flex;align-items:center;gap:.4rem">EXPLORE <i class="fas fa-arrow-right"></i></span>
+        </div>
+      </a>
+
+      <!-- RIGHT COLUMN -->
+      <div style="display:flex;flex-direction:column;gap:1.5rem">
+        <!-- ROYAL DARK -->
+        <a href="shop.html?cat=Dresses" style="display:block;position:relative;overflow:hidden;border:1px solid var(--border);cursor:pointer;transition:all .3s;flex:1" class="reveal d2" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--border)'">
+          <div style="height:290px;background:linear-gradient(160deg,#050510,#0d0d20,#030308);transition:transform .8s"></div>
+          <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(11,11,11,.88),transparent 55%);pointer-events:none"></div>
+          <div style="position:absolute;top:1.2rem;left:1.2rem"><span style="font-size:.52rem;font-weight:700;letter-spacing:.25em;color:var(--gold);background:rgba(11,11,11,.8);border:1px solid rgba(212,175,55,.3);padding:.3rem .8rem;text-transform:uppercase">02 — INTENSO</span></div>
+          <div style="position:absolute;bottom:0;left:0;right:0;padding:2rem">
+            <p style="font-size:.55rem;letter-spacing:.3em;color:var(--gold);text-transform:uppercase;margin-bottom:.4rem">DUSK & DRAMA</p>
+            <h3 style="font-family:var(--font-serif);font-size:1.6rem;color:var(--white);font-weight:300;margin-bottom:.8rem">Royal Dark</h3>
+            <span style="font-size:.6rem;letter-spacing:.22em;color:var(--gold);text-transform:uppercase;display:inline-flex;align-items:center;gap:.4rem">EXPLORE <i class="fas fa-arrow-right"></i></span>
+          </div>
+        </a>
+
+        <!-- VELVET TRUFFLE -->
+        <a href="shop.html" style="display:block;position:relative;overflow:hidden;border:1px solid var(--border);cursor:pointer;transition:all .3s;flex:1" class="reveal d3" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--border)'">
+          <div style="height:290px;background:linear-gradient(160deg,#150a00,#241500,#0a0600);transition:transform .8s"></div>
+          <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(11,11,11,.88),transparent 55%);pointer-events:none"></div>
+          <div style="position:absolute;top:1.2rem;left:1.2rem"><span style="font-size:.52rem;font-weight:700;letter-spacing:.25em;color:var(--gold);background:rgba(11,11,11,.8);border:1px solid rgba(212,175,55,.3);padding:.3rem .8rem;text-transform:uppercase">03 — SENSUEL</span></div>
+          <div style="position:absolute;bottom:0;left:0;right:0;padding:2rem">
+            <p style="font-size:.55rem;letter-spacing:.3em;color:var(--gold);text-transform:uppercase;margin-bottom:.4rem">UNDERSTATED LUXURY</p>
+            <h3 style="font-family:var(--font-serif);font-size:1.6rem;color:var(--white);font-weight:300;margin-bottom:.8rem">Minimal Classics</h3>
+            <span style="font-size:.6rem;letter-spacing:.22em;color:var(--gold);text-transform:uppercase;display:inline-flex;align-items:center;gap:.4rem">EXPLORE <i class="fas fa-arrow-right"></i></span>
+          </div>
+        </a>
+      </div>
+
+      <!-- LIMITED DROPS -->
+      <a href="shop.html?badge=LIMITED" style="display:block;position:relative;overflow:hidden;border:1px solid var(--border);cursor:pointer;transition:all .3s" class="reveal d4" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--border)'">
+        <div style="height:320px;background:linear-gradient(160deg,#0a0000,#1a0000,#050000);transition:transform .8s"></div>
+        <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(11,11,11,.88),transparent 55%);pointer-events:none"></div>
+        <div style="position:absolute;top:1.2rem;left:1.2rem"><span style="font-size:.52rem;font-weight:700;letter-spacing:.25em;color:var(--bg);background:var(--gold-grad);padding:.3rem .8rem;text-transform:uppercase">LIMITED</span></div>
+        <div style="position:absolute;top:1.2rem;right:1.2rem"><span style="font-size:.52rem;font-weight:700;letter-spacing:.25em;color:var(--gold);background:rgba(11,11,11,.8);border:1px solid rgba(212,175,55,.3);padding:.3rem .8rem;text-transform:uppercase">04 — EXCLUSIF</span></div>
+        <div style="position:absolute;bottom:0;left:0;right:0;padding:2rem">
+          <p style="font-size:.55rem;letter-spacing:.3em;color:var(--gold);text-transform:uppercase;margin-bottom:.4rem">NUMBERED PIECES</p>
+          <h3 style="font-family:var(--font-serif);font-size:1.6rem;color:var(--white);font-weight:300;margin-bottom:.8rem">Limited Drops</h3>
+          <p style="font-size:.78rem;color:var(--text-2);margin-bottom:.8rem">Exclusive numbered pieces that will never be reproduced.</p>
+          <span style="font-size:.6rem;letter-spacing:.22em;color:var(--gold);text-transform:uppercase;display:inline-flex;align-items:center;gap:.4rem">CLAIM YOURS <i class="fas fa-arrow-right"></i></span>
+        </div>
+      </a>
+
+      <!-- NIGHT LUXE -->
+      <a href="shop.html" style="display:block;position:relative;overflow:hidden;border:1px solid var(--border);cursor:pointer;transition:all .3s" class="reveal d5" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--border)'">
+        <div style="height:320px;background:linear-gradient(160deg,#080008,#150015,#040004);transition:transform .8s"></div>
+        <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(11,11,11,.88),transparent 55%);pointer-events:none"></div>
+        <div style="position:absolute;top:1.2rem;left:1.2rem"><span style="font-size:.52rem;font-weight:700;letter-spacing:.25em;color:var(--gold);background:rgba(11,11,11,.8);border:1px solid rgba(212,175,55,.3);padding:.3rem .8rem;text-transform:uppercase">05 — NOCTURNE</span></div>
+        <div style="position:absolute;bottom:0;left:0;right:0;padding:2rem">
+          <p style="font-size:.55rem;letter-spacing:.3em;color:var(--gold);text-transform:uppercase;margin-bottom:.4rem">FOR THE EVENING</p>
+          <h3 style="font-family:var(--font-serif);font-size:1.6rem;color:var(--white);font-weight:300;margin-bottom:.8rem">Night Luxe</h3>
+          <p style="font-size:.78rem;color:var(--text-2);margin-bottom:.8rem">For evenings that demand presence. Dramatic, bold, unforgettable.</p>
+          <span style="font-size:.6rem;letter-spacing:.22em;color:var(--gold);text-transform:uppercase;display:inline-flex;align-items:center;gap:.4rem">EXPLORE <i class="fas fa-arrow-right"></i></span>
+        </div>
+      </a>
+
+      <!-- THE ARCHIVE — full width -->
+      <a href="shop.html" style="display:block;grid-column:span 2;position:relative;overflow:hidden;border:1px solid var(--border);cursor:pointer;transition:all .3s" class="reveal d6" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--border)'">
+        <div style="height:260px;background:linear-gradient(160deg,#0a0a00,#1a1900,#050500);transition:transform .8s"></div>
+        <div style="position:absolute;inset:0;background:linear-gradient(to right,rgba(11,11,11,.9) 30%,rgba(11,11,11,.3));pointer-events:none"></div>
+        <div style="position:absolute;inset:0;display:flex;align-items:center;padding:3rem">
+          <div>
+            <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1rem">
+              <span style="font-size:.52rem;font-weight:700;letter-spacing:.25em;color:var(--gold);background:rgba(11,11,11,.8);border:1px solid rgba(212,175,55,.3);padding:.3rem .8rem;text-transform:uppercase">06 — ARCHIVE</span>
+            </div>
+            <p style="font-size:.55rem;letter-spacing:.3em;color:var(--gold);text-transform:uppercase;margin-bottom:.5rem">PAST SEASONS</p>
+            <h3 style="font-family:var(--font-serif);font-size:2.2rem;color:var(--white);font-weight:300;margin-bottom:.8rem">The Archive</h3>
+            <p style="font-size:.85rem;color:var(--text-2);max-width:500px;line-height:1.8;margin-bottom:1.5rem">Iconic VIREON pieces from past seasons — rare, collectible, and in strictly limited supply. Own a piece of history.</p>
+            <span style="font-size:.62rem;letter-spacing:.22em;color:var(--gold);text-transform:uppercase;display:inline-flex;align-items:center;gap:.4rem;border:1px solid rgba(212,175,55,.3);padding:.6rem 1.5rem">EXPLORE THE ARCHIVE <i class="fas fa-arrow-right"></i></span>
+          </div>
+        </div>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+<!-- FEATURED PRODUCTS FROM COLLECTIONS -->
+<section class="section" style="background:var(--bg-2)">
+  <div class="v-wrap">
+    <div class="section-head reveal"><span class="eyebrow">FROM THE COLLECTIONS</span><h2 class="section-title">Featured <em>Pieces</em></h2><div class="gold-rule"></div></div>
+    <div class="p-grid" id="coll-products-grid"></div>
+    <div style="text-align:center;margin-top:4rem" class="reveal">
+      <a href="shop.html" class="btn btn--outline">VIEW ALL PIECES <i class="fas fa-arrow-right"></i></a>
+    </div>
+  </div>
+</section>
+
+<!-- CTA BAND -->
+<section style="background:radial-gradient(ellipse at 50% 50%,rgba(212,175,55,.06),transparent 70%),var(--bg-3);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:7rem 0;text-align:center">
+  <div class="v-wrap--narrow">
+    <span class="eyebrow shimmer-text reveal">INVITATION ONLY</span>
+    <h2 style="font-family:var(--font-serif);font-size:clamp(2.5rem,5vw,4rem);color:var(--white);font-weight:300;margin:.8rem 0 1.5rem" class="reveal d1">Get Early Access to <em style="font-style:italic;color:var(--gold)">Every Drop</em></h2>
+    <p style="font-size:.88rem;color:var(--text-2);max-width:480px;margin:0 auto 2.5rem;line-height:1.9" class="reveal d2">Join VIREON Elite and be the first to access new collections, limited drops, and exclusive member-only pieces before they sell out.</p>
+    <a href="elite.html" class="btn btn--gold pulse-gold reveal d3">JOIN VIREON ELITE <i class="fas fa-arrow-right"></i></a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="v-footer"><div class="v-wrap"><div class="footer-top"><div class="footer-brand"><div class="footer-brand-logo"><span class="nav-v">V</span><span class="nav-ireon">IREON</span></div><p class="footer-brand-tagline">LUXURY COUTURE</p><p class="footer-brand-desc">A digital luxury fashion house built for those who demand nothing less than extraordinary.</p><div class="footer-socials"><a href="#" class="footer-social"><i class="fab fa-instagram"></i></a><a href="#" class="footer-social"><i class="fab fa-twitter"></i></a><a href="#" class="footer-social"><i class="fab fa-pinterest"></i></a><a href="#" class="footer-social"><i class="fab fa-tiktok"></i></a></div></div><div class="footer-col"><h4>COLLECTIONS</h4><ul><li><a href="collections.html">Signature Series</a></li><li><a href="collections.html">Limited Drops</a></li><li><a href="collections.html">Night Luxe</a></li><li><a href="collections.html">The Archive</a></li></ul></div><div class="footer-col"><h4>SHOP</h4><ul><li><a href="shop.html?cat=Coats">Coats</a></li><li><a href="shop.html?cat=Dresses">Dresses</a></li><li><a href="shop.html?cat=Suits">Suits</a></li><li><a href="shop.html?badge=SALE" style="color:var(--gold)">SALE</a></li></ul></div><div class="footer-col"><h4>INFO</h4><ul><li><a href="about.html">About</a></li><li><a href="contact.html">Contact</a></li><li><a href="tracking.html">Track Order</a></li><li><a href="admin-panel.html">Admin</a></li></ul></div></div><div class="footer-bottom"><p>&copy; 2026 VIREON Luxury Couture. All rights reserved.</p><div class="footer-legal"><a href="#">Privacy</a><a href="#">Terms</a><a href="#">Cookies</a></div></div></div></footer>
+
+<div class="cart-overlay" id="cart-overlay"></div>
+<div class="mini-cart" id="mini-cart"><div class="mc-head"><h3>Shopping Bag <span id="mc-qty">(0)</span></h3><button class="mc-close" id="mc-close">&times;</button></div><div class="mc-body" id="mc-body"></div><div class="mc-foot"><div class="mc-subtotal"><span>Subtotal</span><span id="mc-total">$0</span></div><a href="cart.html" class="btn btn--gold btn--block" style="margin-bottom:.8rem">VIEW BAG</a></div></div>
+<button class="ai-fab" id="ai-fab"><i class="fas fa-robot"></i><span class="ai-pulse"></span></button>
+<div class="ai-panel" id="ai-panel"><div class="ai-head"><div class="ai-head-label"><i class="fas fa-robot"></i> AI Style Assistant</div><button class="ai-head-close" id="ai-close">&times;</button></div><div class="ai-body" id="ai-body"><div class="ai-msg-wrap"><div class="ai-avatar">AI</div><div class="ai-bubble">Explore our collections. I can help you find the perfect piece for any occasion.</div></div></div><div class="ai-input-row"><input type="text" id="ai-input" placeholder="Ask about collections..."><button id="ai-send"><i class="fas fa-paper-plane"></i></button></div></div>
+<div id="scroll-progress"></div>
+<div id="v-toast"><i class="fas fa-check-circle"></i><span id="v-toast-msg"></span></div>
+<script src="js/vireon.js"></script>
+<script>
+// Render featured products from collection
+document.addEventListener('DOMContentLoaded',()=>{
+  const g=document.getElementById('coll-products-grid');
+  if(g&&typeof pCard==='function'&&typeof DB!=='undefined'){
+    g.innerHTML=DB.products.filter(p=>p.badge).slice(0,4).map(pCard).join('');
+    attachCardLinks();
+  }
+  window.addEventListener('scroll',()=>{const el=document.getElementById('scroll-progress');if(el){const p=window.scrollY/(document.body.scrollHeight-window.innerHeight);el.style.width=(p*100)+'%';}},{passive:true});
+});
+// Collection image hover zoom
+document.querySelectorAll('a [style*="transition: transform"]').forEach(img=>{
+  const card=img.closest('a');
+  if(card){card.addEventListener('mouseenter',()=>img.style.transform='scale(1.04)');card.addEventListener('mouseleave',()=>img.style.transform='');}
+});
+</script>
+</body></html>

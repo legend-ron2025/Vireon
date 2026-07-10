@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Product — VIREON Luxury Couture</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,600&family=Montserrat:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="css/vireon.css">
+<link rel="stylesheet" href="css/animations.css">
+</head>
+<body>
+<div id="v-cursor"></div><div id="v-cursor-ring"></div>
+<div class="page-transition" id="page-transition"></div>
+<div id="v-loader"><div class="loader-logo"><span class="loader-logo-v">V</span><span class="loader-logo-text">IREON</span></div><div class="loader-bar"><div class="loader-fill" id="loader-fill"></div></div><span class="loader-label">LUXURY COUTURE</span><span class="loader-pct" id="loader-pct">0%</span></div>
+
+<nav id="navbar" style="background:rgba(11,11,11,.98);border-bottom:1px solid var(--border)">
+  <div class="nav-wrap">
+    <div class="nav-links">
+      <a href="shop.html?cat=men" class="nav-a">MEN</a>
+      <a href="shop.html?cat=women" class="nav-a">WOMEN</a>
+      <a href="shop.html" class="nav-a">SHOP</a>
+      <a href="collections.html" class="nav-a">COLLECTIONS</a>
+    </div>
+    <div class="nav-logo"><a href="index.html"><span class="nav-v">V</span><span class="nav-ireon">IREON</span><span class="nav-sub">LUXURY COUTURE</span></a></div>
+    <div class="nav-links nav-links--right">
+      <div class="nav-icons">
+        <button class="nav-icon" id="search-icon"><i class="fas fa-search"></i></button>
+        <a href="wishlist.html" class="nav-icon"><i class="far fa-heart"></i><span class="nav-badge wish-badge">0</span></a>
+        <button class="nav-icon" id="cart-icon"><i class="fas fa-shopping-bag"></i><span class="nav-badge cart-badge">0</span></button>
+        <a href="login.html" class="nav-icon"><i class="far fa-user"></i></a>
+        <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+      </div>
+    </div>
+  </div>
+</nav>
+<div id="mobile-menu"><button id="mobile-close">&times;</button><nav class="mob-nav"><a href="index.html">HOME</a><a href="shop.html">SHOP</a><a href="collections.html">COLLECTIONS</a><a href="about.html">ABOUT</a></nav></div>
+<div id="search-overlay"><button id="search-close-btn">&times;</button><div class="search-inner"><p class="search-heading">SEARCH VIREON</p><div class="search-row"><i class="fas fa-search"></i><input type="text" id="search-main-input" placeholder="Search pieces..." autocomplete="off"></div><div class="search-results-drop" id="search-results-drop"></div></div></div>
+
+<!-- PRODUCT LAYOUT -->
+<div id="pd-root">
+<section class="product-wrap">
+  <div class="pd-layout">
+
+    <!-- GALLERY -->
+    <div class="pd-gallery reveal reveal--left">
+      <div class="gallery-main">
+        <div class="gallery-main-inner" id="pd-main-img" style="height:100%"></div>
+        <div class="gallery-badge"><span class="p-card-badge badge--limited" id="pd-badge">LIMITED</span></div>
+        <button style="position:absolute;top:1rem;right:1rem;background:rgba(11,11,11,.8);border:1px solid var(--border);color:var(--gold);width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:.85rem"><i class="fas fa-expand"></i></button>
+      </div>
+      <div class="gallery-thumbs">
+        <div class="g-thumb" id="pd-img-1"></div>
+        <div class="g-thumb" id="pd-img-2"></div>
+        <div class="g-thumb" id="pd-img-3"></div>
+        <div class="g-thumb" id="pd-img-4"></div>
+      </div>
+    </div>
+
+    <!-- DETAILS -->
+    <div class="pd-details reveal reveal--right">
+      <p class="pd-breadcrumb"><a href="index.html">Home</a> / <a href="shop.html">Shop</a> / <span id="pd-cat">Category</span></p>
+      <p class="pd-cat" id="pd-cat-label">CATEGORY</p>
+      <h1 class="pd-name" id="pd-name">Loading...</h1>
+      <div class="pd-rating">
+        <span class="pd-stars">★★★★★</span>
+        <span class="pd-rev-cnt" onclick="document.getElementById('tab-reviews').click()">(42 reviews)</span>
+      </div>
+      <div class="pd-price-row">
+        <span class="pd-price" id="pd-price">$0</span>
+        <span class="pd-price-old" id="pd-old"></span>
+        <span class="pd-discount" id="pd-disc" style="display:none"></span>
+      </div>
+      <p class="pd-stock stock-in"><i class="fas fa-circle" style="font-size:.45rem"></i> &nbsp;In Stock — Ready to ship within 24h</p>
+      <div class="pd-divider"></div>
+
+      <!-- COLOR -->
+      <div style="margin-bottom:1.8rem">
+        <p class="opt-label">COLOR — <span style="font-weight:300;color:var(--text-2);text-transform:none;letter-spacing:0;font-size:.75rem" id="selected-color">Select a color</span></p>
+        <div class="color-picker" id="pd-colors"></div>
+      </div>
+
+      <!-- SIZE -->
+      <div style="margin-bottom:1.8rem">
+        <p class="opt-label" style="display:flex;justify-content:space-between;align-items:center">
+          SIZE
+          <a href="sizeguide.html" style="color:var(--gold);font-size:.62rem;font-weight:400;text-transform:none;letter-spacing:0;display:flex;align-items:center;gap:.3rem"><i class="fas fa-ruler"></i> Size Guide</a>
+        </p>
+        <div class="size-picker" id="pd-sizes"></div>
+      </div>
+
+      <!-- QTY -->
+      <div style="margin-bottom:2rem">
+        <p class="opt-label">QUANTITY</p>
+        <div class="qty-ctrl">
+          <button id="pd-minus">−</button>
+          <span id="pd-qty">1</span>
+          <button id="pd-plus">+</button>
+        </div>
+      </div>
+
+      <!-- ACTIONS -->
+      <div class="pd-cta-row">
+        <button class="btn-add pulse-gold" id="pd-add">ADD TO BAG <i class="fas fa-shopping-bag"></i></button>
+        <button class="btn-buy" id="pd-buy">BUY NOW</button>
+        <button class="btn-heart" id="pd-wish"><i class="far fa-heart"></i></button>
+      </div>
+
+      <!-- QUICK INFO -->
+      <div class="pd-meta" style="margin-top:2rem">
+        <p>SKU: <span id="pd-sku">—</span></p>
+        <p>Delivery: <span>3–5 business days · Express available</span></p>
+        <p>Returns: <span>Free 30-day returns & exchanges</span></p>
+        <p>Packaging: <span>Signature VIREON luxury box included</span></p>
+      </div>
+
+      <!-- SHARE -->
+      <div class="pd-share">
+        <span>SHARE</span>
+        <a href="#"><i class="fab fa-instagram"></i></a>
+        <a href="#"><i class="fab fa-pinterest"></i></a>
+        <a href="#"><i class="fab fa-twitter"></i></a>
+        <a href="#" onclick="navigator.clipboard?.writeText(window.location.href);toast('Link copied!')"><i class="fas fa-link"></i></a>
+      </div>
+
+      <!-- TRUST ICONS -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-top:2rem;padding-top:1.5rem;border-top:1px solid var(--border)">
+        <div style="display:flex;align-items:center;gap:.7rem;font-size:.7rem;color:var(--text-2)"><i class="fas fa-shield-alt" style="color:var(--gold)"></i>Secure checkout</div>
+        <div style="display:flex;align-items:center;gap:.7rem;font-size:.7rem;color:var(--text-2)"><i class="fas fa-undo" style="color:var(--gold)"></i>30-day returns</div>
+        <div style="display:flex;align-items:center;gap:.7rem;font-size:.7rem;color:var(--text-2)"><i class="fas fa-gem" style="color:var(--gold)"></i>Premium quality</div>
+        <div style="display:flex;align-items:center;gap:.7rem;font-size:.7rem;color:var(--text-2)"><i class="fas fa-gift" style="color:var(--gold)"></i>Luxury packaging</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRODUCT TABS -->
+  <div class="pd-tabs" style="max-width:1480px;margin:6rem auto 0;padding:0 2.5rem">
+    <div class="pd-tab-nav">
+      <button class="pt-btn" id="tab-desc" data-tab="tab-desc-body">DESCRIPTION</button>
+      <button class="pt-btn" data-tab="tab-specs-body">SPECIFICATIONS</button>
+      <button class="pt-btn" data-tab="tab-care-body">FABRIC & CARE</button>
+      <button class="pt-btn" data-tab="tab-ship-body">SHIPPING</button>
+      <button class="pt-btn" data-tab="tab-reviews-body">REVIEWS (42)</button>
+      <button class="pt-btn" data-tab="tab-faq-body">FAQs</button>
+    </div>
+
+    <div class="pd-tab-body" id="tab-desc-body">
+      <p id="pd-desc" style="font-size:.9rem;color:var(--text-2);line-height:1.95;max-width:700px">—</p>
+      <p style="font-size:.9rem;color:var(--text-2);line-height:1.95;max-width:700px;margin-top:1.2rem">Each VIREON piece is constructed by master artisans over 200+ hours. From first sketch to final stitch, exacting standards ensure every garment is worthy of the name it carries.</p>
+    </div>
+
+    <div class="pd-tab-body" id="tab-specs-body">
+      <table class="spec-table">
+        <tr><th>Material</th><td>100% Premium Wool / Silk lining</td></tr>
+        <tr><th>Origin</th><td>Crafted in Milan, Italy</td></tr>
+        <tr><th>Buttons</th><td>24k gold-plated brass</td></tr>
+        <tr><th>Fit</th><td>Tailored — runs true to size</td></tr>
+        <tr><th>Lining</th><td>Italian silk, full-length</td></tr>
+        <tr><th>Weight</th><td>880g (Size M)</td></tr>
+      </table>
+    </div>
+
+    <div class="pd-tab-body" id="tab-care-body">
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;max-width:600px">
+        <div style="text-align:center;padding:1.8rem 1rem;background:var(--bg-2);border:1px solid var(--border)"><i class="fas fa-tshirt" style="color:var(--gold);font-size:1.5rem;display:block;margin-bottom:.8rem"></i><p style="font-size:.68rem;color:var(--text-2)">Dry Clean Only</p></div>
+        <div style="text-align:center;padding:1.8rem 1rem;background:var(--bg-2);border:1px solid var(--border)"><i class="fas fa-temperature-low" style="color:var(--gold);font-size:1.5rem;display:block;margin-bottom:.8rem"></i><p style="font-size:.68rem;color:var(--text-2)">Cool Storage</p></div>
+        <div style="text-align:center;padding:1.8rem 1rem;background:var(--bg-2);border:1px solid var(--border)"><i class="fas fa-ban" style="color:var(--gold);font-size:1.5rem;display:block;margin-bottom:.8rem"></i><p style="font-size:.68rem;color:var(--text-2)">Do Not Bleach</p></div>
+        <div style="text-align:center;padding:1.8rem 1rem;background:var(--bg-2);border:1px solid var(--border)"><i class="fas fa-iron" style="color:var(--gold);font-size:1.5rem;display:block;margin-bottom:.8rem"></i><p style="font-size:.68rem;color:var(--text-2)">Low Heat Iron</p></div>
+      </div>
+    </div>
+
+    <div class="pd-tab-body" id="tab-ship-body">
+      <div style="display:flex;flex-direction:column;gap:1rem;max-width:580px">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:1.5rem;background:var(--bg-2);border:1px solid var(--border)"><div><p style="font-size:.82rem;font-weight:600;color:var(--white)">Standard Delivery</p><p style="font-size:.7rem;color:var(--gray)">3–5 business days</p></div><span style="color:var(--gold);font-family:var(--font-serif)">FREE over $500</span></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:1.5rem;background:var(--bg-2);border:1px solid var(--border)"><div><p style="font-size:.82rem;font-weight:600;color:var(--white)">Express Delivery</p><p style="font-size:.7rem;color:var(--gray)">1–2 business days</p></div><span style="color:var(--gold);font-family:var(--font-serif)">$45</span></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:1.5rem;background:var(--bg-2);border:1px solid var(--border)"><div><p style="font-size:.82rem;font-weight:600;color:var(--white)">Same Day</p><p style="font-size:.7rem;color:var(--gray)">Select cities only</p></div><span style="color:var(--gold);font-family:var(--font-serif)">$85</span></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:1.5rem;background:var(--bg-2);border:1px solid var(--border)"><div><p style="font-size:.82rem;font-weight:600;color:var(--white)">International</p><p style="font-size:.7rem;color:var(--gray)">5–10 business days</p></div><span style="color:var(--gold);font-family:var(--font-serif)">From $35</span></div>
+      </div>
+    </div>
+
+    <div class="pd-tab-body" id="tab-reviews-body">
+      <div style="display:flex;flex-direction:column;gap:1.5rem;max-width:700px">
+        <div style="padding:2rem;background:var(--bg-2);border:1px solid var(--border)">
+          <div style="color:var(--gold);margin-bottom:.8rem;font-size:.95rem">★★★★★</div>
+          <p style="font-size:.9rem;color:var(--white);font-style:italic;margin-bottom:1rem">"Absolutely exceptional quality. The craftsmanship is evident in every single detail. A true heirloom piece."</p>
+          <div style="display:flex;align-items:center;justify-content:space-between"><p style="font-size:.7rem;color:var(--gold)">Alexandra R. <span style="color:var(--gray)">— Verified Purchase</span></p><span style="font-size:.65rem;color:var(--success)"><i class="fas fa-check-circle"></i> Verified</span></div>
+        </div>
+        <div style="padding:2rem;background:var(--bg-2);border:1px solid var(--border)">
+          <div style="color:var(--gold);margin-bottom:.8rem;font-size:.95rem">★★★★★</div>
+          <p style="font-size:.9rem;color:var(--white);font-style:italic;margin-bottom:1rem">"This piece commands presence the moment you walk in a room. Worth every penny and more."</p>
+          <div style="display:flex;align-items:center;justify-content:space-between"><p style="font-size:.7rem;color:var(--gold)">Marcus B. <span style="color:var(--gray)">— Verified Purchase</span></p><span style="font-size:.65rem;color:var(--success)"><i class="fas fa-check-circle"></i> Verified</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pd-tab-body" id="tab-faq-body">
+      <div style="display:flex;flex-direction:column;gap:1rem;max-width:680px">
+        <details style="background:var(--bg-2);border:1px solid var(--border);padding:1.5rem">
+          <summary style="font-size:.82rem;font-weight:600;color:var(--white);cursor:pointer;list-style:none;display:flex;justify-content:space-between">How do I find my size? <i class="fas fa-chevron-down" style="color:var(--gold)"></i></summary>
+          <p style="font-size:.8rem;color:var(--text-2);margin-top:1rem;line-height:1.8">VIREON pieces are cut to a tailored European fit. We recommend checking our size guide for precise measurements. When in doubt, size up — our concierge team can advise.</p>
+        </details>
+        <details style="background:var(--bg-2);border:1px solid var(--border);padding:1.5rem">
+          <summary style="font-size:.82rem;font-weight:600;color:var(--white);cursor:pointer;list-style:none;display:flex;justify-content:space-between">Is monogramming available? <i class="fas fa-chevron-down" style="color:var(--gold)"></i></summary>
+          <p style="font-size:.8rem;color:var(--text-2);margin-top:1rem;line-height:1.8">Yes — VIREON Elite members receive complimentary monogramming on all Signature Collection pieces. Standard orders can add monogramming for $85.</p>
+        </details>
+        <details style="background:var(--bg-2);border:1px solid var(--border);padding:1.5rem">
+          <summary style="font-size:.82rem;font-weight:600;color:var(--white);cursor:pointer;list-style:none;display:flex;justify-content:space-between">What is included in the packaging? <i class="fas fa-chevron-down" style="color:var(--gold)"></i></summary>
+          <p style="font-size:.8rem;color:var(--text-2);margin-top:1rem;line-height:1.8">Every VIREON order arrives in our signature obsidian gift box with gold embossing, a silk garment bag, tissue paper, a handwritten card, and a certificate of authenticity.</p>
+        </details>
+      </div>
+    </div>
+  </div>
+
+  <!-- RECOMMENDED -->
+  <div style="max-width:1480px;margin:6rem auto 0;padding:0 2.5rem 6rem">
+    <div class="section-head reveal">
+      <span class="eyebrow">YOU MAY ALSO LIKE</span>
+      <h2 class="section-title">Recommended <em>Pieces</em></h2>
+      <div class="gold-rule"></div>
+    </div>
+    <div class="p-grid" id="rec-grid"></div>
+  </div>
+
+  <!-- RECENTLY VIEWED -->
+  <div style="max-width:1480px;margin:0 auto;padding:0 2.5rem 6rem" id="recently-viewed-wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">YOUR HISTORY</span>
+      <h2 class="section-title">Recently <em>Viewed</em></h2>
+      <div class="gold-rule"></div>
+    </div>
+    <div class="p-grid" id="recently-viewed"></div>
+  </div>
+</section>
+</div>
+
+<!-- MINI CART -->
+<div class="cart-overlay" id="cart-overlay"></div>
+<div class="mini-cart" id="mini-cart">
+  <div class="mc-head"><h3>Shopping Bag <span id="mc-qty">(0)</span></h3><button class="mc-close" id="mc-close">&times;</button></div>
+  <div class="mc-body" id="mc-body"></div>
+  <div class="mc-foot"><div class="mc-subtotal"><span>Subtotal</span><span id="mc-total">$0</span></div><a href="cart.html" class="btn btn--gold btn--block" style="margin-bottom:.8rem">VIEW BAG</a><a href="cart.html#checkout" class="btn btn--outline btn--block">CHECKOUT</a></div>
+</div>
+
+<!-- AI -->
+<button class="ai-fab" id="ai-fab"><i class="fas fa-robot"></i><span class="ai-pulse"></span></button>
+<div class="ai-panel" id="ai-panel">
+  <div class="ai-head"><div class="ai-head-label"><i class="fas fa-robot"></i> AI Style Assistant</div><button class="ai-head-close" id="ai-close">&times;</button></div>
+  <div class="ai-body" id="ai-body"><div class="ai-msg-wrap"><div class="ai-avatar">AI</div><div class="ai-bubble">I can help you with sizing, styling suggestions, or outfit pairings for this piece.</div></div></div>
+  <div class="ai-input-row"><input type="text" id="ai-input" placeholder="Ask about this piece..."><button id="ai-send"><i class="fas fa-paper-plane"></i></button></div>
+</div>
+
+<div id="scroll-progress"></div>
+<div id="v-toast"><i class="fas fa-check-circle"></i><span id="v-toast-msg"></span></div>
+<script src="js/vireon.js"></script>
+<script>
+// Scroll progress
+window.addEventListener('scroll',()=>{const el=document.getElementById('scroll-progress');if(el){const p=window.scrollY/(document.body.scrollHeight-window.innerHeight);el.style.width=(p*100)+'%';}},{passive:true});
+// Tab system
+document.querySelectorAll('.pt-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.pt-btn').forEach(b=>b.classList.remove('on'));
+    document.querySelectorAll('.pd-tab-body').forEach(b=>b.classList.remove('on'));
+    btn.classList.add('on');
+    document.getElementById(btn.dataset.tab)?.classList.add('on');
+  });
+});
+document.querySelectorAll('.pt-btn')[0]?.classList.add('on');
+document.querySelectorAll('.pd-tab-body')[0]?.classList.add('on');
+</script>
+</body>
+</html>

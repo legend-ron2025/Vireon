@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Shop — VIREON Luxury Couture</title>
+<meta name="description" content="Shop VIREON's premium luxury fashion collection. Coats, dresses, suits, bags and accessories.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,600&family=Montserrat:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="css/vireon.css">
+<link rel="stylesheet" href="css/animations.css">
+</head>
+<body>
+<div id="v-cursor"></div><div id="v-cursor-ring"></div>
+<div class="page-transition" id="page-transition"></div>
+<canvas id="v-particles" style="position:fixed;top:0;left:0;pointer-events:none;z-index:0;opacity:.35"></canvas>
+
+<!-- LOADER -->
+<div id="v-loader">
+  <div class="loader-logo"><span class="loader-logo-v">V</span><span class="loader-logo-text">IREON</span></div>
+  <div class="loader-bar"><div class="loader-fill" id="loader-fill"></div></div>
+  <span class="loader-label">LUXURY COUTURE</span>
+  <span class="loader-pct" id="loader-pct">0%</span>
+</div>
+
+<!-- ANN BAR -->
+<div id="ann-bar">
+  <div class="ann-ticker">
+    <span>FREE WORLDWIDE SHIPPING ON ORDERS OVER $500</span><span class="ann-gem">◆</span>
+    <span>NEW COLLECTION 2026 — NOW LIVE</span><span class="ann-gem">◆</span>
+    <span>VIREON ELITE — 20% OFF EVERY ORDER</span><span class="ann-gem">◆</span>
+    <span>FREE WORLDWIDE SHIPPING ON ORDERS OVER $500</span><span class="ann-gem">◆</span>
+    <span>NEW COLLECTION 2026 — NOW LIVE</span><span class="ann-gem">◆</span>
+    <span>VIREON ELITE — 20% OFF EVERY ORDER</span><span class="ann-gem">◆</span>
+  </div>
+  <button id="ann-close"><i class="fas fa-times"></i></button>
+</div>
+
+<!-- NAVBAR -->
+<nav id="navbar">
+  <div class="nav-wrap">
+    <div class="nav-links">
+      <a href="shop.html?cat=men" class="nav-a">MEN</a>
+      <a href="shop.html?cat=women" class="nav-a">WOMEN</a>
+      <div class="mega-wrap">
+        <a href="shop.html" class="nav-a active">SHOP <i class="fas fa-chevron-down" style="font-size:.5rem"></i></a>
+        <div class="mega-panel">
+          <div class="mega-col"><p class="mega-h">CLOTHING</p><a href="shop.html?cat=Coats">Coats</a><a href="shop.html?cat=Shirts">Shirts</a><a href="shop.html?cat=Dresses">Dresses</a><a href="shop.html?cat=Suits">Suits</a><a href="shop.html?cat=Trousers">Trousers</a></div>
+          <div class="mega-col"><p class="mega-h">ACCESSORIES</p><a href="shop.html?cat=Bags">Bags</a><a href="shop.html?cat=Eyewear">Eyewear</a><a href="shop.html?cat=Accessories">Belts & More</a></div>
+          <div class="mega-col"><p class="mega-h">DISCOVER</p><a href="collections.html">All Collections</a><a href="shop.html?badge=LIMITED">Limited Drops</a><a href="shop.html?badge=NEW">New Arrivals</a><a href="shop.html?badge=SALE" style="color:var(--gold)">SALE</a></div>
+          <div class="mega-visual"><div style="width:100%;height:100%;background:linear-gradient(160deg,#1a0800,#2a1200,#0d0500)"></div><p class="mega-visual-label">NEW COLLECTION 2026</p></div>
+        </div>
+      </div>
+      <a href="collections.html" class="nav-a">COLLECTIONS</a>
+    </div>
+    <div class="nav-logo"><a href="index.html"><span class="nav-v">V</span><span class="nav-ireon">IREON</span><span class="nav-sub">LUXURY COUTURE</span></a></div>
+    <div class="nav-links nav-links--right">
+      <a href="about.html" class="nav-a">ABOUT</a>
+      <a href="contact.html" class="nav-a">CONTACT</a>
+      <div class="nav-icons">
+        <button class="nav-icon" id="search-icon"><i class="fas fa-search"></i></button>
+        <a href="wishlist.html" class="nav-icon"><i class="far fa-heart"></i><span class="nav-badge wish-badge">0</span></a>
+        <button class="nav-icon" id="cart-icon"><i class="fas fa-shopping-bag"></i><span class="nav-badge cart-badge">0</span></button>
+        <a href="login.html" class="nav-icon"><i class="far fa-user"></i></a>
+        <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+      </div>
+    </div>
+  </div>
+</nav>
+<div id="mobile-menu">
+  <button id="mobile-close">&times;</button>
+  <nav class="mob-nav"><a href="index.html">HOME</a><a href="shop.html">SHOP</a><a href="collections.html">COLLECTIONS</a><a href="about.html">ABOUT</a></nav>
+</div>
+<div id="search-overlay">
+  <button id="search-close-btn">&times;</button>
+  <div class="search-inner">
+    <p class="search-heading">SEARCH VIREON</p>
+    <div class="search-row"><i class="fas fa-search"></i><input type="text" id="search-main-input" placeholder="Search pieces, collections, SKUs..." autocomplete="off"></div>
+    <p class="search-trending-label">TRENDING</p>
+    <div class="search-chips">
+      <button class="search-chip" onclick="fillSearch('Coat')">Coats</button>
+      <button class="search-chip" onclick="fillSearch('Dress')">Dresses</button>
+      <button class="search-chip" onclick="fillSearch('Bag')">Bags</button>
+      <button class="search-chip" onclick="fillSearch('Limited')">Limited</button>
+    </div>
+    <div class="search-results-drop" id="search-results-drop"></div>
+  </div>
+</div>
+
+<!-- SHOP HERO -->
+<div class="shop-hero">
+  <div class="v-wrap">
+    <p class="eyebrow reveal">DISCOVER</p>
+    <h1 class="section-title reveal d1" style="font-size:clamp(3rem,6vw,5rem);margin-bottom:.5rem">Our <em>Collection</em></h1>
+    <p style="font-size:.88rem;color:var(--text-2);margin-top:.5rem" class="reveal d2">Each piece represents centuries of couture tradition reimagined for the modern sovereign.</p>
+  </div>
+</div>
+
+<!-- FILTER BAR -->
+<div class="shop-filter-bar">
+  <div class="sfb-inner">
+    <div class="sfb-chips">
+      <button class="sfb-chip on" data-filter="all">ALL</button>
+      <button class="sfb-chip" data-filter="Coats">COATS</button>
+      <button class="sfb-chip" data-filter="Shirts">SHIRTS</button>
+      <button class="sfb-chip" data-filter="Dresses">DRESSES</button>
+      <button class="sfb-chip" data-filter="Suits">SUITS</button>
+      <button class="sfb-chip" data-filter="Trousers">TROUSERS</button>
+      <button class="sfb-chip" data-filter="Accessories">ACCESSORIES</button>
+      <button class="sfb-chip" data-filter="Bags">BAGS</button>
+      <button class="sfb-chip" data-filter="Eyewear">EYEWEAR</button>
+    </div>
+    <div class="sfb-search"><i class="fas fa-search"></i><input type="text" id="shop-search" placeholder="Search pieces..."></div>
+    <select id="shop-sort" class="sfb-sort">
+      <option value="">Featured</option>
+      <option value="price-low">Price: Low → High</option>
+      <option value="price-high">Price: High → Low</option>
+      <option value="rating">Top Rated</option>
+      <option value="name">Name A–Z</option>
+    </select>
+    <span id="shop-count" class="shop-count">12 pieces</span>
+  </div>
+</div>
+
+<!-- SHOP LAYOUT -->
+<div class="shop-layout">
+  <!-- SIDEBAR -->
+  <aside class="shop-sidebar">
+    <div class="filter-group">
+      <p class="fg-title">CATEGORY <i class="fas fa-chevron-down" style="font-size:.5rem"></i></p>
+      <div class="fg-opts">
+        <label class="fg-opt"><input type="checkbox"> Coats (5)</label>
+        <label class="fg-opt"><input type="checkbox"> Dresses (4)</label>
+        <label class="fg-opt"><input type="checkbox"> Suits (2)</label>
+        <label class="fg-opt"><input type="checkbox"> Shirts (1)</label>
+        <label class="fg-opt"><input type="checkbox"> Bags (2)</label>
+        <label class="fg-opt"><input type="checkbox"> Accessories (3)</label>
+      </div>
+    </div>
+    <div class="filter-group">
+      <p class="fg-title">PRICE RANGE <i class="fas fa-chevron-down" style="font-size:.5rem"></i></p>
+      <input type="range" class="price-slider" min="0" max="5000" value="5000">
+      <div class="price-display"><span>$0</span><span id="price-max">$5,000</span></div>
+    </div>
+    <div class="filter-group">
+      <p class="fg-title">COLOR <i class="fas fa-chevron-down" style="font-size:.5rem"></i></p>
+      <div class="swatches">
+        <div class="swatch" style="background:#0a0a0a;border:1px solid #333" title="Black"></div>
+        <div class="swatch" style="background:#1a1900" title="Midnight"></div>
+        <div class="swatch" style="background:#050510" title="Navy"></div>
+        <div class="swatch" style="background:#2d1a08" title="Cognac"></div>
+        <div class="swatch" style="background:#D4AF37" title="Gold"></div>
+        <div class="swatch" style="background:#f0f0f0;border:1px solid #333" title="Ivory"></div>
+      </div>
+    </div>
+    <div class="filter-group">
+      <p class="fg-title">SIZE <i class="fas fa-chevron-down" style="font-size:.5rem"></i></p>
+      <div class="fg-opts" style="flex-direction:row;flex-wrap:wrap;gap:.4rem">
+        <span class="sp" style="cursor:pointer">XS</span><span class="sp" style="cursor:pointer">S</span>
+        <span class="sp" style="cursor:pointer">M</span><span class="sp" style="cursor:pointer">L</span>
+        <span class="sp" style="cursor:pointer">XL</span><span class="sp" style="cursor:pointer">XXL</span>
+      </div>
+    </div>
+    <div class="filter-group">
+      <p class="fg-title">AVAILABILITY <i class="fas fa-chevron-down" style="font-size:.5rem"></i></p>
+      <div class="fg-opts">
+        <label class="fg-opt"><input type="checkbox" checked> In Stock</label>
+        <label class="fg-opt"><input type="checkbox"> Pre-Order</label>
+        <label class="fg-opt"><input type="checkbox"> Limited</label>
+      </div>
+    </div>
+    <button class="btn btn--outline btn--block btn--sm" style="margin-top:1rem" onclick="document.querySelectorAll('[data-filter]')[0].click()">CLEAR FILTERS</button>
+  </aside>
+
+  <!-- PRODUCTS AREA -->
+  <div class="shop-grid-wrap">
+    <div class="shop-pg" id="shop-grid"></div>
+  </div>
+</div>
+
+<!-- TRUST BAR -->
+<div class="trust-bar">
+  <div class="v-wrap">
+    <div class="trust-grid">
+      <div class="trust-item"><i class="fas fa-shield-alt"></i><div><p class="trust-item-t">SECURE PAYMENT</p><span class="trust-item-s">SSL encrypted</span></div></div>
+      <div class="trust-item"><i class="fas fa-undo"></i><div><p class="trust-item-t">30-DAY RETURNS</p><span class="trust-item-s">Hassle-free</span></div></div>
+      <div class="trust-item"><i class="fas fa-gem"></i><div><p class="trust-item-t">PREMIUM QUALITY</p><span class="trust-item-s">200+ hours craft</span></div></div>
+      <div class="trust-item"><i class="fas fa-shipping-fast"></i><div><p class="trust-item-t">WORLDWIDE SHIPPING</p><span class="trust-item-s">Free over $500</span></div></div>
+      <div class="trust-item"><i class="fas fa-headset"></i><div><p class="trust-item-t">24/7 CONCIERGE</p><span class="trust-item-s">Elite support</span></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="v-footer"><div class="v-wrap">
+  <div class="footer-top">
+    <div class="footer-brand"><div class="footer-brand-logo"><span class="nav-v">V</span><span class="nav-ireon">IREON</span></div><p class="footer-brand-tagline">LUXURY COUTURE</p><p class="footer-brand-desc">Where modern technology meets timeless craftsmanship.</p><div class="footer-socials"><a href="#" class="footer-social"><i class="fab fa-instagram"></i></a><a href="#" class="footer-social"><i class="fab fa-twitter"></i></a><a href="#" class="footer-social"><i class="fab fa-pinterest"></i></a></div></div>
+    <div class="footer-col"><h4>COLLECTIONS</h4><ul><li><a href="collections.html">Signature</a></li><li><a href="collections.html">Limited Drops</a></li><li><a href="shop.html?badge=NEW">New Arrivals</a></li></ul></div>
+    <div class="footer-col"><h4>SHOP</h4><ul><li><a href="shop.html?cat=Coats">Coats</a></li><li><a href="shop.html?cat=Dresses">Dresses</a></li><li><a href="shop.html?cat=Bags">Bags</a></li><li><a href="shop.html?badge=SALE" style="color:var(--gold)">SALE</a></li></ul></div>
+    <div class="footer-col"><h4>INFO</h4><ul><li><a href="about.html">About</a></li><li><a href="contact.html">Contact</a></li><li><a href="tracking.html">Track Order</a></li><li><a href="admin-panel.html">Admin</a></li></ul></div>
+  </div>
+  <div class="footer-bottom"><p>&copy; 2026 VIREON Luxury Couture. All rights reserved.</p><div class="footer-legal"><a href="#">Privacy</a><a href="#">Terms</a><a href="#">Cookies</a></div></div>
+</div></footer>
+
+<!-- MINI CART -->
+<div class="cart-overlay" id="cart-overlay"></div>
+<div class="mini-cart" id="mini-cart">
+  <div class="mc-head"><h3>Shopping Bag <span id="mc-qty">(0)</span></h3><button class="mc-close" id="mc-close">&times;</button></div>
+  <div class="mc-body" id="mc-body"></div>
+  <div class="mc-foot">
+    <div class="mc-subtotal"><span>Subtotal</span><span id="mc-total">$0</span></div>
+    <a href="cart.html" class="btn btn--gold btn--block" style="margin-bottom:.8rem">VIEW BAG <i class="fas fa-arrow-right"></i></a>
+    <a href="cart.html#checkout" class="btn btn--outline btn--block">CHECKOUT</a>
+  </div>
+</div>
+
+<!-- AI -->
+<button class="ai-fab" id="ai-fab"><i class="fas fa-robot"></i><span class="ai-pulse"></span></button>
+<div class="ai-panel" id="ai-panel">
+  <div class="ai-head"><div class="ai-head-label"><i class="fas fa-robot"></i> AI Style Assistant</div><button class="ai-head-close" id="ai-close">&times;</button></div>
+  <div class="ai-body" id="ai-body"><div class="ai-msg-wrap"><div class="ai-avatar">AI</div><div class="ai-bubble">Welcome to VIREON. I can help you find the perfect piece. What are you looking for?</div></div></div>
+  <div class="ai-input-row"><input type="text" id="ai-input" placeholder="Ask about style, sizing..."><button id="ai-send"><i class="fas fa-paper-plane"></i></button></div>
+</div>
+
+<!-- SCROLL PROGRESS -->
+<div id="scroll-progress"></div>
+
+<div id="v-toast"><i class="fas fa-check-circle"></i><span id="v-toast-msg"></span></div>
+<script src="js/vireon.js"></script>
+<script>
+// Price slider
+document.querySelector('.price-slider')?.addEventListener('input',function(){
+  document.getElementById('price-max').textContent='$'+parseInt(this.value).toLocaleString();
+});
+// Sidebar size pills
+document.querySelectorAll('.shop-sidebar .sp').forEach(s=>{
+  s.addEventListener('click',function(){this.classList.toggle('on');});
+});
+// Scroll progress bar
+window.addEventListener('scroll',()=>{
+  const el=document.getElementById('scroll-progress');
+  if(el){const p=window.scrollY/(document.body.scrollHeight-window.innerHeight);el.style.width=(p*100)+'%';}
+},{passive:true});
+</script>
+</body>
+</html>

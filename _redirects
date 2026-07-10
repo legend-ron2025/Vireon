@@ -1,0 +1,14 @@
+# VIREON — Netlify Redirects
+# These work as a fallback alongside netlify.toml
+
+/admin              /admin-panel.html   200
+/admin-panel        /admin-panel.html   200
+/dashboard          /admin-panel.html   200
+/login              /admin-login.html   200
+/shop               /shop.html          200
+/cart               /cart.html          200
+/wishlist           /wishlist.html      200
+/tracking           /tracking.html      200
+/about              /about.html         200
+/contact            /contact.html       200
+/collections        /collections.html   200

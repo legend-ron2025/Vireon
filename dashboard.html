@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Admin Dashboard — VIREON Enterprise</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,600&family=Montserrat:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="css/vireon.css">
+<link rel="stylesheet" href="css/animations.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<!-- Route guard -->
+<script src="js/admin-auth.js"></script>
+<script>(function(){if(!AdminAuth.requireAuth())throw new Error('auth');})();</script>
+<style>
+/* ── DASHBOARD-SPECIFIC STYLES ─────────────────── */
+body{padding-top:0;overflow:hidden}
+.admin-layout{display:grid;grid-template-columns:240px 1fr;height:100vh;overflow:hidden}
+.admin-sidebar{background:#0d0d0d;border-right:1px solid var(--border);display:flex;flex-direction:column;overflow-y:auto;height:100vh;position:sticky;top:0}
+.admin-main{display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.admin-topbar{display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem;border-bottom:1px solid var(--border);background:var(--bg-2);flex-shrink:0}
+.admin-content-area{flex:1;overflow-y:auto;padding:2rem}
+
+/* Sidebar */
+.admin-logo-wrap{padding:1.5rem 1.5rem 1rem;border-bottom:1px solid var(--border)}
+.admin-logo{font-family:var(--font-serif);font-size:1.3rem;display:flex;align-items:baseline;gap:.1rem}
+.admin-logo span{color:var(--gold);font-size:1.6rem}
+.admin-logo em{font-size:.55rem;letter-spacing:.3em;color:var(--text-2);font-style:normal;margin-left:.4rem}
+.admin-nav-group-label{font-size:.48rem;font-weight:700;letter-spacing:.35em;color:var(--gray);text-transform:uppercase;padding:.6rem 1.5rem;margin-top:.8rem}
+.admin-link{display:flex;align-items:center;gap:.7rem;padding:.72rem 1.5rem;font-size:.66rem;font-weight:500;letter-spacing:.1em;color:var(--text-2);text-transform:uppercase;transition:all .25s;border-left:3px solid transparent;cursor:pointer;background:none;border-right:none;border-top:none;border-bottom:none;width:100%;text-align:left}
+.admin-link:hover{color:var(--gold);background:rgba(212,175,55,.04);border-left-color:rgba(212,175,55,.4)}
+.admin-link.on{color:var(--gold);background:rgba(212,175,55,.07);border-left-color:var(--gold)}
+.admin-link i{width:16px;font-size:.8rem;flex-shrink:0}
+
+/* Panel system */
+.admin-panel{display:none;animation:panelIn .35s ease both}
+.admin-panel.on{display:block}
+@keyframes panelIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+/* Common panel styles */
+.panel-header{margin-bottom:2rem}
+.panel-title{font-family:var(--font-serif);font-size:2rem;font-weight:300;color:var(--white);margin-bottom:.3rem}
+.panel-title em{font-style:italic;color:var(--gold)}
+.panel-subtitle{font-size:.75rem;color:var(--text-2)}
+.panel-toolbar{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap}
+.pt-left{display:flex;align-items:center;gap:.8rem;flex-wrap:wrap}
+.pt-right{display:flex;align-items:center;gap:.8rem}
+.d-search{background:var(--bg-3);border:1px solid var(--border);color:var(--white);padding:.6rem 1rem .6rem 2.2rem;font-size:.75rem;width:240px;transition:border-color .3s;font-family:var(--font-sans);outline:none;position:relative}
+.d-search:focus{border-color:var(--gold)}
+.d-search-wrap{position:relative}
+.d-search-wrap i{position:absolute;left:.8rem;top:50%;transform:translateY(-50%);color:var(--gray);font-size:.75rem;pointer-events:none}
+.d-select{background:var(--bg-3);border:1px solid var(--border);color:var(--white);padding:.6rem .9rem;font-size:.72rem;cursor:pointer;font-family:var(--font-sans);outline:none}
+.d-btn{display:inline-flex;align-items:center;gap:.5rem;background:var(--gold-grad);border:none;color:var(--bg);font-size:.6rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;padding:.65rem 1.3rem;cursor:pointer;font-family:var(--font-sans);transition:all .3s}
+.d-btn:hover{box-shadow:0 0 16px rgba(212,175,55,.4);transform:translateY(-1px)}
+.d-btn-ghost{display:inline-flex;align-items:center;gap:.5rem;background:transparent;border:1px solid var(--border);color:var(--text-2);font-size:.6rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;padding:.65rem 1.3rem;cursor:pointer;font-family:var(--font-sans);transition:all .3s}
+.d-btn-ghost:hover{border-color:var(--gold);color:var(--gold)}
+.d-btn-danger{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:#EF4444;font-size:.6rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;padding:.65rem 1.3rem;cursor:pointer;font-family:var(--font-sans);transition:all .3s}
+.d-btn-danger:hover{background:rgba(239,68,68,.2)}
+
+/* Data table */
+.d-table-wrap{background:var(--bg-2);border:1px solid var(--border);overflow:hidden}
+.d-table{width:100%;border-collapse:collapse}
+.d-table th{font-size:.56rem;font-weight:700;letter-spacing:.22em;color:var(--gold);text-transform:uppercase;padding:.9rem 1rem;border-bottom:1px solid rgba(212,175,55,.2);text-align:left;background:var(--bg-3);white-space:nowrap}
+.d-table td{font-size:.76rem;color:var(--text-2);padding:.9rem 1rem;border-bottom:1px solid var(--border);vertical-align:middle}
+.d-table tr:hover td{background:rgba(212,175,55,.02)}
+.d-table tr:last-child td{border-bottom:none}
+
+/* Status badges */
+.badge{padding:.25rem .75rem;font-size:.54rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;white-space:nowrap}
+.badge-delivered{background:rgba(16,185,129,.12);color:#10B981;border:1px solid rgba(16,185,129,.3)}
+.badge-processing{background:rgba(212,175,55,.12);color:var(--gold);border:1px solid rgba(212,175,55,.3)}
+.badge-shipped{background:rgba(59,130,246,.12);color:#3B82F6;border:1px solid rgba(59,130,246,.3)}
+.badge-cancelled{background:rgba(239,68,68,.12);color:#EF4444;border:1px solid rgba(239,68,68,.3)}
+.badge-pending{background:rgba(245,158,11,.12);color:#F59E0B;border:1px solid rgba(245,158,11,.3)}
+.badge-refunded{background:rgba(139,92,246,.12);color:#8B5CF6;border:1px solid rgba(139,92,246,.3)}
+.badge-active{background:rgba(16,185,129,.12);color:#10B981;border:1px solid rgba(16,185,129,.3)}
+.badge-inactive{background:rgba(107,114,128,.15);color:#9CA3AF;border:1px solid rgba(107,114,128,.3)}
+.badge-limited{background:var(--gold-grad);color:var(--bg)}
+.badge-vip{background:rgba(212,175,55,.2);color:var(--gold);border:1px solid var(--gold)}
+
+/* Action buttons in table */
+.tbl-action{background:transparent;border:1px solid var(--border);color:var(--gold);padding:.28rem .65rem;font-size:.56rem;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;font-family:var(--font-sans);transition:all .3s}
+.tbl-action:hover{background:var(--gold);color:var(--bg);border-color:var(--gold)}
+.tbl-action-del{border-color:rgba(239,68,68,.3);color:#EF4444}
+.tbl-action-del:hover{background:#EF4444;color:#fff;border-color:#EF4444}
+
+/* Stat cards row */
+.stat-row{display:grid;gap:1.2rem;margin-bottom:2rem}
+.stat-row-4{grid-template-columns:repeat(4,1fr)}
+.stat-row-3{grid-template-columns:repeat(3,1fr)}
+.stat-card{background:var(--bg-2);border:1px solid var(--border);padding:1.5rem;transition:all .3s}
+.stat-card:hover{border-color:rgba(212,175,55,.3);box-shadow:0 0 20px rgba(212,175,55,.06)}
+.stat-card-icon{font-size:1.3rem;color:var(--gold);margin-bottom:.8rem}
+.stat-card-n{font-family:var(--font-serif);font-size:1.9rem;color:var(--white);margin-bottom:.2rem;line-height:1}
+.stat-card-label{font-size:.58rem;letter-spacing:.18em;color:var(--gray);text-transform:uppercase}
+.stat-card-trend{font-size:.65rem;margin-top:.5rem;display:flex;align-items:center;gap:.3rem}
+
+/* Forms inside panels */
+.d-form-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem}
+.d-form-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.2rem}
+.d-form-group{margin-bottom:1.2rem}
+.d-form-label{display:block;font-size:.56rem;font-weight:700;letter-spacing:.2em;color:var(--gold);text-transform:uppercase;margin-bottom:.4rem}
+.d-form-input{width:100%;background:var(--bg-3);border:1px solid var(--border);color:var(--white);padding:.8rem 1rem;font-size:.82rem;transition:border-color .3s;font-family:var(--font-sans);outline:none}
+.d-form-input:focus{border-color:var(--gold)}
+.d-form-input::placeholder{color:var(--gray)}
+.d-form-select{width:100%;background:var(--bg-3);border:1px solid var(--border);color:var(--white);padding:.8rem 1rem;font-size:.82rem;cursor:pointer;font-family:var(--font-sans);outline:none;transition:border-color .3s}
+.d-form-select:focus{border-color:var(--gold)}
+.d-form-textarea{width:100%;background:var(--bg-3);border:1px solid var(--border);color:var(--white);padding:.8rem 1rem;font-size:.82rem;font-family:var(--font-sans);outline:none;transition:border-color .3s;resize:vertical;min-height:90px}
+.d-form-textarea:focus{border-color:var(--gold)}
+.d-form-section{background:var(--bg-2);border:1px solid var(--border);padding:2rem;margin-bottom:1.5rem}
+.d-form-section-title{font-size:.6rem;font-weight:700;letter-spacing:.25em;color:var(--gold);text-transform:uppercase;margin-bottom:1.5rem;padding-bottom:.8rem;border-bottom:1px solid var(--border)}
+
+/* Product image placeholder in table */
+.tbl-img{width:46px;height:58px;flex-shrink:0;border:1px solid var(--border);display:inline-flex;align-items:center;justify-content:center;font-size:.6rem;color:var(--gold);vertical-align:middle;margin-right:.8rem}
+
+/* Pagination */
+.d-pagination{display:flex;align-items:center;justify-content:space-between;padding:1rem;border-top:1px solid var(--border);font-size:.72rem;color:var(--text-2)}
+.d-pages{display:flex;gap:.3rem}
+.d-page-btn{width:32px;height:32px;background:transparent;border:1px solid var(--border);color:var(--text-2);font-size:.72rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s}
+.d-page-btn:hover,.d-page-btn.on{background:var(--gold);border-color:var(--gold);color:var(--bg)}
+
+/* Chart containers */
+.chart-wrap{background:var(--bg-2);border:1px solid var(--border);padding:2rem}
+.chart-wrap-title{font-size:.68rem;font-weight:700;letter-spacing:.18em;color:var(--white);text-transform:uppercase;margin-bottom:1.5rem}
+.charts-2{display:grid;grid-template-columns:2fr 1fr;gap:1.2rem;margin-bottom:1.5rem}
+.charts-3{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem;margin-bottom:1.5rem}
+
+/* Inline tag */
+.d-tag{display:inline-block;padding:.2rem .6rem;font-size:.55rem;letter-spacing:.1em;background:rgba(212,175,55,.1);color:var(--gold);border:1px solid rgba(212,175,55,.2)}
+
+/* Toggle switch */
+.d-toggle{position:relative;width:40px;height:22px}
+.d-toggle input{opacity:0;width:0;height:0}
+.d-slider{position:absolute;inset:0;background:var(--border);transition:.3s;border-radius:22px;cursor:pointer}
+.d-slider::before{content:'';position:absolute;height:16px;width:16px;left:3px;bottom:3px;background:var(--gray);transition:.3s;border-radius:50%}
+.d-toggle input:checked+.d-slider{background:var(--gold)}
+.d-toggle input:checked+.d-slider::before{transform:translateX(18px);background:var(--bg)}
+
+/* Progress bar */
+.d-progress{height:6px;background:var(--border);border-radius:3px;overflow:hidden;margin-top:.4rem}
+.d-progress-fill{height:100%;border-radius:3px;background:var(--gold-grad)}
+
+/* Alert box */
+.d-alert{padding:1rem 1.2rem;border-left:3px solid;margin-bottom:1rem;font-size:.78rem;display:flex;align-items:flex-start;gap:.7rem}
+.d-alert-warn{background:rgba(245,158,11,.08);border-color:var(--warning);color:var(--warning)}
+.d-alert-err{background:rgba(239,68,68,.08);border-color:var(--error);color:var(--error)}
+.d-alert-ok{background:rgba(16,185,129,.08);border-color:var(--success);color:var(--success)}
+.d-alert-info{background:rgba(59,130,246,.08);border-color:#3B82F6;color:#3B82F6}
+
+/* Customer avatar */
+.c-avatar{width:36px;height:36px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;flex-shrink:0;vertical-align:middle;margin-right:.7rem}
+</style>
+</head>
+<body style="padding-top:0">
+
+<div id="v-loader"><div class="loader-logo"><span class="loader-logo-v">V</span><span class="loader-logo-text">IREON</span></div><div class="loader-bar"><div class="loader-fill" id="loader-fill"></div></div><span class="loader-label">ADMIN PANEL</span><span class="loader-pct" id="loader-pct">0%</span></div>
+
+<div class="admin-layout" id="admin-root">
+
+<!-- ══════════════ SIDEBAR ══════════════ -->
+<aside class="admin-sidebar">
+  <div class="admin-logo-wrap">
+    <div class="admin-logo"><span>V</span>IREON <em>ADMIN</em></div>
+    <p style="font-size:.6rem;color:var(--gray);margin-top:.3rem" id="sidebar-user">Loading...</p>
+  </div>
+  <nav class="admin-nav" style="padding:.5rem 0 2rem;flex:1">
+    <p class="admin-nav-group-label">OVERVIEW</p>
+    <button class="admin-link on" data-panel="panel-dashboard"><i class="fas fa-chart-bar"></i>Dashboard</button>
+    <button class="admin-link" data-panel="panel-analytics"><i class="fas fa-chart-line"></i>Analytics</button>
+    <button class="admin-link" data-panel="panel-reports"><i class="fas fa-file-alt"></i>Reports</button>
+
+    <p class="admin-nav-group-label">CATALOGUE</p>
+    <button class="admin-link" data-panel="panel-products"><i class="fas fa-box-open"></i>Products</button>
+    <button class="admin-link" data-panel="panel-collections"><i class="fas fa-layer-group"></i>Collections</button>
+    <button class="admin-link" data-panel="panel-categories"><i class="fas fa-tags"></i>Categories</button>
+    <button class="admin-link" data-panel="panel-inventory"><i class="fas fa-warehouse"></i>Inventory</button>
+
+    <p class="admin-nav-group-label">COMMERCE</p>
+    <button class="admin-link" data-panel="panel-orders"><i class="fas fa-shopping-bag"></i>Orders</button>
+    <button class="admin-link" data-panel="panel-customers"><i class="fas fa-users"></i>Customers</button>
+    <button class="admin-link" data-panel="panel-returns"><i class="fas fa-undo"></i>Returns</button>
+    <button class="admin-link" data-panel="panel-coupons"><i class="fas fa-ticket-alt"></i>Coupons</button>
+
+    <p class="admin-nav-group-label">MARKETING</p>
+    <button class="admin-link" data-panel="panel-email"><i class="fas fa-envelope"></i>Email Campaigns</button>
+    <button class="admin-link" data-panel="panel-push"><i class="fas fa-bell"></i>Push Campaigns</button>
+    <button class="admin-link" data-panel="panel-reviews"><i class="fas fa-star"></i>Reviews</button>
+    <button class="admin-link" data-panel="panel-flashsale"><i class="fas fa-bolt"></i>Flash Sales</button>
+
+    <p class="admin-nav-group-label">SYSTEM</p>
+    <button class="admin-link" data-panel="panel-support"><i class="fas fa-life-ring"></i>Support Tickets</button>
+    <button class="admin-link" data-panel="panel-security"><i class="fas fa-shield-alt"></i>Security</button>
+    <button class="admin-link" data-panel="panel-settings" id="sidebar-settings-btn"><i class="fas fa-cog"></i>Settings</button>
+
+    <div style="border-top:1px solid var(--border);margin-top:1rem;padding-top:.5rem">
+      <a href="index.html" class="admin-link" style="color:var(--text-2)"><i class="fas fa-store"></i>View Store</a>
+      <button class="admin-link" style="color:#EF4444" onclick="adminLogout()"><i class="fas fa-sign-out-alt"></i>Logout</button>
+    </div>
+  </nav>
+</aside>
+
+<!-- ══════════════ MAIN ══════════════ -->
+<div class="admin-main">
+
+  <!-- TOPBAR -->
+  <div class="admin-topbar">
+    <div style="display:flex;align-items:center;gap:1rem">
+      <h1 style="font-size:1.1rem;font-weight:400;color:var(--white)" id="topbar-title">Dashboard</h1>
+      <span style="font-size:.62rem;color:var(--gray)" id="topbar-breadcrumb">Overview → Dashboard</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:.8rem">
+      <button class="d-btn-ghost" style="padding:.45rem .9rem;font-size:.58rem" onclick="document.getElementById('panel-support').querySelector('.d-btn')?.click()"><i class="fas fa-bell"></i> <span style="background:var(--error);color:#fff;border-radius:50%;width:16px;height:16px;display:inline-flex;align-items:center;justify-content:center;font-size:.55rem">3</span></button>
+      <span style="font-size:.62rem;color:var(--gold);letter-spacing:.12em;text-transform:uppercase" id="admin-topbar-role">Role</span>
+      <div id="admin-topbar-avatar" class="admin-avatar" style="cursor:pointer" onclick="showPanel('panel-settings')">A</div>
+      <button class="d-btn-ghost" style="padding:.45rem .9rem;font-size:.58rem" onclick="adminLogout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    </div>
+  </div>
+
+  <!-- SCROLL PROGRESS -->
+  <div id="scroll-progress" style="height:2px;background:var(--gold-grad);width:0;transition:width .1s;flex-shrink:0"></div>
+
+  <!-- CONTENT AREA -->
+  <div class="admin-content-area" id="admin-content-area">
+
+<!-- ════════════ PANEL: DASHBOARD ════════════ -->
+<div class="admin-panel on" id="panel-dashboard">
+  <div class="panel-header">
+    <h2 class="panel-title">Dashboard <em>Overview</em></h2>
+    <p class="panel-subtitle">Real-time performance snapshot for VIREON Enterprise.</p>
+  </div>
+  <div class="stat-row stat-row-4">
+    <div class="stat-card"><div class="stat-card-icon"><i class="fas fa-dollar-sign"></i></div><div class="stat-card-n">$84,250</div><div class="stat-card-label">Revenue Today</div><div class="stat-card-trend trend-up"><i class="fas fa-arrow-up"></i> +12.5%</div></div>
+    <div class="stat-card"><div class="stat-card-icon"><i class="fas fa-shopping-bag"></i></div><div class="stat-card-n">47</div><div class="stat-card-label">Orders Today</div><div class="stat-card-trend trend-up"><i class="fas fa-arrow-up"></i> +8 vs yesterday</div></div>
+    <div class="stat-card"><div class="stat-card-icon"><i class="fas fa-users"></i></div><div class="stat-card-n">1,284</div><div class="stat-card-label">Active Customers</div><div class="stat-card-trend trend-up"><i class="fas fa-arrow-up"></i> +23 new</div></div>
+    <div class="stat-card"><div class="stat-card-icon"><i class="fas fa-eye"></i></div><div class="stat-card-n">9,482</div><div class="stat-card-label">Page Views</div><div class="stat-card-trend trend-dn"><i class="fas fa-arrow-down"></i> -3.1%</div></div>
+  </div>
+  <div class="stat-row" style="grid-template-columns:repeat(4,1fr)">
+    <div class="stat-card"><div class="stat-card-icon"><i class="fas fa-percentage"></i></div><div class="stat-card-n">3.8%</div><div class="stat-card-label">Conversion Rate</div><div class="stat-card-trend trend-up"><i class="fas fa-arrow-up"></i> +0.4%</div></div>
+    <div class="stat-card"><div class="stat-card-icon"><i class="fas fa-chart-pie"></i></div><div class="stat-card-n">$1,792</div><div class="stat-card-label">Avg Order Value</div><div class="stat-card-trend trend-up"><i class="fas fa-arrow-up"></i> +$140</div></div>
+    <div class="stat-card"><div class="stat-card-icon" style="color:var(--warning)"><i class="fas fa-exclamation-triangle"></i></div><div class="stat-card-n" style="color:var(--warning)">4</div><div class="stat-card-label">Stock Alerts</div><div class="stat-card-trend" style="color:var(--warning)"><i class="fas fa-exclamation-circle"></i> Action needed</div></div>
+    <div class="stat-card"><div class="stat-card-icon" style="color:var(--error)"><i class="fas fa-undo"></i></div><div class="stat-card-n" style="color:var(--error)">2</div><div class="stat-card-label">Pending Returns</div><div class="stat-card-trend" style="color:var(--error)"><i class="fas fa-clock"></i> Awaiting review</div></div>
+  </div>
+  <div class="charts-2">
+    <div class="chart-wrap"><p class="chart-wrap-title">Revenue — 2026</p><canvas id="ch-revenue" height="90"></canvas></div>
+    <div class="chart-wrap"><p class="chart-wrap-title">Sales by Category</p><canvas id="ch-cat"></canvas></div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-bottom:1.5rem">
+    <div class="chart-wrap"><p class="chart-wrap-title">Weekly Visitors</p><canvas id="ch-traffic" height="90"></canvas></div>
+    <div class="chart-wrap" style="display:flex;flex-direction:column">
+      <p class="chart-wrap-title">Live Visitors</p>
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5rem">
+        <span style="font-family:var(--font-serif);font-size:4rem;color:var(--gold);line-height:1" id="live-count">142</span>
+        <span style="font-size:.58rem;letter-spacing:.2em;color:var(--gray);text-transform:uppercase">Currently on site</span>
+        <div style="width:100%;margin-top:1rem;display:flex;flex-direction:column;gap:.6rem" id="live-breakdown"></div>
+      </div>
+    </div>
+  </div>
+  <!-- Recent Orders -->
+  <div class="d-table-wrap" style="margin-bottom:1.5rem">
+    <div style="padding:1.2rem 1.5rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+      <p style="font-size:.68rem;font-weight:700;letter-spacing:.18em;color:var(--white);text-transform:uppercase">Recent Orders</p>
+      <button class="tbl-action" onclick="showPanel('panel-orders')">VIEW ALL</button>
+    </div>
+    <table class="d-table" id="dash-orders-table">
+      <thead><tr><th>Order ID</th><th>Customer</th><th>Product</th><th>Amount</th><th>Date</th><th>Status</th><th>Action</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+  <!-- Bottom grid -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.2rem">
+    <div class="d-table-wrap"><div style="padding:1.2rem 1.5rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between"><p style="font-size:.68rem;font-weight:700;letter-spacing:.18em;color:var(--white);text-transform:uppercase">Top Products</p><button class="tbl-action" onclick="showPanel('panel-products')">VIEW ALL</button></div><div id="dash-top-products" style="padding:1rem 1.5rem"></div></div>
+    <div class="d-table-wrap"><div style="padding:1.2rem 1.5rem;border-bottom:1px solid var(--border)"><p style="font-size:.68rem;font-weight:700;letter-spacing:.18em;color:var(--white);text-transform:uppercase">Activity Feed</p></div><div id="dash-activity" style="padding:.5rem 1.5rem;max-height:320px;overflow-y:auto"></div></div>
+  </div>
+</div>
+
+<!-- ════════════ PANEL: ANALYTICS ════════════ -->
+<div class="admin-panel" id="panel-analytics">
+  <div class="panel-header"><h2 class="panel-title">Analytics <em>& Insights</em></h2><p class="panel-subtitle">Deep performance metrics and trend analysis.</p></div>
+  <div style="display:flex;gap:.8rem;margin-bottom:2rem;flex-wrap:wrap">
+    <button class="d-btn">LAST 7 DAYS</button>
+    <button class="d-btn-ghost">30 DAYS</button>
+    <button class="d-btn-ghost">90 DAYS</button>
+    <button class="d-btn-ghost">THIS YEAR</button>
+    <button class="d-btn-ghost" style="margin-left:auto"><i class="fas fa-download"></i> EXPORT</button>
+  </div>
+  <div class="stat-row stat-row-3" style="margin-bottom:1.5rem">
+    <div class="stat-card"><div class="stat-card-icon"><i class="fas fa-funnel-dollar"></i></div><div class="stat-card-n">$612,840</div><div class="stat-card-label">Total Revenue (YTD)</div><div class="stat-card-trend trend-up"><i class="fas fa-arrow-up"></i> +34% vs last year</div></div>
+    <div class="stat-card"><div class="stat-card-icon"><i class="fas fa-users"></i></div><div class="stat-card-n">8,421</div><div class="stat-card-label">Total Customers</div><div class="stat-card-trend trend-up"><i class="fas fa-arrow-up"></i> +18% vs last year</div></div>
+    <div class="stat-card"><div class="stat-card-icon"><i class="fas fa-repeat"></i></div><div class="stat-card-n">68%</div><div class="stat-card-label">Repeat Purchase Rate</div><div class="stat-card-trend trend-up"><i class="fas fa-arrow-up"></i> +5% vs last year</div></div>
+  </div>
+  <div class="charts-2" style="margin-bottom:1.5rem">
+    <div class="chart-wrap"><p class="chart-wrap-title">Revenue Trend (Monthly)</p><canvas id="ch-rev-monthly" height="100"></canvas></div>
+    <div class="chart-wrap"><p class="chart-wrap-title">Traffic Sources</p><canvas id="ch-traffic-sources"></canvas></div>
+  </div>
+  <div class="charts-3">
+    <div class="chart-wrap"><p class="chart-wrap-title">Orders by Day</p><canvas id="ch-orders-day" height="120"></canvas></div>
+    <div class="chart-wrap"><p class="chart-wrap-title">Device Breakdown</p><canvas id="ch-devices"></canvas></div>
+    <div class="chart-wrap"><p class="chart-wrap-title">Customer Regions</p><canvas id="ch-regions"></canvas></div>
+  </div>
+  <div class="d-table-wrap">
+    <div style="padding:1.2rem 1.5rem;border-bottom:1px solid var(--border)"><p style="font-size:.68rem;font-weight:700;letter-spacing:.18em;color:var(--white);text-transform:uppercase">Top Performing Products (Revenue)</p></div>
+    <table class="d-table">
+      <thead><tr><th>#</th><th>Product</th><th>Category</th><th>Units Sold</th><th>Revenue</th><th>Avg Rating</th><th>Trend</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td><span class="tbl-img" style="background:linear-gradient(135deg,#1a0f05,#2d1a08)"></span>Sovereign Coat</td><td>Coats</td><td>124</td><td style="color:var(--gold);font-family:var(--font-serif)">$229,400</td><td>⭐ 5.0</td><td><span style="color:var(--success)">▲ 18%</span></td></tr>
+        <tr><td>2</td><td><span class="tbl-img" style="background:linear-gradient(135deg,#150a00,#241500)"></span>Evening Gown</td><td>Dresses</td><td>43</td><td style="color:var(--gold);font-family:var(--font-serif)">$206,400</td><td>⭐ 5.0</td><td><span style="color:var(--success)">▲ 31%</span></td></tr>
+        <tr><td>3</td><td><span class="tbl-img" style="background:linear-gradient(135deg,#0a0a00,#1a1900)"></span>Imperial Suit</td><td>Suits</td><td>58</td><td style="color:var(--gold);font-family:var(--font-serif)">$185,600</td><td>⭐ 4.8</td><td><span style="color:var(--success)">▲ 12%</span></td></tr>
+        <tr><td>4</td><td><span class="tbl-img" style="background:linear-gradient(135deg,#080008,#150015)"></span>Caviar Handbag</td><td>Bags</td><td>63</td><td style="color:var(--gold);font-family:var(--font-serif)">$182,700</td><td>⭐ 5.0</td><td><span style="color:var(--success)">▲ 22%</span></td></tr>
+        <tr><td>5</td><td><span class="tbl-img" style="background:linear-gradient(135deg,#050510,#0d0d20)"></span>Noir Velvet Dress</td><td>Dresses</td><td>76</td><td style="color:var(--gold);font-family:var(--font-serif)">$167,200</td><td>⭐ 5.0</td><td><span style="color:var(--warning)">▼ 4%</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ════════════ PANEL: REPORTS ════════════ -->
+<div class="admin-panel" id="panel-reports">
+  <div class="panel-header"><h2 class="panel-title">Reports <em>& Exports</em></h2><p class="panel-subtitle">Generate and download business reports.</p></div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem">
+    <div class="d-form-section" style="cursor:pointer;transition:all .3s" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--border)'">
+      <div style="font-size:2rem;color:var(--gold);margin-bottom:1rem"><i class="fas fa-chart-line"></i></div>
+      <h3 style="font-size:.95rem;color:var(--white);margin-bottom:.5rem">Sales Report</h3>
+      <p style="font-size:.75rem;color:var(--text-2);margin-bottom:1.5rem">Daily, weekly, monthly and yearly sales breakdown.</p>
+      <button class="d-btn btn--sm" onclick="generateReport('sales')"><i class="fas fa-download"></i> GENERATE</button>
+    </div>
+    <div class="d-form-section" style="cursor:pointer;transition:all .3s" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--border)'">
+      <div style="font-size:2rem;color:var(--gold);margin-bottom:1rem"><i class="fas fa-users"></i></div>
+      <h3 style="font-size:.95rem;color:var(--white);margin-bottom:.5rem">Customer Report</h3>
+      <p style="font-size:.75rem;color:var(--text-2);margin-bottom:1.5rem">Customer acquisition, retention and LTV analysis.</p>
+      <button class="d-btn btn--sm" onclick="generateReport('customers')"><i class="fas fa-download"></i> GENERATE</button>
+    </div>
+    <div class="d-form-section" style="cursor:pointer;transition:all .3s" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--border)'">
+      <div style="font-size:2rem;color:var(--gold);margin-bottom:1rem"><i class="fas fa-box"></i></div>
+      <h3 style="font-size:.95rem;color:var(--white);margin-bottom:.5rem">Product Report</h3>
+      <p style="font-size:.75rem;color:var(--text-2);margin-bottom:1.5rem">Stock levels, best sellers and performance metrics.</p>
+      <button class="d-btn btn--sm" onclick="generateReport('products')"><i class="fas fa-download"></i> GENERATE</button>
+    </div>
+    <div class="d-form-section" style="cursor:pointer;transition:all .3s" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--border)'">
+      <div style="font-size:2rem;color:var(--gold);margin-bottom:1rem"><i class="fas fa-receipt"></i></div>
+      <h3 style="font-size:.95rem;color:var(--white);margin-bottom:.5rem">Tax Report</h3>
+      <p style="font-size:.75rem;color:var(--text-2);margin-bottom:1.5rem">VAT, duties and tax summaries for accounting.</p>
+      <button class="d-btn btn--sm" onclick="generateReport('tax')"><i class="fas fa-download"></i> GENERATE</button>
+    </div>
+    <div class="d-form-section" style="cursor:pointer;transition:all .3s" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--border)'">
+      <div style="font-size:2rem;color:var(--gold);margin-bottom:1rem"><i class="fas fa-bullhorn"></i></div>
+      <h3 style="font-size:.95rem;color:var(--white);margin-bottom:.5rem">Marketing Report</h3>
+      <p style="font-size:.75rem;color:var(--text-2);margin-bottom:1.5rem">Campaign ROI, email opens and click rates.</p>
+      <button class="d-btn btn--sm" onclick="generateReport('marketing')"><i class="fas fa-download"></i> GENERATE</button>
+    </div>
+    <div class="d-form-section" style="cursor:pointer;transition:all .3s" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--border)'">
+      <div style="font-size:2rem;color:var(--gold);margin-bottom:1rem"><i class="fas fa-undo"></i></div>
+      <h3 style="font-size:.95rem;color:var(--white);margin-bottom:.5rem">Returns Report</h3>
+      <p style="font-size:.75rem;color:var(--text-2);margin-bottom:1.5rem">Return reasons, refund totals and resolution times.</p>
+      <button class="d-btn btn--sm" onclick="generateReport('returns')"><i class="fas fa-download"></i> GENERATE</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ PANEL: PRODUCTS ════════════ -->
+<div class="admin-panel" id="panel-products">
+  <div class="panel-header"><h2 class="panel-title">Products <em>Management</em></h2><p class="panel-subtitle">Manage your entire luxury product catalogue.</p></div>
+  <div class="panel-toolbar">
+    <div class="pt-left">
+      <div class="d-search-wrap"><i class="fas fa-search"></i><input type="text" class="d-search" placeholder="Search products..." id="prod-search" oninput="filterProducts()"></div>
+      <select class="d-select" id="prod-cat-filter" onchange="filterProducts()"><option value="">All Categories</option><option>Coats</option><option>Dresses</option><option>Suits</option><option>Shirts</option><option>Bags</option><option>Eyewear</option><option>Accessories</option><option>Trousers</option></select>
+      <select class="d-select" id="prod-status-filter" onchange="filterProducts()"><option value="">All Status</option><option>In Stock</option><option>Low Stock</option><option>Out of Stock</option></select>
+    </div>
+    <div class="pt-right">
+      <button class="d-btn-ghost"><i class="fas fa-file-import"></i> IMPORT CSV</button>
+      <button class="d-btn" onclick="openAddProduct()"><i class="fas fa-plus"></i> ADD PRODUCT</button>
+    </div>
+  </div>
+  <div class="d-table-wrap">
+    <table class="d-table">
+      <thead><tr><th><input type="checkbox" style="accent-color:var(--gold)"></th><th>Product</th><th>SKU</th><th>Category</th><th>Price</th><th>Stock</th><th>Status</th><th>Sales</th><th>Actions</th></tr></thead>
+      <tbody id="products-table-body"></tbody>
+    </table>
+    <div class="d-pagination"><span id="prod-count">Showing 12 products</span><div class="d-pages"><button class="d-page-btn on">1</button><button class="d-page-btn">2</button><button class="d-page-btn">3</button><button class="d-page-btn"><i class="fas fa-chevron-right"></i></button></div></div>
+  </div>
+  <!-- Add/Edit Product Form (hidden by default) -->
+  <div id="add-product-form" style="display:none;margin-top:2rem">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem">
+      <h3 style="font-size:1.2rem;color:var(--white);font-weight:300">Add <em style="font-style:italic;color:var(--gold)">New Product</em></h3>
+      <button class="d-btn-ghost" onclick="closeAddProduct()"><i class="fas fa-times"></i> CANCEL</button>
+    </div>
+    <div class="d-form-section">
+      <p class="d-form-section-title">Basic Information</p>
+      <div class="d-form-grid-2">
+        <div class="d-form-group"><label class="d-form-label">Product Name *</label><input type="text" class="d-form-input" placeholder="e.g. Sovereign Coat"></div>
+        <div class="d-form-group"><label class="d-form-label">SKU *</label><input type="text" class="d-form-input" placeholder="e.g. VR-C-013"></div>
+      </div>
+      <div class="d-form-grid-3">
+        <div class="d-form-group"><label class="d-form-label">Category *</label><select class="d-form-select"><option>Coats</option><option>Dresses</option><option>Suits</option><option>Shirts</option><option>Bags</option><option>Eyewear</option><option>Accessories</option></select></div>
+        <div class="d-form-group"><label class="d-form-label">Price *</label><input type="number" class="d-form-input" placeholder="1850"></div>
+        <div class="d-form-group"><label class="d-form-label">Compare Price</label><input type="number" class="d-form-input" placeholder="2400"></div>
+      </div>
+      <div class="d-form-group"><label class="d-form-label">Description</label><textarea class="d-form-textarea" placeholder="Product description..."></textarea></div>
+    </div>
+    <div class="d-form-section">
+      <p class="d-form-section-title">Variants & Inventory</p>
+      <div class="d-form-grid-3">
+        <div class="d-form-group"><label class="d-form-label">Available Sizes</label><input type="text" class="d-form-input" placeholder="XS,S,M,L,XL,XXL"></div>
+        <div class="d-form-group"><label class="d-form-label">Colors</label><input type="text" class="d-form-input" placeholder="#1a1a1a,#2d1a08"></div>
+        <div class="d-form-group"><label class="d-form-label">Stock Quantity</label><input type="number" class="d-form-input" placeholder="10"></div>
+      </div>
+    </div>
+    <div class="d-form-section">
+      <p class="d-form-section-title">SEO & Labels</p>
+      <div class="d-form-grid-2">
+        <div class="d-form-group"><label class="d-form-label">SEO Title</label><input type="text" class="d-form-input" placeholder="VIREON Sovereign Coat — Luxury Menswear"></div>
+        <div class="d-form-group"><label class="d-form-label">Badge</label><select class="d-form-select"><option value="">None</option><option>LIMITED</option><option>NEW</option><option>SALE</option><option>BESTSELLER</option></select></div>
+      </div>
+      <div class="d-form-group"><label class="d-form-label">Meta Description</label><textarea class="d-form-textarea" placeholder="SEO meta description..." style="min-height:60px"></textarea></div>
+    </div>
+    <div style="display:flex;gap:.8rem">
+      <button class="d-btn" onclick="saveProduct()"><i class="fas fa-save"></i> SAVE PRODUCT</button>
+      <button class="d-btn-ghost" onclick="closeAddProduct()">CANCEL</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ PANEL: COLLECTIONS ════════════ -->
+<div class="admin-panel" id="panel-collections">
+  <div class="panel-header"><h2 class="panel-title">Collections <em>Editor</em></h2><p class="panel-subtitle">Manage curated product collections and editorial drops.</p></div>
+  <div class="panel-toolbar">
+    <div class="pt-left"><div class="d-search-wrap"><i class="fas fa-search"></i><input type="text" class="d-search" placeholder="Search collections..."></div></div>
+    <div class="pt-right"><button class="d-btn"><i class="fas fa-plus"></i> NEW COLLECTION</button></div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem">
+    <div class="d-form-section" style="transition:all .3s" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--border)'">
+      <div style="height:120px;background:linear-gradient(135deg,#1a0700,#2d1000);margin:-2rem -2rem 1.5rem;border-bottom:1px solid var(--border)"></div>
+      <div style="display:flex;justify-content:space-between;align-items:flex-start">
+        <div><h3 style="font-size:1rem;color:var(--white);margin-bottom:.3rem">Signature Series</h3><p style="font-size:.7rem;color:var(--text-2)">12 products · Active</p></div>
+        <span class="badge badge-active">ACTIVE</span>
+      </div>
+      <div style="display:flex;gap:.5rem;margin-top:1rem"><button class="tbl-action"><i class="fas fa-edit"></i> EDIT</button><button class="tbl-action-del tbl-action"><i class="fas fa-trash"></i></button></div>
+    </div>
+    <div class="d-form-section" style="transition:all .3s" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--border)'">
+      <div style="height:120px;background:linear-gradient(135deg,#050510,#0d0d20);margin:-2rem -2rem 1.5rem;border-bottom:1px solid var(--border)"></div>
+      <div style="display:flex;justify-content:space-between;align-items:flex-start">
+        <div><h3 style="font-size:1rem;color:var(--white);margin-bottom:.3rem">Limited Drops</h3><p style="font-size:.7rem;color:var(--text-2)">4 products · Active</p></div>
+        <span class="badge badge-limited">LIMITED</span>
+      </div>
+      <div style="display:flex;gap:.5rem;margin-top:1rem"><button class="tbl-action"><i class="fas fa-edit"></i> EDIT</button><button class="tbl-action-del tbl-action"><i class="fas fa-trash"></i></button></div>
+    </div>
+    <div class="d-form-section" style="transition:all .3s" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--border)'">
+      <div style="height:120px;background:linear-gradient(135deg,#0a0a00,#1a1900);margin:-2rem -2rem 1.5rem;border-bottom:1px solid var(--border)"></div>
+      <div style="display:flex;justify-content:space-between;align-items:flex-start">
+        <div><h3 style="font-size:1rem;color:var(--white);margin-bottom:.3rem">Night Luxe</h3><p style="font-size:.7rem;color:var(--text-2)">6 products · Active</p></div>
+        <span class="badge badge-active">ACTIVE</span>
+      </div>
+      <div style="display:flex;gap:.5rem;margin-top:1rem"><button class="tbl-action"><i class="fas fa-edit"></i> EDIT</button><button class="tbl-action-del tbl-action"><i class="fas fa-trash"></i></button></div>
+    </div>
+    <div class="d-form-section" style="border:2px dashed var(--border);background:transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:180px;cursor:pointer;transition:all .3s" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--border)'">
+      <i class="fas fa-plus" style="font-size:2rem;color:var(--gray);margin-bottom:.8rem"></i>
+      <p style="font-size:.72rem;color:var(--gray)">Create New Collection</p>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ PANEL: CATEGORIES ════════════ -->
+<div class="admin-panel" id="panel-categories">
+  <div class="panel-header"><h2 class="panel-title">Categories <em>Management</em></h2><p class="panel-subtitle">Organise your product taxonomy.</p></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem">
+    <div>
+      <div class="d-table-wrap">
+        <div style="padding:1.2rem 1.5rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between"><p style="font-size:.68rem;font-weight:700;letter-spacing:.18em;color:var(--white);text-transform:uppercase">All Categories</p></div>
+        <table class="d-table">
+          <thead><tr><th>Category</th><th>Products</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody>
+            <tr><td><i class="fas fa-circle" style="color:var(--gold);font-size:.5rem;margin-right:.5rem"></i>Coats</td><td>5</td><td><span class="badge badge-active">Active</span></td><td><button class="tbl-action">EDIT</button></td></tr>
+            <tr><td><i class="fas fa-circle" style="color:var(--gold);font-size:.5rem;margin-right:.5rem"></i>Dresses</td><td>4</td><td><span class="badge badge-active">Active</span></td><td><button class="tbl-action">EDIT</button></td></tr>
+            <tr><td><i class="fas fa-circle" style="color:var(--gold);font-size:.5rem;margin-right:.5rem"></i>Suits</td><td>2</td><td><span class="badge badge-active">Active</span></td><td><button class="tbl-action">EDIT</button></td></tr>
+            <tr><td><i class="fas fa-circle" style="color:var(--gold);font-size:.5rem;margin-right:.5rem"></i>Bags</td><td>2</td><td><span class="badge badge-active">Active</span></td><td><button class="tbl-action">EDIT</button></td></tr>
+            <tr><td><i class="fas fa-circle" style="color:var(--gold);font-size:.5rem;margin-right:.5rem"></i>Accessories</td><td>3</td><td><span class="badge badge-active">Active</span></td><td><button class="tbl-action">EDIT</button></td></tr>
+            <tr><td><i class="fas fa-circle" style="color:var(--gold);font-size:.5rem;margin-right:.5rem"></i>Eyewear</td><td>1</td><td><span class="badge badge-active">Active</span></td><td><button class="tbl-action">EDIT</button></td></tr>
+            <tr><td><i class="fas fa-circle" style="color:var(--gray);font-size:.5rem;margin-right:.5rem"></i>Shoes</td><td>0</td><td><span class="badge badge-inactive">Inactive</span></td><td><button class="tbl-action">EDIT</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="d-form-section">
+      <p class="d-form-section-title">Add New Category</p>
+      <div class="d-form-group"><label class="d-form-label">Category Name *</label><input type="text" class="d-form-input" placeholder="e.g. Jewellery"></div>
+      <div class="d-form-group"><label class="d-form-label">Slug</label><input type="text" class="d-form-input" placeholder="jewellery"></div>
+      <div class="d-form-group"><label class="d-form-label">Parent Category</label><select class="d-form-select"><option value="">None (Top Level)</option><option>Accessories</option></select></div>
+      <div class="d-form-group"><label class="d-form-label">Description</label><textarea class="d-form-textarea" placeholder="Category description..." style="min-height:70px"></textarea></div>
+      <div class="d-form-group"><label class="d-form-label">Status</label>
+        <div style="display:flex;align-items:center;gap:.8rem;margin-top:.3rem">
+          <label class="d-toggle"><input type="checkbox" checked><span class="d-slider"></span></label>
+          <span style="font-size:.75rem;color:var(--text-2)">Active</span>
+        </div>
+      </div>
+      <button class="d-btn"><i class="fas fa-save"></i> SAVE CATEGORY</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ PANEL: INVENTORY ════════════ -->
+<div class="admin-panel" id="panel-inventory">
+  <div class="panel-header"><h2 class="panel-title">Inventory <em>Control</em></h2><p class="panel-subtitle">Monitor stock levels, set alerts and manage warehouse operations.</p></div>
+  <div class="d-alert d-alert-warn"><i class="fas fa-exclamation-triangle"></i><div><strong>4 items running low.</strong> Stock below reorder threshold. Review and reorder before items sell out.</div></div>
+  <div class="stat-row stat-row-4" style="margin-bottom:1.5rem">
+    <div class="stat-card"><div class="stat-card-icon"><i class="fas fa-boxes"></i></div><div class="stat-card-n">127</div><div class="stat-card-label">Total SKUs</div></div>
+    <div class="stat-card"><div class="stat-card-icon"><i class="fas fa-check-circle" style="color:var(--success)"></i></div><div class="stat-card-n" style="color:var(--success)">119</div><div class="stat-card-label">In Stock</div></div>
+    <div class="stat-card"><div class="stat-card-icon"><i class="fas fa-exclamation-triangle" style="color:var(--warning)"></i></div><div class="stat-card-n" style="color:var(--warning)">4</div><div class="stat-card-label">Low Stock</div></div>
+    <div class="stat-card"><div class="stat-card-icon"><i class="fas fa-times-circle" style="color:var(--error)"></i></div><div class="stat-card-n" style="color:var(--error)">4</div><div class="stat-card-label">Out of Stock</div></div>
+  </div>
+  <div class="d-table-wrap">
+    <table class="d-table">
+      <thead><tr><th>Product</th><th>SKU</th><th>Stock</th><th>Threshold</th><th>Status</th><th>Warehouse</th><th>Actions</th></tr></thead>
+      <tbody id="inventory-table"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ════════════ PANEL: ORDERS ════════════ -->
+<div class="admin-panel" id="panel-orders">
+  <div class="panel-header"><h2 class="panel-title">Orders <em>Management</em></h2><p class="panel-subtitle">View, manage and update all customer orders.</p></div>
+  <div class="stat-row stat-row-4" style="margin-bottom:1.5rem">
+    <div class="stat-card"><div class="stat-card-icon"><i class="fas fa-clock" style="color:var(--warning)"></i></div><div class="stat-card-n" style="color:var(--warning)">12</div><div class="stat-card-label">Pending</div></div>
+    <div class="stat-card"><div class="stat-card-icon"><i class="fas fa-spinner" style="color:var(--gold)"></i></div><div class="stat-card-n" style="color:var(--gold)">8</div><div class="stat-card-label">Processing</div></div>
+    <div class="stat-card"><div class="stat-card-icon"><i class="fas fa-truck" style="color:var(--info)"></i></div><div class="stat-card-n" style="color:var(--info)">15</div><div class="stat-card-label">Shipped</div></div>
+    <div class="stat-card"><div class="stat-card-icon"><i class="fas fa-check-circle" style="color:var(--success)"></i></div><div class="stat-card-n" style="color:var(--success)">312</div><div class="stat-card-label">Delivered</div></div>
+  </div>
+  <div class="panel-toolbar">
+    <div class="pt-left">
+      <div class="d-search-wrap"><i class="fas fa-search"></i><input type="text" class="d-search" placeholder="Search order ID, customer..." id="order-search" oninput="filterOrders()"></div>
+      <select class="d-select" id="order-status-filter" onchange="filterOrders()"><option value="">All Status</option><option>Pending</option><option>Processing</option><option>Shipped</option><option>Delivered</option><option>Cancelled</option><option>Returned</option></select>
+    </div>
+    <div class="pt-right">
+      <button class="d-btn-ghost"><i class="fas fa-file-export"></i> EXPORT</button>
+      <button class="d-btn" onclick="createManualOrder()"><i class="fas fa-plus"></i> MANUAL ORDER</button>
+    </div>
+  </div>
+  <div class="d-table-wrap">
+    <table class="d-table">
+      <thead><tr><th>Order ID</th><th>Customer</th><th>Products</th><th>Total</th><th>Date</th><th>Delivery</th><th>Status</th><th>Actions</th></tr></thead>
+      <tbody id="orders-table-body"></tbody>
+    </table>
+    <div class="d-pagination"><span id="orders-count">Showing 10 of 347 orders</span><div class="d-pages"><button class="d-page-btn on">1</button><button class="d-page-btn">2</button><button class="d-page-btn">3</button><button class="d-page-btn"><i class="fas fa-chevron-right"></i></button></div></div>
+  </div>
+</div>
+
+<!-- ════════════ PANEL: CUSTOMERS ════════════ -->
+<div class="admin-panel" id="panel-customers">
+  <div class="panel-header"><h2 class="panel-title">Customer <em>Profiles</em></h2><p class="panel-subtitle">Manage customer accounts, loyalty points and membership tiers.</p></div>
+  <div class="panel-toolbar">
+    <div class="pt-left">
+      <div class="d-search-wrap"><i class="fas fa-search"></i><input type="text" class="d-search" placeholder="Search by name, email..."></div>
+      <select class="d-select"><option value="">All Tiers</option><option>VIREON Elite</option><option>Premium</option><option>Standard</option></select>
+    </div>
+    <div class="pt-right"><button class="d-btn-ghost"><i class="fas fa-file-export"></i> EXPORT</button></div>
+  </div>
+  <div class="d-table-wrap">
+    <table class="d-table">
+      <thead><tr><th>Customer</th><th>Email</th><th>Tier</th><th>Orders</th><th>Spent</th><th>Points</th><th>Joined</th><th>Actions</th></tr></thead>
+      <tbody id="customers-table"></tbody>
+    </table>
+    <div class="d-pagination"><span>Showing 10 of 1,284 customers</span><div class="d-pages"><button class="d-page-btn on">1</button><button class="d-page-btn">2</button><button class="d-page-btn"><i class="fas fa-chevron-right"></i></button></div></div>
+  </div>
+</div>
+
+<!-- ════════════ PANEL: RETURNS ════════════ -->
+<div class="admin-panel" id="panel-returns">
+  <div class="panel-header"><h2 class="panel-title">Returns <em>& Refunds</em></h2><p class="panel-subtitle">Process return requests, exchanges and issue refunds.</p></div>
+  <div class="stat-row stat-row-3" style="margin-bottom:1.5rem">
+    <div class="stat-card"><div class="stat-card-icon" style="color:var(--warning)"><i class="fas fa-inbox"></i></div><div class="stat-card-n" style="color:var(--warning)">2</div><div class="stat-card-label">Pending Review</div></div>
+    <div class="stat-card"><div class="stat-card-icon" style="color:var(--info)"><i class="fas fa-exchange-alt"></i></div><div class="stat-card-n" style="color:var(--info)">1</div><div class="stat-card-label">In Progress</div></div>
+    <div class="stat-card"><div class="stat-card-icon" style="color:var(--success)"><i class="fas fa-check-double"></i></div><div class="stat-card-n" style="color:var(--success)">18</div><div class="stat-card-label">Resolved This Month</div></div>
+  </div>
+  <div class="d-table-wrap">
+    <table class="d-table">
+      <thead><tr><th>Return ID</th><th>Order</th><th>Customer</th><th>Product</th><th>Reason</th><th>Type</th><th>Status</th><th>Actions</th></tr></thead>
+      <tbody>
+        <tr><td style="color:var(--gold)">#RET-047</td><td style="color:var(--gold)">VP-2026-031</td><td>Isabella Cross</td><td>Evening Gown</td><td>Size issue</td><td><span class="badge badge-shipped">Exchange</span></td><td><span class="badge badge-pending">Pending</span></td><td><button class="tbl-action">REVIEW</button></td></tr>
+        <tr><td style="color:var(--gold)">#RET-046</td><td style="color:var(--gold)">VP-2026-028</td><td>Thomas Reed</td><td>Imperial Suit</td><td>Changed mind</td><td><span class="badge badge-processing">Refund</span></td><td><span class="badge badge-processing">Processing</span></td><td><button class="tbl-action">REVIEW</button></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ════════════ PANEL: COUPONS ════════════ -->
+<div class="admin-panel" id="panel-coupons">
+  <div class="panel-header"><h2 class="panel-title">Coupons <em>& Discounts</em></h2><p class="panel-subtitle">Create and manage promotional codes and discount campaigns.</p></div>
+  <div class="panel-toolbar">
+    <div class="pt-left"><div class="d-search-wrap"><i class="fas fa-search"></i><input type="text" class="d-search" placeholder="Search coupon codes..."></div></div>
+    <div class="pt-right"><button class="d-btn" onclick="document.getElementById('coupon-form-section').style.display='block'"><i class="fas fa-plus"></i> CREATE COUPON</button></div>
+  </div>
+  <div class="d-table-wrap" style="margin-bottom:1.5rem">
+    <table class="d-table">
+      <thead><tr><th>Code</th><th>Type</th><th>Value</th><th>Used</th><th>Limit</th><th>Expires</th><th>Status</th><th>Actions</th></tr></thead>
+      <tbody>
+        <tr><td style="color:var(--gold);font-weight:600;letter-spacing:.1em">VIREON20</td><td>Percentage</td><td>20% off</td><td>47</td><td>500</td><td>Dec 31, 2026</td><td><span class="badge badge-active">Active</span></td><td><button class="tbl-action">EDIT</button> <button class="tbl-action-del tbl-action">DELETE</button></td></tr>
+        <tr><td style="color:var(--gold);font-weight:600;letter-spacing:.1em">ELITE</td><td>Free Shipping</td><td>Free Express</td><td>124</td><td>Unlimited</td><td>Never</td><td><span class="badge badge-active">Active</span></td><td><button class="tbl-action">EDIT</button> <button class="tbl-action-del tbl-action">DELETE</button></td></tr>
+        <tr><td style="color:var(--gold);font-weight:600;letter-spacing:.1em">WELCOME10</td><td>Percentage</td><td>10% off</td><td>238</td><td>1000</td><td>Jun 30, 2026</td><td><span class="badge badge-inactive">Expired</span></td><td><button class="tbl-action">RENEW</button> <button class="tbl-action-del tbl-action">DELETE</button></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div id="coupon-form-section" style="display:none">
+    <div class="d-form-section">
+      <p class="d-form-section-title">Create New Coupon</p>
+      <div class="d-form-grid-2">
+        <div class="d-form-group"><label class="d-form-label">Coupon Code *</label><input type="text" class="d-form-input" placeholder="e.g. SUMMER25" style="text-transform:uppercase"></div>
+        <div class="d-form-group"><label class="d-form-label">Discount Type *</label><select class="d-form-select"><option>Percentage (%)</option><option>Fixed Amount ($)</option><option>Free Shipping</option></select></div>
+      </div>
+      <div class="d-form-grid-3">
+        <div class="d-form-group"><label class="d-form-label">Value *</label><input type="number" class="d-form-input" placeholder="25"></div>
+        <div class="d-form-group"><label class="d-form-label">Usage Limit</label><input type="number" class="d-form-input" placeholder="100"></div>
+        <div class="d-form-group"><label class="d-form-label">Expiry Date</label><input type="date" class="d-form-input"></div>
+      </div>
+      <div class="d-form-group"><label class="d-form-label">Minimum Order Value ($)</label><input type="number" class="d-form-input" placeholder="0 = no minimum"></div>
+      <div style="display:flex;gap:.8rem">
+        <button class="d-btn" onclick="saveCoupon()"><i class="fas fa-save"></i> SAVE COUPON</button>
+        <button class="d-btn-ghost" onclick="document.getElementById('coupon-form-section').style.display='none'">CANCEL</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ PANEL: EMAIL CAMPAIGNS ════════════ -->
+<div class="admin-panel" id="panel-email">
+  <div class="panel-header"><h2 class="panel-title">Email <em>Campaigns</em></h2><p class="panel-subtitle">Create and send targeted email campaigns to your customers.</p></div>
+  <div class="stat-row stat-row-4" style="margin-bottom:1.5rem">
+    <div class="stat-card"><div class="stat-card-icon"><i class="fas fa-paper-plane"></i></div><div class="stat-card-n">14</div><div class="stat-card-label">Campaigns Sent</div></div>
+    <div class="stat-card"><div class="stat-card-icon"><i class="fas fa-envelope-open"></i></div><div class="stat-card-n">68.4%</div><div class="stat-card-label">Avg Open Rate</div><div class="stat-card-trend trend-up"><i class="fas fa-arrow-up"></i> +3.2%</div></div>
+    <div class="stat-card"><div class="stat-card-icon"><i class="fas fa-mouse-pointer"></i></div><div class="stat-card-n">24.1%</div><div class="stat-card-label">Click-Through Rate</div></div>
+    <div class="stat-card"><div class="stat-card-icon"><i class="fas fa-users"></i></div><div class="stat-card-n">2,341</div><div class="stat-card-label">Subscribers</div><div class="stat-card-trend trend-up"><i class="fas fa-arrow-up"></i> +87 this week</div></div>
+  </div>
+  <div class="panel-toolbar">
+    <div class="pt-left"><div class="d-search-wrap"><i class="fas fa-search"></i><input type="text" class="d-search" placeholder="Search campaigns..."></div></div>
+    <div class="pt-right"><button class="d-btn" onclick="document.getElementById('email-compose').style.display='block'"><i class="fas fa-plus"></i> NEW CAMPAIGN</button></div>
+  </div>
+  <div class="d-table-wrap" style="margin-bottom:1.5rem">
+    <table class="d-table">
+      <thead><tr><th>Campaign Name</th><th>Type</th><th>Sent To</th><th>Sent Date</th><th>Opens</th><th>Clicks</th><th>Status</th><th>Actions</th></tr></thead>
+      <tbody>
+        <tr><td>Summer Collection Launch</td><td>Promotional</td><td>2,341</td><td>Jun 15, 2026</td><td>71.2%</td><td>28.4%</td><td><span class="badge badge-delivered">Sent</span></td><td><button class="tbl-action">VIEW</button></td></tr>
+        <tr><td>Elite Members Exclusive Drop</td><td>Segmented</td><td>486</td><td>Jun 02, 2026</td><td>84.6%</td><td>41.2%</td><td><span class="badge badge-delivered">Sent</span></td><td><button class="tbl-action">VIEW</button></td></tr>
+        <tr><td>Limited Edition Countdown</td><td>Automated</td><td>2,341</td><td>May 20, 2026</td><td>65.8%</td><td>22.1%</td><td><span class="badge badge-delivered">Sent</span></td><td><button class="tbl-action">VIEW</button></td></tr>
+        <tr><td>July Newsletter Draft</td><td>Newsletter</td><td>—</td><td>—</td><td>—</td><td>—</td><td><span class="badge badge-pending">Draft</span></td><td><button class="tbl-action">EDIT</button> <button class="d-btn" style="padding:.28rem .65rem;font-size:.56rem">SEND</button></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <!-- Compose Campaign -->
+  <div id="email-compose" style="display:none">
+    <div class="d-form-section">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem">
+        <p class="d-form-section-title" style="margin-bottom:0">Compose New Campaign</p>
+        <button class="d-btn-ghost" onclick="document.getElementById('email-compose').style.display='none'"><i class="fas fa-times"></i> CLOSE</button>
+      </div>
+      <div class="d-form-grid-2">
+        <div class="d-form-group"><label class="d-form-label">Campaign Name *</label><input type="text" class="d-form-input" placeholder="e.g. Summer Drop 2026"></div>
+        <div class="d-form-group"><label class="d-form-label">Audience *</label><select class="d-form-select"><option>All Subscribers (2,341)</option><option>VIREON Elite Members (486)</option><option>Customers — Last 30 days</option><option>Inactive 90+ days</option></select></div>
+      </div>
+      <div class="d-form-group"><label class="d-form-label">Subject Line *</label><input type="text" class="d-form-input" placeholder="e.g. Your Exclusive Access — New Collection Inside"></div>
+      <div class="d-form-group"><label class="d-form-label">Preview Text</label><input type="text" class="d-form-input" placeholder="Text shown in inbox preview..."></div>
+      <div class="d-form-group"><label class="d-form-label">Message Body *</label><textarea class="d-form-textarea" placeholder="Write your email content here..." style="min-height:140px"></textarea></div>
+      <div class="d-form-grid-2">
+        <div class="d-form-group"><label class="d-form-label">Schedule Send</label><input type="datetime-local" class="d-form-input"></div>
+        <div class="d-form-group"><label class="d-form-label">CTA Button URL</label><input type="url" class="d-form-input" placeholder="https://vireon.com/collections"></div>
+      </div>
+      <div style="display:flex;gap:.8rem">
+        <button class="d-btn" onclick="sendCampaign()"><i class="fas fa-paper-plane"></i> SEND NOW</button>
+        <button class="d-btn-ghost" onclick="saveDraft()"><i class="fas fa-save"></i> SAVE DRAFT</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ PANEL: PUSH CAMPAIGNS ════════════ -->
+<div class="admin-panel" id="panel-push">
+  <div class="panel-header"><h2 class="panel-title">Push <em>Campaigns</em></h2><p class="panel-subtitle">Send push notifications and SMS alerts to customers.</p></div>
+  <div class="stat-row stat-row-3" style="margin-bottom:1.5rem">
+    <div class="stat-card"><div class="stat-card-icon"><i class="fas fa-bell"></i></div><div class="stat-card-n">1,847</div><div class="stat-card-label">Push Subscribers</div></div>
+    <div class="stat-card"><div class="stat-card-icon"><i class="fas fa-percentage"></i></div><div class="stat-card-n">42.8%</div><div class="stat-card-label">Avg Click Rate</div><div class="stat-card-trend trend-up"><i class="fas fa-arrow-up"></i> +5.1%</div></div>
+    <div class="stat-card"><div class="stat-card-icon"><i class="fas fa-mobile-alt"></i></div><div class="stat-card-n">9</div><div class="stat-card-label">Campaigns Sent</div></div>
+  </div>
+  <div class="panel-toolbar">
+    <div class="pt-left"></div>
+    <div class="pt-right"><button class="d-btn" onclick="document.getElementById('push-compose').style.display='block'"><i class="fas fa-plus"></i> NEW PUSH</button></div>
+  </div>
+  <div class="d-table-wrap" style="margin-bottom:1.5rem">
+    <table class="d-table">
+      <thead><tr><th>Notification Title</th><th>Audience</th><th>Sent</th><th>Clicked</th><th>Date</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td>🔥 Limited Drop — Only 7 Left!</td><td>All Subscribers</td><td>1,847</td><td>42.1%</td><td>Jul 8, 2026</td><td><span class="badge badge-delivered">Sent</span></td></tr>
+        <tr><td>👑 Your Elite Access is Ready</td><td>Elite Members</td><td>486</td><td>61.4%</td><td>Jul 1, 2026</td><td><span class="badge badge-delivered">Sent</span></td></tr>
+        <tr><td>🛍️ Order VP-2026-031 Shipped</td><td>Automated</td><td>1</td><td>100%</td><td>Jun 30, 2026</td><td><span class="badge badge-delivered">Sent</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div id="push-compose" style="display:none">
+    <div class="d-form-section">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem">
+        <p class="d-form-section-title" style="margin-bottom:0">New Push Notification</p>
+        <button class="d-btn-ghost" onclick="document.getElementById('push-compose').style.display='none'"><i class="fas fa-times"></i> CLOSE</button>
+      </div>
+      <div class="d-form-grid-2">
+        <div class="d-form-group"><label class="d-form-label">Title *</label><input type="text" class="d-form-input" placeholder="e.g. 🔥 New Drop Available!"></div>
+        <div class="d-form-group"><label class="d-form-label">Audience</label><select class="d-form-select"><option>All Subscribers</option><option>Elite Members</option><option>Recent Customers</option></select></div>
+      </div>
+      <div class="d-form-group"><label class="d-form-label">Message *</label><textarea class="d-form-textarea" placeholder="Short notification message..." style="min-height:80px"></textarea></div>
+      <div class="d-form-group"><label class="d-form-label">Target URL</label><input type="url" class="d-form-input" placeholder="https://vireon.com/..."></div>
+      <button class="d-btn" onclick="toast('Push notification sent!','success')"><i class="fas fa-paper-plane"></i> SEND NOTIFICATION</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ PANEL: REVIEWS ════════════ -->
+<div class="admin-panel" id="panel-reviews">
+  <div class="panel-header"><h2 class="panel-title">Customer <em>Reviews</em></h2><p class="panel-subtitle">Moderate and respond to customer reviews and ratings.</p></div>
+  <div class="stat-row stat-row-4" style="margin-bottom:1.5rem">
+    <div class="stat-card"><div class="stat-card-icon"><i class="fas fa-star"></i></div><div class="stat-card-n">4.94</div><div class="stat-card-label">Avg Rating</div></div>
+    <div class="stat-card"><div class="stat-card-icon"><i class="fas fa-comment-dots"></i></div><div class="stat-card-n">287</div><div class="stat-card-label">Total Reviews</div></div>
+    <div class="stat-card"><div class="stat-card-icon" style="color:var(--warning)"><i class="fas fa-clock"></i></div><div class="stat-card-n" style="color:var(--warning)">3</div><div class="stat-card-label">Pending Approval</div></div>
+    <div class="stat-card"><div class="stat-card-icon" style="color:var(--error)"><i class="fas fa-flag"></i></div><div class="stat-card-n" style="color:var(--error)">1</div><div class="stat-card-label">Flagged</div></div>
+  </div>
+  <div class="d-table-wrap">
+    <table class="d-table">
+      <thead><tr><th>Customer</th><th>Product</th><th>Rating</th><th>Review</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
+      <tbody>
+        <tr><td>Alexandra R.</td><td>Sovereign Coat</td><td style="color:var(--gold)">★★★★★</td><td style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">"Absolutely exceptional quality..."</td><td>Jul 9</td><td><span class="badge badge-active">Published</span></td><td><button class="tbl-action">VIEW</button> <button class="tbl-action-del tbl-action">REMOVE</button></td></tr>
+        <tr><td>Marcus B.</td><td>Imperial Suit</td><td style="color:var(--gold)">★★★★★</td><td style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">"Commands presence the moment..."</td><td>Jul 8</td><td><span class="badge badge-active">Published</span></td><td><button class="tbl-action">VIEW</button> <button class="tbl-action-del tbl-action">REMOVE</button></td></tr>
+        <tr><td>Sofia V.</td><td>Evening Gown</td><td style="color:var(--gold)">★★★★☆</td><td style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">"Beautiful but delivery took..."</td><td>Jul 7</td><td><span class="badge badge-pending">Pending</span></td><td><button class="d-btn" style="padding:.28rem .65rem;font-size:.56rem">APPROVE</button> <button class="tbl-action-del tbl-action">REJECT</button></td></tr>
+        <tr><td>Unknown</td><td>Noir Velvet Dress</td><td style="color:var(--error)">★☆☆☆☆</td><td style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">"Spam review content..."</td><td>Jul 6</td><td><span class="badge badge-cancelled">Flagged</span></td><td><button class="tbl-action-del tbl-action">REMOVE</button></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ════════════ PANEL: FLASH SALES ════════════ -->
+<div class="admin-panel" id="panel-flashsale">
+  <div class="panel-header"><h2 class="panel-title">Flash <em>Sales</em></h2><p class="panel-subtitle">Create time-limited sales events with countdown timers.</p></div>
+  <div class="d-alert d-alert-info"><i class="fas fa-info-circle"></i><span>Flash sales create urgency. Active sales display a countdown timer on the storefront automatically.</span></div>
+  <div class="panel-toolbar">
+    <div class="pt-left"></div>
+    <div class="pt-right"><button class="d-btn" onclick="document.getElementById('flash-form').style.display='block'"><i class="fas fa-bolt"></i> CREATE FLASH SALE</button></div>
+  </div>
+  <div class="d-table-wrap" style="margin-bottom:1.5rem">
+    <table class="d-table">
+      <thead><tr><th>Sale Name</th><th>Discount</th><th>Products</th><th>Start</th><th>End</th><th>Orders</th><th>Status</th><th>Actions</th></tr></thead>
+      <tbody>
+        <tr><td>Night Luxe Flash</td><td style="color:var(--gold)">25% OFF</td><td>6</td><td>Jul 8, 9:00am</td><td>Jul 11, 11:59pm</td><td>31</td><td><span class="badge badge-active">Live ⚡</span></td><td><button class="tbl-action">EDIT</button> <button class="tbl-action-del tbl-action">END</button></td></tr>
+        <tr><td>Summer Clearance</td><td style="color:var(--gold)">30% OFF</td><td>12</td><td>Jun 20</td><td>Jun 30</td><td>89</td><td><span class="badge badge-inactive">Ended</span></td><td><button class="tbl-action">CLONE</button></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div id="flash-form" style="display:none">
+    <div class="d-form-section">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem">
+        <p class="d-form-section-title" style="margin-bottom:0">New Flash Sale</p>
+        <button class="d-btn-ghost" onclick="document.getElementById('flash-form').style.display='none'"><i class="fas fa-times"></i> CLOSE</button>
+      </div>
+      <div class="d-form-grid-2">
+        <div class="d-form-group"><label class="d-form-label">Sale Name *</label><input type="text" class="d-form-input" placeholder="e.g. Weekend Flash Sale"></div>
+        <div class="d-form-group"><label class="d-form-label">Discount *</label><input type="number" class="d-form-input" placeholder="e.g. 20 (for 20%)"></div>
+      </div>
+      <div class="d-form-grid-2">
+        <div class="d-form-group"><label class="d-form-label">Start Date & Time *</label><input type="datetime-local" class="d-form-input"></div>
+        <div class="d-form-group"><label class="d-form-label">End Date & Time *</label><input type="datetime-local" class="d-form-input"></div>
+      </div>
+      <div class="d-form-group"><label class="d-form-label">Apply to Categories</label>
+        <div style="display:flex;gap:.8rem;flex-wrap:wrap;margin-top:.5rem">
+          <label style="display:flex;align-items:center;gap:.4rem;font-size:.75rem;color:var(--text-2);cursor:pointer"><input type="checkbox" style="accent-color:var(--gold)"> Coats</label>
+          <label style="display:flex;align-items:center;gap:.4rem;font-size:.75rem;color:var(--text-2);cursor:pointer"><input type="checkbox" style="accent-color:var(--gold)"> Dresses</label>
+          <label style="display:flex;align-items:center;gap:.4rem;font-size:.75rem;color:var(--text-2);cursor:pointer"><input type="checkbox" style="accent-color:var(--gold)"> Bags</label>
+          <label style="display:flex;align-items:center;gap:.4rem;font-size:.75rem;color:var(--text-2);cursor:pointer"><input type="checkbox" style="accent-color:var(--gold)"> Accessories</label>
+          <label style="display:flex;align-items:center;gap:.4rem;font-size:.75rem;color:var(--text-2);cursor:pointer"><input type="checkbox" style="accent-color:var(--gold)"> All Products</label>
+        </div>
+      </div>
+      <button class="d-btn" onclick="toast('Flash sale created!','success');document.getElementById('flash-form').style.display='none'"><i class="fas fa-bolt"></i> LAUNCH SALE</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ PANEL: SUPPORT TICKETS ════════════ -->
+<div class="admin-panel" id="panel-support">
+  <div class="panel-header"><h2 class="panel-title">Support <em>Center</em></h2><p class="panel-subtitle">Manage customer support tickets, live chat and enquiries.</p></div>
+  <div class="stat-row stat-row-4" style="margin-bottom:1.5rem">
+    <div class="stat-card"><div class="stat-card-icon" style="color:var(--warning)"><i class="fas fa-inbox"></i></div><div class="stat-card-n" style="color:var(--warning)">8</div><div class="stat-card-label">Open Tickets</div></div>
+    <div class="stat-card"><div class="stat-card-icon" style="color:var(--info)"><i class="fas fa-spinner"></i></div><div class="stat-card-n" style="color:var(--info)">3</div><div class="stat-card-label">In Progress</div></div>
+    <div class="stat-card"><div class="stat-card-icon" style="color:var(--success)"><i class="fas fa-check-circle"></i></div><div class="stat-card-n" style="color:var(--success)">142</div><div class="stat-card-label">Resolved</div></div>
+    <div class="stat-card"><div class="stat-card-icon"><i class="fas fa-clock"></i></div><div class="stat-card-n">1.8h</div><div class="stat-card-label">Avg Response Time</div></div>
+  </div>
+  <div class="panel-toolbar">
+    <div class="pt-left">
+      <div class="d-search-wrap"><i class="fas fa-search"></i><input type="text" class="d-search" placeholder="Search tickets..."></div>
+      <select class="d-select"><option value="">All Types</option><option>Order Issue</option><option>Return Request</option><option>Product Query</option><option>Payment Issue</option><option>Other</option></select>
+      <select class="d-select"><option value="">All Priority</option><option>High</option><option>Medium</option><option>Low</option></select>
+    </div>
+    <div class="pt-right"><button class="d-btn" onclick="document.getElementById('new-ticket-form').style.display='block'"><i class="fas fa-plus"></i> NEW TICKET</button></div>
+  </div>
+  <div class="d-table-wrap" style="margin-bottom:1.5rem">
+    <table class="d-table">
+      <thead><tr><th>Ticket ID</th><th>Customer</th><th>Subject</th><th>Type</th><th>Priority</th><th>Assigned</th><th>Status</th><th>Actions</th></tr></thead>
+      <tbody id="support-table">
+        <tr>
+          <td style="color:var(--gold)">#TKT-091</td>
+          <td>James Whitmore</td>
+          <td>Order VP-2026-047 not arrived</td>
+          <td><span class="d-tag">Order Issue</span></td>
+          <td><span style="color:var(--error);font-size:.68rem;font-weight:700">● HIGH</span></td>
+          <td>Rockstar</td>
+          <td><span class="badge badge-pending">Open</span></td>
+          <td><button class="tbl-action" onclick="openTicket('TKT-091')">OPEN</button></td>
+        </tr>
+        <tr>
+          <td style="color:var(--gold)">#TKT-090</td>
+          <td>Sofia Reyes</td>
+          <td>Wrong size received — Evening Gown</td>
+          <td><span class="d-tag">Return Request</span></td>
+          <td><span style="color:var(--warning);font-size:.68rem;font-weight:700">● MED</span></td>
+          <td>Vanshika</td>
+          <td><span class="badge badge-processing">In Progress</span></td>
+          <td><button class="tbl-action" onclick="openTicket('TKT-090')">OPEN</button></td>
+        </tr>
+        <tr>
+          <td style="color:var(--gold)">#TKT-089</td>
+          <td>Hugo Laurent</td>
+          <td>Monogram request for Imperial Suit</td>
+          <td><span class="d-tag">Product Query</span></td>
+          <td><span style="color:var(--success);font-size:.68rem;font-weight:700">● LOW</span></td>
+          <td>Lilith</td>
+          <td><span class="badge badge-processing">In Progress</span></td>
+          <td><button class="tbl-action" onclick="openTicket('TKT-089')">OPEN</button></td>
+        </tr>
+        <tr>
+          <td style="color:var(--gold)">#TKT-088</td>
+          <td>Elara Voss</td>
+          <td>Payment declined — card error</td>
+          <td><span class="d-tag">Payment Issue</span></td>
+          <td><span style="color:var(--error);font-size:.68rem;font-weight:700">● HIGH</span></td>
+          <td>Prince</td>
+          <td><span class="badge badge-pending">Open</span></td>
+          <td><button class="tbl-action" onclick="openTicket('TKT-088')">OPEN</button></td>
+        </tr>
+        <tr>
+          <td style="color:var(--gold)">#TKT-085</td>
+          <td>Marcus Bell</td>
+          <td>Tracking number not updating</td>
+          <td><span class="d-tag">Order Issue</span></td>
+          <td><span style="color:var(--warning);font-size:.68rem;font-weight:700">● MED</span></td>
+          <td>Rockstar</td>
+          <td><span class="badge badge-delivered">Resolved</span></td>
+          <td><button class="tbl-action">VIEW</button></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <!-- Ticket Detail Modal -->
+  <div id="ticket-modal" style="display:none;background:var(--bg-2);border:1px solid var(--border);padding:2rem;margin-bottom:1.5rem">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem">
+      <h3 style="font-family:var(--font-serif);font-size:1.4rem;color:var(--white);font-weight:300">Ticket <em id="ticket-id-display" style="color:var(--gold)">#TKT-091</em></h3>
+      <button class="d-btn-ghost" onclick="document.getElementById('ticket-modal').style.display='none'"><i class="fas fa-times"></i> CLOSE</button>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 320px;gap:2rem">
+      <div>
+        <div id="ticket-messages" style="min-height:200px;max-height:340px;overflow-y:auto;background:var(--bg-3);border:1px solid var(--border);padding:1.5rem;margin-bottom:1rem;display:flex;flex-direction:column;gap:1rem"></div>
+        <div style="display:flex;gap:.8rem">
+          <textarea id="ticket-reply-input" class="d-form-textarea" placeholder="Type your reply..." style="flex:1;min-height:70px"></textarea>
+        </div>
+        <div style="display:flex;gap:.8rem;margin-top:.8rem">
+          <button class="d-btn" onclick="sendTicketReply()"><i class="fas fa-paper-plane"></i> SEND REPLY</button>
+          <button class="d-btn-ghost" onclick="closeTicket()"><i class="fas fa-check"></i> MARK RESOLVED</button>
+          <button class="d-btn-danger" onclick="document.getElementById('ticket-modal').style.display='none'">CLOSE TICKET</button>
+        </div>
+      </div>
+      <div>
+        <div class="d-form-section" style="padding:1.5rem">
+          <p class="d-form-section-title">Ticket Info</p>
+          <div style="display:flex;flex-direction:column;gap:.8rem;font-size:.75rem">
+            <div style="display:flex;justify-content:space-between"><span style="color:var(--gray)">Status</span><span id="tkt-status" class="badge badge-pending">Open</span></div>
+            <div style="display:flex;justify-content:space-between"><span style="color:var(--gray)">Priority</span><span id="tkt-priority" style="color:var(--error)">HIGH</span></div>
+            <div style="display:flex;justify-content:space-between"><span style="color:var(--gray)">Customer</span><span id="tkt-customer" style="color:var(--white)">James Whitmore</span></div>
+            <div style="display:flex;justify-content:space-between"><span style="color:var(--gray)">Assigned To</span>
+              <select class="d-select" style="padding:.25rem .5rem;font-size:.65rem;min-width:0">
+                <option>Rockstar</option><option>Vanshika</option><option>Lilith</option><option>Prince</option>
+              </select>
+            </div>
+            <div style="display:flex;justify-content:space-between"><span style="color:var(--gray)">Created</span><span id="tkt-date" style="color:var(--white)">Jul 10, 2026</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- New Ticket Form -->
+  <div id="new-ticket-form" style="display:none">
+    <div class="d-form-section">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem">
+        <p class="d-form-section-title" style="margin-bottom:0">Create New Ticket</p>
+        <button class="d-btn-ghost" onclick="document.getElementById('new-ticket-form').style.display='none'"><i class="fas fa-times"></i> CLOSE</button>
+      </div>
+      <div class="d-form-grid-2">
+        <div class="d-form-group"><label class="d-form-label">Customer Name *</label><input type="text" class="d-form-input" placeholder="Customer name"></div>
+        <div class="d-form-group"><label class="d-form-label">Customer Email *</label><input type="email" class="d-form-input" placeholder="customer@email.com"></div>
+      </div>
+      <div class="d-form-grid-2">
+        <div class="d-form-group"><label class="d-form-label">Type *</label><select class="d-form-select"><option>Order Issue</option><option>Return Request</option><option>Product Query</option><option>Payment Issue</option><option>Other</option></select></div>
+        <div class="d-form-group"><label class="d-form-label">Priority *</label><select class="d-form-select"><option>Low</option><option>Medium</option><option>High</option></select></div>
+      </div>
+      <div class="d-form-group"><label class="d-form-label">Subject *</label><input type="text" class="d-form-input" placeholder="Brief summary of the issue"></div>
+      <div class="d-form-group"><label class="d-form-label">Description *</label><textarea class="d-form-textarea" placeholder="Full description..." style="min-height:100px"></textarea></div>
+      <div class="d-form-group"><label class="d-form-label">Assign To</label><select class="d-form-select"><option>Rockstar (Super Admin)</option><option>Vanshika (Manager)</option><option>Lilith (Marketing)</option><option>Prince (Sales)</option></select></div>
+      <button class="d-btn" onclick="createTicket()"><i class="fas fa-save"></i> CREATE TICKET</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ PANEL: SECURITY ════════════ -->
+<div class="admin-panel" id="panel-security">
+  <div class="panel-header"><h2 class="panel-title">Security <em>Center</em></h2><p class="panel-subtitle">Monitor admin access, audit logs and system security.</p></div>
+  <div class="d-alert d-alert-ok"><i class="fas fa-shield-alt"></i><span>All systems secure. Last security scan: Today at 03:00 AM. No threats detected.</span></div>
+  <div class="stat-row stat-row-4" style="margin-bottom:1.5rem">
+    <div class="stat-card"><div class="stat-card-icon" style="color:var(--success)"><i class="fas fa-shield-alt"></i></div><div class="stat-card-n" style="color:var(--success)">Secure</div><div class="stat-card-label">System Status</div></div>
+    <div class="stat-card"><div class="stat-card-icon"><i class="fas fa-sign-in-alt"></i></div><div class="stat-card-n">47</div><div class="stat-card-label">Logins This Week</div></div>
+    <div class="stat-card"><div class="stat-card-icon" style="color:var(--error)"><i class="fas fa-ban"></i></div><div class="stat-card-n" style="color:var(--error)">2</div><div class="stat-card-label">Blocked Attempts</div></div>
+    <div class="stat-card"><div class="stat-card-icon"><i class="fas fa-history"></i></div><div class="stat-card-n">4</div><div class="stat-card-label">Active Sessions</div></div>
+  </div>
+  <!-- Admin Accounts Status -->
+  <div class="d-form-section" style="margin-bottom:1.5rem">
+    <p class="d-form-section-title">Admin Account Status</p>
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:1rem" id="sec-accounts-grid"></div>
+  </div>
+  <!-- Audit Log -->
+  <div class="d-table-wrap" style="margin-bottom:1.5rem">
+    <div style="padding:1.2rem 1.5rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+      <p style="font-size:.68rem;font-weight:700;letter-spacing:.18em;color:var(--white);text-transform:uppercase">Audit Log</p>
+      <button class="d-btn-ghost" style="padding:.4rem .8rem;font-size:.58rem"><i class="fas fa-download"></i> EXPORT LOG</button>
+    </div>
+    <table class="d-table">
+      <thead><tr><th>Time</th><th>Admin</th><th>Action</th><th>IP Address</th><th>Status</th></tr></thead>
+      <tbody id="audit-log-body"></tbody>
+    </table>
+  </div>
+  <!-- Security Settings -->
+  <div class="d-form-section">
+    <p class="d-form-section-title">Security Settings</p>
+    <div style="display:flex;flex-direction:column;gap:1.2rem">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:1rem;background:var(--bg-3);border:1px solid var(--border)">
+        <div><p style="font-size:.82rem;color:var(--white);margin-bottom:.2rem">Two-Factor Authentication (OTP)</p><p style="font-size:.7rem;color:var(--text-2)">Require email OTP for every login</p></div>
+        <label class="d-toggle"><input type="checkbox" checked><span class="d-slider"></span></label>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:1rem;background:var(--bg-3);border:1px solid var(--border)">
+        <div><p style="font-size:.82rem;color:var(--white);margin-bottom:.2rem">Auto-Lock on Failed Attempts</p><p style="font-size:.7rem;color:var(--text-2)">Lock account after 5 wrong passwords</p></div>
+        <label class="d-toggle"><input type="checkbox" checked><span class="d-slider"></span></label>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:1rem;background:var(--bg-3);border:1px solid var(--border)">
+        <div><p style="font-size:.82rem;color:var(--white);margin-bottom:.2rem">Session Expiry (8 hours)</p><p style="font-size:.7rem;color:var(--text-2)">Automatically log out after 8 hours</p></div>
+        <label class="d-toggle"><input type="checkbox" checked><span class="d-slider"></span></label>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:1rem;background:var(--bg-3);border:1px solid var(--border)">
+        <div><p style="font-size:.82rem;color:var(--white);margin-bottom:.2rem">Login Activity Notifications</p><p style="font-size:.7rem;color:var(--text-2)">Email alert on every new login</p></div>
+        <label class="d-toggle"><input type="checkbox"><span class="d-slider"></span></label>
+      </div>
+    </div>
+    <button class="d-btn" style="margin-top:1.5rem" onclick="toast('Security settings saved.','success')"><i class="fas fa-save"></i> SAVE SETTINGS</button>
+  </div>
+</div>
+
+<!-- ════════════ PANEL: SETTINGS ════════════ -->
+<div class="admin-panel" id="panel-settings">
+  <div class="panel-header"><h2 class="panel-title">Account <em>Settings</em></h2><p class="panel-subtitle">Manage your profile, password and preferences.</p></div>
+  <!-- Profile Card -->
+  <div class="d-form-section" style="margin-bottom:1.5rem">
+    <p class="d-form-section-title">Your Profile</p>
+    <div style="display:flex;align-items:center;gap:2rem;margin-bottom:2rem">
+      <div id="settings-avatar-big" style="width:80px;height:80px;border-radius:50%;background:var(--gold-grad);display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:700;color:var(--bg);flex-shrink:0;box-shadow:0 0 24px rgba(212,175,55,.35)">A</div>
+      <div>
+        <h3 id="settings-display-name" style="font-family:var(--font-serif);font-size:1.6rem;color:var(--white);font-weight:300;margin-bottom:.2rem">Loading...</h3>
+        <p id="settings-role-badge" class="badge badge-vip" style="margin-bottom:.5rem">ROLE</p>
+        <p id="settings-email-display" style="font-size:.75rem;color:var(--text-2)">email@vireon.com</p>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem">
+      <div style="background:var(--bg-3);border:1px solid var(--border);padding:1.2rem"><p style="font-size:.55rem;letter-spacing:.2em;color:var(--gold);text-transform:uppercase;margin-bottom:.3rem">Username</p><p id="s-username" style="font-size:.85rem;color:var(--white)">—</p></div>
+      <div style="background:var(--bg-3);border:1px solid var(--border);padding:1.2rem"><p style="font-size:.55rem;letter-spacing:.2em;color:var(--gold);text-transform:uppercase;margin-bottom:.3rem">Last Login</p><p id="s-last-login" style="font-size:.85rem;color:var(--white)">—</p></div>
+      <div style="background:var(--bg-3);border:1px solid var(--border);padding:1.2rem"><p style="font-size:.55rem;letter-spacing:.2em;color:var(--gold);text-transform:uppercase;margin-bottom:.3rem">Session Expires</p><p id="s-session-exp" style="font-size:.85rem;color:var(--white)">—</p></div>
+    </div>
+  </div>
+  <!-- Change Password -->
+  <div class="d-form-section" style="margin-bottom:1.5rem">
+    <p class="d-form-section-title">Change Password</p>
+    <div id="pw-step-a" style="display:block">
+      <div class="d-form-grid-3">
+        <div class="d-form-group"><label class="d-form-label">Current Password *</label>
+          <div style="position:relative"><input type="password" class="d-form-input" id="s-cur-pw" placeholder="Current password"><button type="button" onclick="toggleField('s-cur-pw','eye-s1')" style="position:absolute;right:.8rem;top:50%;transform:translateY(-50%);background:none;color:var(--gray);font-size:.82rem;transition:color .3s" onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color='var(--gray)'"><i id="eye-s1" class="fas fa-eye"></i></button></div>
+        </div>
+        <div class="d-form-group"><label class="d-form-label">New Password *</label>
+          <div style="position:relative"><input type="password" class="d-form-input" id="s-new-pw" placeholder="Min 8 chars" oninput="updateStrength(this.value)"><button type="button" onclick="toggleField('s-new-pw','eye-s2')" style="position:absolute;right:.8rem;top:50%;transform:translateY(-50%);background:none;color:var(--gray);font-size:.82rem;transition:color .3s" onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color='var(--gray)'"><i id="eye-s2" class="fas fa-eye"></i></button></div>
+          <div class="d-progress" style="margin-top:.4rem"><div class="d-progress-fill" id="pw-strength-bar" style="width:0"></div></div>
+          <p id="pw-strength-txt" style="font-size:.6rem;color:var(--gray);margin-top:.2rem;text-align:right"></p>
+        </div>
+        <div class="d-form-group"><label class="d-form-label">Confirm New Password *</label>
+          <div style="position:relative"><input type="password" class="d-form-input" id="s-conf-pw" placeholder="Repeat new password"></div>
+        </div>
+      </div>
+      <div id="pw-error-inline" style="display:none;color:var(--error);font-size:.72rem;margin-bottom:.8rem;display:flex;align-items:center;gap:.4rem"><i class="fas fa-exclamation-circle"></i><span id="pw-error-inline-msg"></span></div>
+      <button class="d-btn" onclick="requestSettingsPwOTP()"><i class="fas fa-shield-alt"></i> SEND VERIFICATION CODE</button>
+    </div>
+    <!-- OTP Confirm Step -->
+    <div id="pw-step-b" style="display:none">
+      <div style="text-align:center;padding:2rem;background:var(--bg-3);border:1px solid var(--border);margin-bottom:1.5rem">
+        <i class="fas fa-envelope-open-text" style="font-size:2.5rem;color:var(--gold);display:block;margin-bottom:1rem"></i>
+        <p style="font-size:.85rem;color:var(--text-2);line-height:1.8">Enter the 6-digit code sent to your registered email.<br><span id="otp-email-target" style="color:var(--gold)"></span></p>
+        <div style="display:flex;gap:.6rem;justify-content:center;margin:1.5rem 0">
+          <input type="text" class="otp-digit-s" maxlength="1" inputmode="numeric" style="width:48px;height:56px;background:var(--bg-2);border:1px solid var(--border);color:var(--white);font-family:var(--font-serif);font-size:1.7rem;text-align:center;outline:none;transition:border-color .3s" data-si="0">
+          <input type="text" class="otp-digit-s" maxlength="1" inputmode="numeric" style="width:48px;height:56px;background:var(--bg-2);border:1px solid var(--border);color:var(--white);font-family:var(--font-serif);font-size:1.7rem;text-align:center;outline:none;transition:border-color .3s" data-si="1">
+          <input type="text" class="otp-digit-s" maxlength="1" inputmode="numeric" style="width:48px;height:56px;background:var(--bg-2);border:1px solid var(--border);color:var(--white);font-family:var(--font-serif);font-size:1.7rem;text-align:center;outline:none;transition:border-color .3s" data-si="2">
+          <input type="text" class="otp-digit-s" maxlength="1" inputmode="numeric" style="width:48px;height:56px;background:var(--bg-2);border:1px solid var(--border);color:var(--white);font-family:var(--font-serif);font-size:1.7rem;text-align:center;outline:none;transition:border-color .3s" data-si="3">
+          <input type="text" class="otp-digit-s" maxlength="1" inputmode="numeric" style="width:48px;height:56px;background:var(--bg-2);border:1px solid var(--border);color:var(--white);font-family:var(--font-serif);font-size:1.7rem;text-align:center;outline:none;transition:border-color .3s" data-si="4">
+          <input type="text" class="otp-digit-s" maxlength="1" inputmode="numeric" style="width:48px;height:56px;background:var(--bg-2);border:1px solid var(--border);color:var(--white);font-family:var(--font-serif);font-size:1.7rem;text-align:center;outline:none;transition:border-color .3s" data-si="5">
+        </div>
+        <p id="otp-s-error" style="font-size:.72rem;color:var(--error);display:none;margin-bottom:.8rem"></p>
+        <p id="otp-s-success" style="font-size:.72rem;color:var(--success);display:none;margin-bottom:.8rem"></p>
+      </div>
+      <div style="display:flex;gap:.8rem">
+        <button class="d-btn" onclick="confirmSettingsPwChange()"><i class="fas fa-unlock-alt"></i> CONFIRM CHANGE</button>
+        <button class="d-btn-ghost" onclick="document.getElementById('pw-step-a').style.display='block';document.getElementById('pw-step-b').style.display='none'"><i class="fas fa-arrow-left"></i> BACK</button>
+        <button class="d-btn-ghost" onclick="resendSettingsOTP()">RESEND CODE</button>
+      </div>
+    </div>
+  </div>
+  <!-- Preferences -->
+  <div class="d-form-section" style="margin-bottom:1.5rem">
+    <p class="d-form-section-title">Preferences</p>
+    <div style="display:flex;flex-direction:column;gap:1rem">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:.8rem 1rem;background:var(--bg-3);border:1px solid var(--border)">
+        <div><p style="font-size:.8rem;color:var(--white)">Email notifications for new orders</p><p style="font-size:.68rem;color:var(--text-2)">Receive an email each time a new order is placed</p></div>
+        <label class="d-toggle"><input type="checkbox" checked><span class="d-slider"></span></label>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:.8rem 1rem;background:var(--bg-3);border:1px solid var(--border)">
+        <div><p style="font-size:.8rem;color:var(--white)">Low stock alerts</p><p style="font-size:.68rem;color:var(--text-2)">Get notified when products reach threshold</p></div>
+        <label class="d-toggle"><input type="checkbox" checked><span class="d-slider"></span></label>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:.8rem 1rem;background:var(--bg-3);border:1px solid var(--border)">
+        <div><p style="font-size:.8rem;color:var(--white)">New support ticket alerts</p><p style="font-size:.68rem;color:var(--text-2)">Notify me when new tickets are assigned to me</p></div>
+        <label class="d-toggle"><input type="checkbox" checked><span class="d-slider"></span></label>
+      </div>
+    </div>
+    <button class="d-btn" style="margin-top:1.2rem" onclick="toast('Preferences saved.','success')"><i class="fas fa-save"></i> SAVE PREFERENCES</button>
+  </div>
+  <!-- Danger Zone -->
+  <div style="background:rgba(239,68,68,.05);border:1px solid rgba(239,68,68,.2);padding:2rem">
+    <p style="font-size:.6rem;font-weight:700;letter-spacing:.25em;color:var(--error);text-transform:uppercase;margin-bottom:1rem">DANGER ZONE</p>
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem">
+      <div><p style="font-size:.82rem;color:var(--white)">Log out of all devices</p><p style="font-size:.7rem;color:var(--text-2)">Terminates all active admin sessions</p></div>
+      <button class="d-btn-danger" onclick="if(confirm('Logout from all devices?')){AdminAuth.clearSession();window.location.replace('admin-login.html');}"><i class="fas fa-sign-out-alt"></i> LOGOUT ALL DEVICES</button>
+    </div>
+  </div>
+</div>
+
+  </div><!-- /admin-content-area -->
+</div><!-- /admin-main -->
+</div><!-- /admin-layout -->
+
+<!-- ── TOAST ── -->
+<div id="v-toast" style="position:fixed;bottom:2rem;left:2rem;background:var(--bg-3);border-left:3px solid var(--gold);color:var(--white);padding:1rem 1.8rem;display:flex;align-items:center;gap:.8rem;font-size:.78rem;z-index:9999;transform:translateY(80px);opacity:0;transition:all .35s;box-shadow:0 8px 30px rgba(0,0,0,.5)">
+  <i class="fas fa-check-circle" style="color:var(--gold)"></i>
+  <span id="v-toast-msg"></span>
+</div>
+<style>
+#v-toast.on{transform:translateY(0)!important;opacity:1!important}
+#v-toast.success{border-left-color:var(--success)}
+#v-toast.success i{color:var(--success)}
+#v-toast.error{border-left-color:var(--error)}
+#v-toast.error i{color:var(--error)}
+/* Loader out */
+#v-loader.out{opacity:0;visibility:hidden;pointer-events:none}
+.admin-avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:700;cursor:pointer;background:var(--gold-grad);color:var(--bg)}
+/* Trends */
+.trend-up{color:var(--success)} .trend-dn{color:var(--error)}
+/* Responsive */
+@media(max-width:1200px){.stat-row-4{grid-template-columns:repeat(2,1fr)}.charts-2,.charts-3{grid-template-columns:1fr}}
+@media(max-width:900px){.admin-layout{grid-template-columns:1fr}.admin-sidebar{display:none}.d-form-grid-2,.d-form-grid-3{grid-template-columns:1fr}}
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="js/admin-auth.js"></script>
+<script src="js/dashboard.js"></script>
+</body>
+</html>

@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Shopping Bag — VIREON Luxury Couture</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,600&family=Montserrat:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="css/vireon.css">
+<link rel="stylesheet" href="css/animations.css">
+</head>
+<body>
+<div id="v-cursor"></div><div id="v-cursor-ring"></div>
+<div class="page-transition" id="page-transition"></div>
+<div id="v-loader"><div class="loader-logo"><span class="loader-logo-v">V</span><span class="loader-logo-text">IREON</span></div><div class="loader-bar"><div class="loader-fill" id="loader-fill"></div></div><span class="loader-label">LUXURY COUTURE</span><span class="loader-pct" id="loader-pct">0%</span></div>
+
+<nav id="navbar" style="background:rgba(11,11,11,.98);border-bottom:1px solid var(--border)">
+  <div class="nav-wrap">
+    <div class="nav-links"><a href="shop.html" class="nav-a">SHOP</a><a href="collections.html" class="nav-a">COLLECTIONS</a></div>
+    <div class="nav-logo"><a href="index.html"><span class="nav-v">V</span><span class="nav-ireon">IREON</span><span class="nav-sub">LUXURY COUTURE</span></a></div>
+    <div class="nav-links nav-links--right">
+      <div class="nav-icons">
+        <button class="nav-icon" id="search-icon"><i class="fas fa-search"></i></button>
+        <a href="wishlist.html" class="nav-icon"><i class="far fa-heart"></i><span class="nav-badge wish-badge">0</span></a>
+        <button class="nav-icon" id="cart-icon"><i class="fas fa-shopping-bag"></i><span class="nav-badge cart-badge">0</span></button>
+        <a href="login.html" class="nav-icon"><i class="far fa-user"></i></a>
+      </div>
+    </div>
+  </div>
+</nav>
+<div id="search-overlay"><button id="search-close-btn">&times;</button><div class="search-inner"><p class="search-heading">SEARCH VIREON</p><div class="search-row"><i class="fas fa-search"></i><input type="text" id="search-main-input" placeholder="Search..." autocomplete="off"></div><div class="search-results-drop" id="search-results-drop"></div></div></div>
+
+<!-- CART SECTION -->
+<section class="cart-wrap" id="cart-section">
+  <div class="v-wrap">
+    <p class="eyebrow reveal">YOUR SELECTION</p>
+    <h1 class="section-title reveal d1" style="font-size:clamp(2rem,4vw,3.2rem);margin-bottom:3rem">Shopping <em>Bag</em></h1>
+  </div>
+  <div class="cart-layout">
+    <div>
+      <div class="ct-table-head"><span>PRODUCT</span><span>PRICE</span><span>QUANTITY</span><span>TOTAL</span><span></span></div>
+      <div id="cart-rows"></div>
+      <div style="display:flex;justify-content:space-between;margin-top:2rem;flex-wrap:wrap;gap:1rem">
+        <a href="shop.html" class="btn btn--outline btn--sm"><i class="fas fa-arrow-left"></i> CONTINUE SHOPPING</a>
+        <button class="btn btn--ghost btn--sm" onclick="store.saveCart([]);store.saveCart([])">CLEAR BAG</button>
+      </div>
+    </div>
+
+    <!-- ORDER SUMMARY -->
+    <div>
+      <div class="order-summary">
+        <h3 class="os-title">Order Summary</h3>
+        <div class="os-row"><span>Subtotal</span><span id="os-subtotal">$0</span></div>
+        <div class="os-row"><span>Shipping</span><span id="os-ship">FREE</span></div>
+        <div class="os-row"><span>Duties & Tax</span><span>At checkout</span></div>
+        <div class="os-divider"></div>
+        <div class="os-total"><span>TOTAL</span><span id="os-total">$0</span></div>
+
+        <!-- COUPON -->
+        <div style="margin-top:1.5rem">
+          <p style="font-size:.6rem;font-weight:700;letter-spacing:.2em;color:var(--gold);text-transform:uppercase;margin-bottom:.8rem">PROMO CODE</p>
+          <div class="coupon-row">
+            <input type="text" class="coupon-input" id="coupon-input" placeholder="Try VIREON20 or ELITE">
+            <button class="coupon-btn" id="apply-coupon">APPLY</button>
+          </div>
+        </div>
+
+        <button id="go-checkout" class="btn btn--gold btn--block" style="margin-top:1.5rem;justify-content:center">PROCEED TO CHECKOUT <i class="fas fa-arrow-right"></i></button>
+        <p class="os-security"><i class="fas fa-shield-alt"></i> 256-bit SSL secure checkout</p>
+      </div>
+
+      <!-- DELIVERY PERKS -->
+      <div style="background:var(--bg-2);border:1px solid var(--border);padding:2rem;margin-top:1.5rem;display:flex;flex-direction:column;gap:1rem">
+        <div style="display:flex;align-items:center;gap:1rem"><i class="fas fa-shipping-fast" style="color:var(--gold);width:20px"></i><div><p style="font-size:.78rem;font-weight:600;color:var(--white)">Free Shipping</p><p style="font-size:.7rem;color:var(--text-2)">On orders over $500</p></div></div>
+        <div style="display:flex;align-items:center;gap:1rem"><i class="fas fa-undo" style="color:var(--gold);width:20px"></i><div><p style="font-size:.78rem;font-weight:600;color:var(--white)">30-Day Returns</p><p style="font-size:.7rem;color:var(--text-2)">No questions asked</p></div></div>
+        <div style="display:flex;align-items:center;gap:1rem"><i class="fas fa-gift" style="color:var(--gold);width:20px"></i><div><p style="font-size:.78rem;font-weight:600;color:var(--white)">Luxury Packaging</p><p style="font-size:.7rem;color:var(--text-2)">Signature VIREON box included</p></div></div>
+      </div>
+
+      <!-- PAYMENT ICONS -->
+      <div style="padding:1.5rem 0;text-align:center">
+        <p style="font-size:.52rem;letter-spacing:.2em;color:var(--gray);text-transform:uppercase;margin-bottom:.8rem">ACCEPTED PAYMENTS</p>
+        <div style="display:flex;justify-content:center;gap:1rem;font-size:1.7rem;color:var(--gray)">
+          <i class="fab fa-cc-visa"></i><i class="fab fa-cc-mastercard"></i><i class="fab fa-cc-amex"></i>
+          <i class="fab fa-cc-paypal"></i><i class="fab fa-cc-stripe"></i><i class="fab fa-apple-pay"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CHECKOUT SECTION -->
+<section id="checkout-section" class="co-wrap" style="display:none">
+  <div class="v-wrap">
+    <p class="eyebrow">SECURE CHECKOUT</p>
+    <h1 class="section-title" style="font-size:clamp(2rem,4vw,3rem);margin-bottom:3rem">Complete Your <em>Order</em></h1>
+  </div>
+  <div class="co-layout">
+    <div>
+      <!-- SHIPPING -->
+      <div class="co-section">
+        <h3>Shipping Address</h3>
+        <div class="fg2">
+          <div class="form-group"><label class="form-lbl">First Name *</label><input type="text" class="form-ctrl" placeholder="James"></div>
+          <div class="form-group"><label class="form-lbl">Last Name *</label><input type="text" class="form-ctrl" placeholder="Whitmore"></div>
+        </div>
+        <div class="form-group"><label class="form-lbl">Email Address *</label><input type="email" class="form-ctrl" placeholder="james@example.com"></div>
+        <div class="fg2">
+          <div class="form-group"><label class="form-lbl">Phone</label><input type="tel" class="form-ctrl" placeholder="+1 (000) 000-0000"></div>
+          <div class="form-group"><label class="form-lbl">Company (Optional)</label><input type="text" class="form-ctrl" placeholder="Your company"></div>
+        </div>
+        <div class="form-group"><label class="form-lbl">Street Address *</label><input type="text" class="form-ctrl" placeholder="14 Mayfair Lane"></div>
+        <div class="fg3">
+          <div class="form-group"><label class="form-lbl">City *</label><input type="text" class="form-ctrl" placeholder="London"></div>
+          <div class="form-group"><label class="form-lbl">Postcode *</label><input type="text" class="form-ctrl" placeholder="W1J 5BW"></div>
+          <div class="form-group"><label class="form-lbl">Country *</label><select class="form-ctrl form-select"><option>United Kingdom</option><option>United States</option><option>France</option><option>Germany</option><option>UAE</option><option>Singapore</option><option>Japan</option></select></div>
+        </div>
+        <div class="form-group"><label class="form-lbl">Order Notes (Optional)</label><textarea class="form-ctrl" rows="3" placeholder="Special delivery instructions, gift message..." style="resize:vertical"></textarea></div>
+
+        <!-- GIFT OPTION -->
+        <div style="padding:1.2rem 1.5rem;background:rgba(212,175,55,.05);border:1px solid rgba(212,175,55,.2);display:flex;align-items:center;gap:1rem;margin-bottom:2rem">
+          <input type="checkbox" id="gift-opt" style="accent-color:var(--gold);width:16px;height:16px">
+          <label for="gift-opt" style="font-size:.8rem;color:var(--white);cursor:pointer"><i class="fas fa-gift" style="color:var(--gold);margin-right:.5rem"></i>This is a gift — include a handwritten card & special packaging</label>
+        </div>
+      </div>
+
+      <!-- DELIVERY METHOD -->
+      <div class="co-section">
+        <h3>Delivery Method</h3>
+        <div class="delivery-opts">
+          <div class="d-opt on"><i class="fas fa-shipping-fast"></i><div><p class="d-opt-name">Standard Delivery</p><p class="d-opt-desc">3–5 business days</p></div><span class="d-opt-price">FREE</span></div>
+          <div class="d-opt"><i class="fas fa-bolt"></i><div><p class="d-opt-name">Express Delivery</p><p class="d-opt-desc">1–2 business days</p></div><span class="d-opt-price">$45</span></div>
+          <div class="d-opt"><i class="fas fa-clock"></i><div><p class="d-opt-name">Same Day Delivery</p><p class="d-opt-desc">Available in select cities</p></div><span class="d-opt-price">$85</span></div>
+        </div>
+      </div>
+
+      <!-- PAYMENT -->
+      <div class="co-section">
+        <h3>Payment Method</h3>
+        <div class="payment-opts">
+          <div class="pay-opt on"><i class="fab fa-cc-visa" style="font-size:1.5rem"></i><div><p class="pay-opt-name">Credit / Debit Card</p></div></div>
+          <div class="pay-opt"><i class="fab fa-paypal" style="font-size:1.5rem"></i><div><p class="pay-opt-name">PayPal</p></div></div>
+          <div class="pay-opt"><i class="fab fa-apple-pay" style="font-size:1.5rem"></i><div><p class="pay-opt-name">Apple Pay</p></div></div>
+        </div>
+        <div style="margin-top:1.5rem" id="card-fields">
+          <div class="form-group"><label class="form-lbl">Card Number</label><input type="text" class="form-ctrl" placeholder="•••• •••• •••• ••••" maxlength="19"></div>
+          <div class="fg3">
+            <div class="form-group" style="grid-column:span 2"><label class="form-lbl">Cardholder Name</label><input type="text" class="form-ctrl" placeholder="James Whitmore"></div>
+            <div></div>
+          </div>
+          <div class="fg2">
+            <div class="form-group"><label class="form-lbl">Expiry Date</label><input type="text" class="form-ctrl" placeholder="MM / YY" maxlength="7"></div>
+            <div class="form-group"><label class="form-lbl">CVV</label><input type="text" class="form-ctrl" placeholder="•••" maxlength="4"></div>
+          </div>
+        </div>
+        <button onclick="placeOrder()" class="btn btn--gold btn--block" style="margin-top:2rem;justify-content:center;font-size:.7rem;padding:1.2rem">
+          <i class="fas fa-lock" style="margin-right:.5rem"></i> PLACE ORDER SECURELY
+        </button>
+        <p style="text-align:center;font-size:.65rem;color:var(--gray);margin-top:.8rem">By placing this order you agree to our Terms of Service and Privacy Policy</p>
+      </div>
+    </div>
+
+    <!-- CHECKOUT SUMMARY -->
+    <div>
+      <div class="order-summary" style="position:sticky;top:100px">
+        <h3 class="os-title">Order Summary</h3>
+        <div class="co-items" id="co-items-list"></div>
+        <div class="os-row"><span>Subtotal</span><span id="co-sub">$0</span></div>
+        <div class="os-row"><span>Shipping</span><span>FREE</span></div>
+        <div class="os-divider"></div>
+        <div class="os-total"><span>TOTAL</span><span id="co-total">$0</span></div>
+        <div style="margin-top:1.5rem;padding:1rem;background:rgba(212,175,55,.05);border:1px solid rgba(212,175,55,.15);display:flex;align-items:center;gap:.8rem">
+          <i class="fas fa-gift" style="color:var(--gold)"></i>
+          <div><p style="font-size:.72rem;font-weight:600;color:var(--white)">Luxury Packaging Included</p><p style="font-size:.65rem;color:var(--text-2)">Signature VIREON obsidian gift box</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MINI CART -->
+<div class="cart-overlay" id="cart-overlay"></div>
+<div class="mini-cart" id="mini-cart"><div class="mc-head"><h3>Shopping Bag <span id="mc-qty">(0)</span></h3><button class="mc-close" id="mc-close">&times;</button></div><div class="mc-body" id="mc-body"></div><div class="mc-foot"><div class="mc-subtotal"><span>Subtotal</span><span id="mc-total">$0</span></div><a href="cart.html" class="btn btn--gold btn--block" style="margin-bottom:.8rem">VIEW BAG</a><a href="cart.html#checkout" class="btn btn--outline btn--block">CHECKOUT</a></div></div>
+
+<div id="scroll-progress"></div>
+<div id="v-toast"><i class="fas fa-check-circle"></i><span id="v-toast-msg"></span></div>
+<script src="js/vireon.js"></script>
+<script>
+// Toggle checkout
+if(window.location.hash==='#checkout'){
+  document.getElementById('cart-section').style.display='none';
+  document.getElementById('checkout-section').style.display='block';
+  renderCheckoutSummary();
+}
+// Delivery options
+document.querySelectorAll('.d-opt').forEach(o=>o.addEventListener('click',function(){document.querySelectorAll('.d-opt').forEach(x=>x.classList.remove('on'));this.classList.add('on');}));
+document.querySelectorAll('.pay-opt').forEach(o=>o.addEventListener('click',function(){document.querySelectorAll('.pay-opt').forEach(x=>x.classList.remove('on'));this.classList.add('on');}));
+// Scroll progress
+window.addEventListener('scroll',()=>{const el=document.getElementById('scroll-progress');if(el){const p=window.scrollY/(document.body.scrollHeight-window.innerHeight);el.style.width=(p*100)+'%';}},{passive:true});
+</script>
+</body>
+</html>

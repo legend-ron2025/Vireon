@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>VIREON Admin</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#0B0B0B;display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:'Montserrat',sans-serif}
+  .wrap{text-align:center}
+  .v{font-family:Georgia,serif;font-size:5rem;color:#D4AF37;animation:pulse 1.5s ease-in-out infinite;display:block;line-height:1}
+  .t{font-size:.8rem;letter-spacing:.35em;color:#6B6B6B;text-transform:uppercase;margin-top:.5rem}
+  .bar{width:160px;height:2px;background:#2A2A2A;margin:2rem auto 0;overflow:hidden}
+  .fill{height:100%;background:linear-gradient(90deg,#D4AF37,#F5D76E);width:0;transition:width .05s linear}
+  @keyframes pulse{0%,100%{text-shadow:0 0 10px rgba(212,175,55,.3)}50%{text-shadow:0 0 40px rgba(212,175,55,.9)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <span class="v">V</span>
+  <p class="t">VIREON ENTERPRISE</p>
+  <div class="bar"><div class="fill" id="f"></div></div>
+</div>
+<script>
+  /* ── URL ROUTER ───────────────────────────────────────────
+     Accessing /Vireon/admin-panel or admin-panel.html routes
+     to the login page if not authenticated, or dashboard if
+     already logged in.
+  ──────────────────────────────────────────────────────── */
+  let p = 0;
+  const bar = document.getElementById('f');
+  const t = setInterval(() => {
+    p += Math.random() * 25 + 8;
+    if (bar) bar.style.width = Math.min(p, 100) + '%';
+    if (p >= 100) {
+      clearInterval(t);
+      setTimeout(() => {
+        try {
+          const session = JSON.parse(sessionStorage.getItem('vireon_admin_session'));
+          const valid   = session && Date.now() < session.expiresAt;
+          window.location.replace(valid ? 'dashboard.html' : 'admin-login.html');
+        } catch {
+          window.location.replace('admin-login.html');
+        }
+      }, 200);
+    }
+  }, 55);
+</script>
+</body>
+</html>

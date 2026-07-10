@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Contact VIREON — Luxury Couture | Get In Touch</title>
+<meta name="description" content="Contact VIREON's luxury concierge team. Available 24/7 for private consultations, corporate gifting and bespoke requests.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,600&family=Montserrat:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<link rel="stylesheet" href="css/vireon.css"><link rel="stylesheet" href="css/animations.css">
+<style>
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:start}
+.info-card{background:var(--bg-3);border:1px solid var(--border);padding:2rem;display:flex;align-items:flex-start;gap:1.2rem;margin-bottom:1rem;transition:all .3s}
+.info-card:hover{border-color:var(--gold);box-shadow:0 0 20px rgba(212,175,55,.06);transform:translateX(4px)}
+.info-card-icon{font-size:1.3rem;color:var(--gold);flex-shrink:0;margin-top:.15rem}
+.info-card-title{font-size:.6rem;font-weight:700;letter-spacing:.22em;color:var(--gold);text-transform:uppercase;margin-bottom:.4rem}
+.info-card-text{font-size:.82rem;color:var(--text-2);line-height:1.8}
+.contact-form-wrap{background:var(--bg-2);border:1px solid var(--border);padding:3rem}
+.cf-label{display:block;font-size:.58rem;font-weight:700;letter-spacing:.22em;color:var(--gold);text-transform:uppercase;margin-bottom:.5rem}
+.cf-input{width:100%;background:transparent;border:none;border-bottom:1px solid var(--border);color:var(--white);padding:.9rem 0;font-size:.85rem;font-family:var(--font-sans);outline:none;transition:border-color .3s;margin-bottom:0}
+.cf-input:focus{border-bottom-color:var(--gold)}
+.cf-input::placeholder{color:var(--gray)}
+.cf-select{width:100%;background:transparent;border:none;border-bottom:1px solid var(--border);color:var(--white);padding:.9rem 0;font-size:.85rem;cursor:pointer;font-family:var(--font-sans);outline:none;transition:border-color .3s}
+.cf-select option{background:var(--bg-3);color:var(--white)}
+.cf-select:focus{border-bottom-color:var(--gold)}
+.cf-textarea{width:100%;background:transparent;border:none;border-bottom:1px solid var(--border);color:var(--white);padding:.9rem 0;font-size:.85rem;font-family:var(--font-sans);outline:none;resize:none;min-height:100px;transition:border-color .3s}
+.cf-textarea:focus{border-bottom-color:var(--gold)}
+.cf-textarea::placeholder{color:var(--gray)}
+.cf-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
+.cf-group{margin-bottom:1.5rem}
+#contact-map{height:420px;background:var(--bg-3);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.leaflet-popup-content-wrapper{background:rgba(20,20,20,.97)!important;color:#fff!important;border:1px solid rgba(212,175,55,.3)!important;border-radius:0!important}
+.leaflet-popup-tip{background:rgba(20,20,20,.97)!important}
+.leaflet-popup-content b{color:#D4AF37}
+@media(max-width:900px){.contact-grid{grid-template-columns:1fr}.cf-grid-2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div id="v-cursor"></div><div id="v-cursor-ring"></div>
+<div class="page-transition" id="page-transition"></div>
+<canvas id="v-particles" style="position:fixed;top:0;left:0;pointer-events:none;z-index:0;opacity:.3"></canvas>
+<div id="v-loader"><div class="loader-logo"><span class="loader-logo-v">V</span><span class="loader-logo-text">IREON</span></div><div class="loader-bar"><div class="loader-fill" id="loader-fill"></div></div><span class="loader-label">LUXURY COUTURE</span><span class="loader-pct" id="loader-pct">0%</span></div>
+<div id="ann-bar"><div class="ann-ticker"><span>FREE WORLDWIDE SHIPPING ON ORDERS OVER $500</span><span class="ann-gem">◆</span><span>NEW COLLECTION 2026 — NOW LIVE</span><span class="ann-gem">◆</span><span>VIREON ELITE — 20% OFF EVERY ORDER</span><span class="ann-gem">◆</span><span>FREE WORLDWIDE SHIPPING ON ORDERS OVER $500</span></div><button id="ann-close"><i class="fas fa-times"></i></button></div>
+
+<nav id="navbar">
+  <div class="nav-wrap">
+    <div class="nav-links"><a href="shop.html?cat=men" class="nav-a">MEN</a><a href="shop.html?cat=women" class="nav-a">WOMEN</a><a href="shop.html" class="nav-a">SHOP</a><a href="collections.html" class="nav-a">COLLECTIONS</a></div>
+    <div class="nav-logo"><a href="index.html"><span class="nav-v">V</span><span class="nav-ireon">IREON</span><span class="nav-sub">LUXURY COUTURE</span></a></div>
+    <div class="nav-links nav-links--right"><a href="about.html" class="nav-a">ABOUT</a><a href="contact.html" class="nav-a active">CONTACT</a><div class="nav-icons"><button class="nav-icon" id="search-icon"><i class="fas fa-search"></i></button><a href="wishlist.html" class="nav-icon"><i class="far fa-heart"></i><span class="nav-badge wish-badge">0</span></a><button class="nav-icon" id="cart-icon"><i class="fas fa-shopping-bag"></i><span class="nav-badge cart-badge">0</span></button><a href="login.html" class="nav-icon"><i class="far fa-user"></i></a><button class="hamburger" id="hamburger"><span></span><span></span><span></span></button></div></div>
+  </div>
+</nav>
+<div id="mobile-menu"><button id="mobile-close">&times;</button><nav class="mob-nav"><a href="index.html">HOME</a><a href="shop.html">SHOP</a><a href="collections.html">COLLECTIONS</a><a href="about.html">ABOUT</a><a href="contact.html">CONTACT</a></nav></div>
+<div id="search-overlay"><button id="search-close-btn">&times;</button><div class="search-inner"><p class="search-heading">SEARCH VIREON</p><div class="search-row"><i class="fas fa-search"></i><input type="text" id="search-main-input" placeholder="Search..." autocomplete="off"></div><div class="search-results-drop" id="search-results-drop"></div></div></div>
+
+<!-- PAGE HERO -->
+<section style="padding:10rem 0 5rem;background:linear-gradient(160deg,#0d0600,#0B0B0B 60%,#111106);border-bottom:1px solid var(--border)">
+  <div class="v-wrap">
+    <p class="eyebrow reveal">GET IN TOUCH</p>
+    <h1 style="font-family:var(--font-serif);font-size:clamp(3rem,7vw,6rem);font-weight:300;color:var(--white);margin-bottom:1rem;line-height:1.05" class="reveal d1">Contact <em style="font-style:italic;color:var(--gold)">Us</em></h1>
+    <p style="font-size:.9rem;color:var(--text-2);max-width:480px;line-height:1.95" class="reveal d2">Our luxury concierge team is available 24/7 for private consultations, bespoke requests, corporate gifting and any enquiry.</p>
+  </div>
+</section>
+
+<!-- CONTACT SECTION -->
+<section class="section">
+  <div class="v-wrap">
+    <div class="contact-grid">
+      <!-- INFO -->
+      <div class="reveal reveal--left">
+        <p class="eyebrow">CONNECT</p>
+        <h2 style="font-family:var(--font-serif);font-size:clamp(1.8rem,3vw,2.6rem);color:var(--white);font-weight:300;margin-bottom:1rem">Every message<br><em style="font-style:italic;color:var(--gold)">matters.</em></h2>
+        <div style="width:50px;height:1px;background:var(--gold-grad);margin-bottom:2rem"></div>
+        <p style="font-size:.88rem;color:var(--text-2);line-height:1.9;margin-bottom:2.5rem">Whether you're seeking a bespoke creation, a private consultation, corporate gifting, or simply wish to discuss our collection — our dedicated concierge team ensures every experience is extraordinary.</p>
+        <div class="info-card">
+          <i class="fas fa-map-marker-alt info-card-icon"></i>
+          <div><p class="info-card-title">Our Atelier</p><p class="info-card-text">14 Rue du Couture, London<br>EC1A 1BB, United Kingdom</p></div>
+        </div>
+        <div class="info-card">
+          <i class="fas fa-phone info-card-icon"></i>
+          <div><p class="info-card-title">Phone</p><p class="info-card-text">+44 (0) 20 7946 0321<br>Mon – Sun, 9am – 9pm</p></div>
+        </div>
+        <div class="info-card">
+          <i class="fas fa-envelope info-card-icon"></i>
+          <div><p class="info-card-title">Email</p><p class="info-card-text">concierge@vireon.com<br>orders@vireon.com</p></div>
+        </div>
+        <div class="info-card">
+          <i class="fab fa-whatsapp info-card-icon" style="color:var(--success)"></i>
+          <div><p class="info-card-title">WhatsApp</p><p class="info-card-text">+44 7700 900321<br>24/7 Luxury Concierge</p></div>
+        </div>
+        <div class="info-card">
+          <i class="fas fa-clock info-card-icon"></i>
+          <div><p class="info-card-title">Hours</p><p class="info-card-text">Mon – Sun: 9:00 AM – 9:00 PM<br>Emergency Line: 24/7</p></div>
+        </div>
+      </div>
+      <!-- FORM -->
+      <div class="reveal reveal--right">
+        <div class="contact-form-wrap">
+          <form id="contactForm" onsubmit="submitContact(event)">
+            <div class="cf-grid-2">
+              <div class="cf-group"><label class="cf-label">First Name *</label><input type="text" class="cf-input" placeholder="James" required></div>
+              <div class="cf-group"><label class="cf-label">Last Name *</label><input type="text" class="cf-input" placeholder="Whitmore" required></div>
+            </div>
+            <div class="cf-group"><label class="cf-label">Email Address *</label><input type="email" class="cf-input" placeholder="james@example.com" required></div>
+            <div class="cf-group"><label class="cf-label">Phone</label><input type="tel" class="cf-input" placeholder="+44 (0) 000 000 0000"></div>
+            <div class="cf-group"><label class="cf-label">Subject *</label>
+              <select class="cf-select" required>
+                <option value="" disabled selected>Select a subject</option>
+                <option>Product Enquiry</option>
+                <option>Bespoke / Custom Order</option>
+                <option>Corporate Gifting</option>
+                <option>Order Support</option>
+                <option>Private Event</option>
+                <option>Press & Media</option>
+                <option>Partnership</option>
+                <option>Other</option>
+              </select>
+            </div>
+            <div class="cf-group"><label class="cf-label">Message *</label><textarea class="cf-textarea" placeholder="Tell us how we can assist you..." required></textarea></div>
+            <div style="margin-bottom:1.5rem;display:flex;align-items:flex-start;gap:.7rem">
+              <input type="checkbox" id="consent" required style="accent-color:var(--gold);margin-top:.15rem;width:15px;height:15px;flex-shrink:0">
+              <label for="consent" style="font-size:.7rem;color:var(--text-2);cursor:pointer;line-height:1.6">I agree to the <a href="#" style="color:var(--gold)">Privacy Policy</a> and consent to VIREON storing my data to respond to this enquiry.</label>
+            </div>
+            <button type="submit" class="btn btn--gold btn--block" style="justify-content:center">SEND MESSAGE <i class="fas fa-paper-plane"></i></button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MAP -->
+<div id="contact-map"></div>
+<div style="background:var(--bg-2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:4rem 0;text-align:center">
+  <div class="v-wrap--narrow">
+    <h3 style="font-family:var(--font-serif);font-size:1.5rem;color:var(--white);margin-bottom:.5rem">VIREON Atelier</h3>
+    <p style="font-size:.68rem;letter-spacing:.2em;color:var(--gold);text-transform:uppercase">14 RUE DU COUTURE, LONDON EC1A 1BB</p>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="v-footer"><div class="v-wrap"><div class="footer-top"><div class="footer-brand"><div class="footer-brand-logo"><span class="nav-v">V</span><span class="nav-ireon">IREON</span></div><p class="footer-brand-tagline">LUXURY COUTURE</p><p class="footer-brand-desc">A digital luxury fashion house for those who carry presence and identity.</p><div class="footer-socials"><a href="#" class="footer-social"><i class="fab fa-instagram"></i></a><a href="#" class="footer-social"><i class="fab fa-twitter"></i></a><a href="#" class="footer-social"><i class="fab fa-pinterest"></i></a></div></div><div class="footer-col"><h4>COLLECTIONS</h4><ul><li><a href="collections.html">Signature</a></li><li><a href="collections.html">Limited</a></li><li><a href="shop.html?badge=NEW">New Arrivals</a></li></ul></div><div class="footer-col"><h4>SHOP</h4><ul><li><a href="shop.html?cat=Coats">Coats</a></li><li><a href="shop.html?cat=Dresses">Dresses</a></li><li><a href="shop.html?badge=SALE" style="color:var(--gold)">SALE</a></li></ul></div><div class="footer-col"><h4>INFO</h4><ul><li><a href="about.html">About</a></li><li><a href="contact.html">Contact</a></li><li><a href="tracking.html">Track Order</a></li></ul></div></div><div class="footer-bottom"><p>&copy; 2026 VIREON Luxury Couture. All rights reserved.</p></div></div></footer>
+
+<div class="cart-overlay" id="cart-overlay"></div>
+<div class="mini-cart" id="mini-cart"><div class="mc-head"><h3>Shopping Bag <span id="mc-qty">(0)</span></h3><button class="mc-close" id="mc-close">&times;</button></div><div class="mc-body" id="mc-body"></div><div class="mc-foot"><div class="mc-subtotal"><span>Subtotal</span><span id="mc-total">$0</span></div><a href="cart.html" class="btn btn--gold btn--block" style="margin-bottom:.8rem">VIEW BAG</a></div></div>
+<div id="v-toast"><i class="fas fa-check-circle"></i><span id="v-toast-msg"></span></div>
+<div id="scroll-progress"></div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="js/vireon.js"></script>
+<script>
+function submitContact(e){
+  e.preventDefault();
+  if(typeof toast==='function') toast('Message sent! We\'ll respond within 24 hours.','success');
+  e.target.reset();
+}
+// Contact map
+window.addEventListener('load',()=>{
+  if(!window.L) return;
+  const m=L.map('contact-map',{center:[51.5177,-0.0999],zoom:14,scrollWheelZoom:false});
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{attribution:'© OSM © CARTO',subdomains:'abcd',maxZoom:20}).addTo(m);
+  const icon=L.divIcon({html:'<div style="width:36px;height:36px;border-radius:50%;background:rgba(212,175,55,.9);border:2px solid #D4AF37;display:flex;align-items:center;justify-content:center;font-size:.9rem;color:#000"><i class="fas fa-store"></i></div>',className:'',iconSize:[36,36],iconAnchor:[18,18]});
+  L.marker([51.5177,-0.0999],{icon}).addTo(m).bindPopup('<b>VIREON Atelier</b><br>14 Rue du Couture, London').openPopup();
+});
+window.addEventListener('scroll',()=>{const el=document.getElementById('scroll-progress');if(el){const p=window.scrollY/(document.body.scrollHeight-window.innerHeight);el.style.width=(p*100)+'%';}},{passive:true});
+</script>
+</body></html>

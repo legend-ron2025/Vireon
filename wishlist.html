@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Wishlist — VIREON Luxury Couture</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,600&family=Montserrat:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="css/vireon.css"><link rel="stylesheet" href="css/animations.css">
+</head>
+<body>
+<div id="v-cursor"></div><div id="v-cursor-ring"></div>
+<div class="page-transition" id="page-transition"></div>
+<canvas id="v-particles" style="position:fixed;top:0;left:0;pointer-events:none;z-index:0;opacity:.35"></canvas>
+<div id="v-loader"><div class="loader-logo"><span class="loader-logo-v">V</span><span class="loader-logo-text">IREON</span></div><div class="loader-bar"><div class="loader-fill" id="loader-fill"></div></div><span class="loader-label">LUXURY COUTURE</span><span class="loader-pct" id="loader-pct">0%</span></div>
+
+<nav id="navbar" style="background:rgba(11,11,11,.98);border-bottom:1px solid var(--border)">
+  <div class="nav-wrap">
+    <div class="nav-links"><a href="shop.html" class="nav-a">SHOP</a><a href="collections.html" class="nav-a">COLLECTIONS</a></div>
+    <div class="nav-logo"><a href="index.html"><span class="nav-v">V</span><span class="nav-ireon">IREON</span><span class="nav-sub">LUXURY COUTURE</span></a></div>
+    <div class="nav-links nav-links--right"><div class="nav-icons"><button class="nav-icon" id="search-icon"><i class="fas fa-search"></i></button><a href="wishlist.html" class="nav-icon"><i class="fas fa-heart" style="color:var(--gold)"></i><span class="nav-badge wish-badge">0</span></a><button class="nav-icon" id="cart-icon"><i class="fas fa-shopping-bag"></i><span class="nav-badge cart-badge">0</span></button><a href="login.html" class="nav-icon"><i class="far fa-user"></i></a><button class="hamburger" id="hamburger"><span></span><span></span><span></span></button></div></div>
+  </div>
+</nav>
+<div id="mobile-menu"><button id="mobile-close">&times;</button><nav class="mob-nav"><a href="index.html">HOME</a><a href="shop.html">SHOP</a><a href="collections.html">COLLECTIONS</a></nav></div>
+<div id="search-overlay"><button id="search-close-btn">&times;</button><div class="search-inner"><p class="search-heading">SEARCH VIREON</p><div class="search-row"><i class="fas fa-search"></i><input type="text" id="search-main-input" placeholder="Search..." autocomplete="off"></div><div class="search-results-drop" id="search-results-drop"></div></div></div>
+
+<section class="section" style="padding-top:9rem;min-height:80vh">
+  <div class="v-wrap">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4rem;flex-wrap:wrap;gap:1.5rem">
+      <div>
+        <p class="eyebrow reveal">YOUR SELECTIONS</p>
+        <h1 class="section-title reveal d1" style="font-size:clamp(2rem,4vw,3.2rem)">My <em>Wishlist</em></h1>
+      </div>
+      <div style="display:flex;gap:1rem" class="reveal d2">
+        <button id="wish-add-all" class="btn btn--gold"><i class="fas fa-shopping-bag"></i> ADD ALL TO BAG</button>
+        <button id="wish-share" class="btn btn--outline"><i class="fas fa-share-alt"></i> SHARE</button>
+      </div>
+    </div>
+    <div class="p-grid" id="wish-grid"></div>
+  </div>
+</section>
+
+<footer class="v-footer"><div class="v-wrap"><div class="footer-top"><div class="footer-brand"><div class="footer-brand-logo"><span class="nav-v">V</span><span class="nav-ireon">IREON</span></div><p class="footer-brand-tagline">LUXURY COUTURE</p><div class="footer-socials"><a href="#" class="footer-social"><i class="fab fa-instagram"></i></a><a href="#" class="footer-social"><i class="fab fa-twitter"></i></a></div></div><div class="footer-col"><h4>SHOP</h4><ul><li><a href="shop.html">All Pieces</a></li><li><a href="shop.html?badge=NEW">New Arrivals</a></li><li><a href="shop.html?badge=LIMITED">Limited</a></li></ul></div><div class="footer-col"><h4>INFO</h4><ul><li><a href="about.html">About</a></li><li><a href="contact.html">Contact</a></li><li><a href="tracking.html">Track Order</a></li></ul></div><div class="footer-col"></div></div><div class="footer-bottom"><p>&copy; 2026 VIREON Luxury Couture.</p></div></div></footer>
+
+<div class="cart-overlay" id="cart-overlay"></div>
+<div class="mini-cart" id="mini-cart"><div class="mc-head"><h3>Shopping Bag <span id="mc-qty">(0)</span></h3><button class="mc-close" id="mc-close">&times;</button></div><div class="mc-body" id="mc-body"></div><div class="mc-foot"><div class="mc-subtotal"><span>Subtotal</span><span id="mc-total">$0</span></div><a href="cart.html" class="btn btn--gold btn--block" style="margin-bottom:.8rem">VIEW BAG</a></div></div>
+<div id="scroll-progress"></div>
+<div id="v-toast"><i class="fas fa-check-circle"></i><span id="v-toast-msg"></span></div>
+<script src="js/vireon.js"></script>
+<script>window.addEventListener('scroll',()=>{const el=document.getElementById('scroll-progress');if(el){const p=window.scrollY/(document.body.scrollHeight-window.innerHeight);el.style.width=(p*100)+'%';}},{passive:true});</script>
+</body>
+</html>

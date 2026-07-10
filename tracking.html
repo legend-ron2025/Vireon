@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Live Order Tracking — VIREON Luxury Couture</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,600&family=Montserrat:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<link rel="stylesheet" href="css/vireon.css">
+<link rel="stylesheet" href="css/animations.css">
+<style>
+.leaflet-popup-content-wrapper{background:rgba(20,20,20,.97)!important;color:#fff!important;border:1px solid rgba(212,175,55,.3)!important;border-radius:0!important;box-shadow:0 0 24px rgba(212,175,55,.25)!important}
+.leaflet-popup-tip{background:rgba(20,20,20,.97)!important}
+.leaflet-popup-content b{color:#D4AF37}
+.map-m{display:flex;align-items:center;justify-content:center;border-radius:50%;border:2px solid}
+.map-m-f{width:34px;height:34px;background:rgba(212,175,55,.9);border-color:#D4AF37;color:#0B0B0B;font-size:.85rem}
+.map-m-h{width:34px;height:34px;background:rgba(59,130,246,.9);border-color:#3B82F6;color:#fff;font-size:.85rem}
+.map-m-t{width:44px;height:44px;background:rgba(16,185,129,.95);border-color:#10B981;color:#fff;font-size:1rem;box-shadow:0 0 14px rgba(16,185,129,.5);animation:truckPop 2s ease-in-out infinite}
+@keyframes truckPop{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-7px) scale(1.1)}}
+details summary{list-style:none} details summary::-webkit-details-marker{display:none}
+</style>
+</head>
+<body>
+<div id="v-cursor"></div><div id="v-cursor-ring"></div>
+<div class="page-transition" id="page-transition"></div>
+<div id="v-loader"><div class="loader-logo"><span class="loader-logo-v">V</span><span class="loader-logo-text">IREON</span></div><div class="loader-bar"><div class="loader-fill" id="loader-fill"></div></div><span class="loader-label">TRACKING</span><span class="loader-pct" id="loader-pct">0%</span></div>
+
+<nav id="navbar" style="background:rgba(11,11,11,.98);border-bottom:1px solid var(--border)">
+  <div class="nav-wrap">
+    <div class="nav-links"><a href="shop.html" class="nav-a">SHOP</a><a href="collections.html" class="nav-a">COLLECTIONS</a></div>
+    <div class="nav-logo"><a href="index.html"><span class="nav-v">V</span><span class="nav-ireon">IREON</span><span class="nav-sub">LUXURY COUTURE</span></a></div>
+    <div class="nav-links nav-links--right"><div class="nav-icons"><a href="wishlist.html" class="nav-icon"><i class="far fa-heart"></i><span class="nav-badge wish-badge">0</span></a><button class="nav-icon" id="cart-icon"><i class="fas fa-shopping-bag"></i><span class="nav-badge cart-badge">0</span></button><a href="login.html" class="nav-icon"><i class="far fa-user"></i></a></div></div>
+  </div>
+</nav>
+<div id="search-overlay"><button id="search-close-btn">&times;</button><div class="search-inner"><p class="search-heading">SEARCH VIREON</p><div class="search-row"><i class="fas fa-search"></i><input type="text" id="search-main-input" placeholder="Search..." autocomplete="off"></div><div class="search-results-drop" id="search-results-drop"></div></div></div>
+
+<!-- TRACKING PAGE -->
+<div class="track-wrap">
+  <div class="v-wrap--narrow" style="max-width:680px">
+    <p class="eyebrow reveal">LIVE TRACKING</p>
+    <h1 class="section-title reveal d1" style="font-size:clamp(2.5rem,5vw,4rem);margin-bottom:.5rem">Track Your <em>Delivery</em></h1>
+    <p style="font-size:.85rem;color:var(--text-2);margin-bottom:3rem" class="reveal d2">Real-time updates and live map for your luxury order</p>
+
+    <!-- SEARCH FORM -->
+    <div style="background:var(--bg-2);border:1px solid var(--border);padding:4rem 3rem;text-align:center" id="track-form-section" class="reveal d3">
+      <div style="font-size:3.5rem;color:var(--gold);margin-bottom:1.5rem"><i class="fas fa-shipping-fast pulse-gold"></i></div>
+      <h2 style="font-family:var(--font-serif);font-size:1.8rem;color:var(--white);font-weight:300;margin-bottom:.8rem">Enter Your Order Number</h2>
+      <p style="font-size:.82rem;color:var(--text-2);margin-bottom:2rem">Find your order ID in your confirmation email</p>
+      <form id="track-form" style="max-width:460px;margin:0 auto">
+        <div style="display:flex">
+          <input type="text" id="order-input" style="flex:1;background:var(--bg);border:1px solid rgba(212,175,55,.3);border-right:none;color:var(--white);padding:1rem 1.5rem;font-size:.9rem;outline:none;font-family:var(--font-sans);transition:border-color .3s" placeholder="e.g. VP-2026-047">
+          <button type="submit" class="btn btn--gold" style="white-space:nowrap;border:none">TRACK <i class="fas fa-arrow-right"></i></button>
+        </div>
+      </form>
+      <p style="font-size:.7rem;color:var(--gray);margin-top:1.5rem"><i class="fas fa-info-circle" style="color:var(--gold)"></i> Demo: Enter any order number to see live tracking</p>
+      <button class="btn btn--outline btn--sm" style="margin-top:1rem" onclick="document.getElementById('order-input').value='VP-2026-047';document.getElementById('track-form').dispatchEvent(new Event('submit'))">TRY DEMO ORDER</button>
+    </div>
+  </div>
+
+  <!-- TRACKING PANEL -->
+  <div id="track-panel" style="display:none;margin-top:2rem">
+    <!-- INFO BAR -->
+    <div class="v-wrap">
+      <div class="track-info-bar">
+        <div class="tib-item"><p class="tib-l">ORDER NUMBER</p><p class="tib-v" id="tib-order" style="color:var(--gold)">VP-2026-047</p></div>
+        <div class="tib-item"><p class="tib-l">STATUS</p><p class="tib-v" style="font-size:.82rem;color:var(--gold);display:flex;align-items:center;gap:.4rem"><span class="live-dot"></span>Out for Delivery</p></div>
+        <div class="tib-item"><p class="tib-l">ESTIMATED ARRIVAL</p><p class="tib-v" id="tib-eta">Today, 4:30 PM</p></div>
+        <div class="tib-item"><p class="tib-l">COURIER</p><p class="tib-v">VIREON Express Elite</p></div>
+      </div>
+    </div>
+
+    <!-- MAP + TIMELINE -->
+    <div class="track-layout" style="max-width:100%">
+      <div id="v-map"></div>
+      <div class="track-side">
+        <div class="track-head">
+          <h3>Delivery Progress</h3>
+          <span class="track-live"><span class="live-dot"></span> LIVE</span>
+        </div>
+        <div id="track-steps"></div>
+
+        <!-- DRIVER CARD -->
+        <div style="background:var(--bg-3);border:1px solid var(--border);padding:1.5rem;display:flex;align-items:center;gap:1.2rem">
+          <div style="width:48px;height:48px;border-radius:50%;background:var(--gold-grad);display:flex;align-items:center;justify-content:center;font-size:1.1rem;color:var(--bg);flex-shrink:0"><i class="fas fa-user"></i></div>
+          <div style="flex:1">
+            <p style="font-size:.52rem;letter-spacing:.2em;color:var(--gold);text-transform:uppercase;margin-bottom:.2rem">DELIVERY AGENT</p>
+            <p style="font-size:.9rem;font-weight:600;color:var(--white);margin-bottom:.2rem">Marcus Williams</p>
+            <p style="font-size:.7rem;color:var(--text-2)">Black Mercedes Sprinter · VP-ELITE-01</p>
+          </div>
+          <a href="tel:+447700900000" style="width:36px;height:36px;border-radius:50%;border:1px solid rgba(212,175,55,.3);color:var(--gold);display:flex;align-items:center;justify-content:center;font-size:.85rem;transition:all .3s" onmouseover="this.style.background='var(--gold)';this.style.color='var(--bg)'" onmouseout="this.style.background='';this.style.color='var(--gold)'"><i class="fas fa-phone"></i></a>
+        </div>
+
+        <!-- PACKAGE CARD -->
+        <div style="background:var(--bg-3);border:1px solid var(--border);padding:1.5rem;display:flex;align-items:flex-start;gap:1.2rem">
+          <i class="fas fa-box" style="font-size:1.5rem;color:var(--gold);flex-shrink:0;margin-top:.2rem"></i>
+          <div>
+            <p style="font-size:.52rem;letter-spacing:.2em;color:var(--gold);text-transform:uppercase;margin-bottom:.3rem">PACKAGE DETAILS</p>
+            <p style="font-size:.88rem;font-weight:600;color:var(--white);margin-bottom:.3rem">VIREON Luxury Order</p>
+            <p style="font-size:.7rem;color:var(--text-2);line-height:1.7">Temperature-controlled · Signature gold packaging · Fragile handling · Certificate of authenticity enclosed</p>
+          </div>
+        </div>
+
+        <!-- MAP LEGEND -->
+        <div style="background:var(--bg-3);border:1px solid var(--border);padding:1.2rem 1.5rem">
+          <p style="font-size:.52rem;letter-spacing:.2em;color:var(--gold);text-transform:uppercase;margin-bottom:.8rem">MAP LEGEND</p>
+          <div style="display:flex;flex-direction:column;gap:.5rem">
+            <div style="display:flex;align-items:center;gap:.6rem;font-size:.72rem;color:var(--text-2)"><span style="width:10px;height:10px;border-radius:50%;background:var(--gold);flex-shrink:0"></span>VIREON Atelier (Origin)</div>
+            <div style="display:flex;align-items:center;gap:.6rem;font-size:.72rem;color:var(--text-2)"><span style="width:10px;height:10px;border-radius:50%;background:var(--success);flex-shrink:0"></span>Delivery Vehicle (Live)</div>
+            <div style="display:flex;align-items:center;gap:.6rem;font-size:.72rem;color:var(--text-2)"><span style="width:10px;height:10px;border-radius:50%;background:var(--info);flex-shrink:0"></span>Your Address</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="v-footer" style="margin-top:5rem"><div class="v-wrap">
+  <div class="footer-top">
+    <div class="footer-brand"><div class="footer-brand-logo"><span class="nav-v">V</span><span class="nav-ireon">IREON</span></div><p class="footer-brand-tagline">LUXURY COUTURE</p><p class="footer-brand-desc">Luxury delivered with precision.</p><div class="footer-socials"><a href="#" class="footer-social"><i class="fab fa-instagram"></i></a><a href="#" class="footer-social"><i class="fab fa-twitter"></i></a></div></div>
+    <div class="footer-col"><h4>QUICK LINKS</h4><ul><li><a href="shop.html">Shop</a></li><li><a href="collections.html">Collections</a></li><li><a href="cart.html">Cart</a></li><li><a href="wishlist.html">Wishlist</a></li></ul></div>
+    <div class="footer-col"><h4>SUPPORT</h4><ul><li><a href="contact.html">Contact</a></li><li><a href="#">Returns</a></li><li><a href="#">FAQ</a></li></ul></div>
+    <div class="footer-col"><h4>LEGAL</h4><ul><li><a href="#">Privacy Policy</a></li><li><a href="#">Terms</a></li><li><a href="#">Cookies</a></li></ul></div>
+  </div>
+  <div class="footer-bottom"><p>&copy; 2026 VIREON Luxury Couture. All rights reserved.</p></div>
+</div></footer>
+
+<!-- MINI CART -->
+<div class="cart-overlay" id="cart-overlay"></div>
+<div class="mini-cart" id="mini-cart"><div class="mc-head"><h3>Shopping Bag <span id="mc-qty">(0)</span></h3><button class="mc-close" id="mc-close">&times;</button></div><div class="mc-body" id="mc-body"></div><div class="mc-foot"><div class="mc-subtotal"><span>Subtotal</span><span id="mc-total">$0</span></div><a href="cart.html" class="btn btn--gold btn--block" style="margin-bottom:.8rem">VIEW BAG</a></div></div>
+
+<div id="scroll-progress"></div>
+<div id="v-toast"><i class="fas fa-check-circle"></i><span id="v-toast-msg"></span></div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="js/vireon.js"></script>
+<script>
+window.addEventListener('scroll',()=>{const el=document.getElementById('scroll-progress');if(el){const p=window.scrollY/(document.body.scrollHeight-window.innerHeight);el.style.width=(p*100)+'%';}},{passive:true});
+// Input focus style
+document.getElementById('order-input')?.addEventListener('focus',function(){this.style.borderColor='var(--gold)';});
+document.getElementById('order-input')?.addEventListener('blur',function(){this.style.borderColor='rgba(212,175,55,.3)';});
+</script>
+</body>
+</html>

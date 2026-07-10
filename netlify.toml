@@ -1,0 +1,60 @@
+# ══════════════════════════════════════════════════════
+#  VIREON Luxury Couture — Netlify Configuration
+#  Deploy: drag the /Vireon folder to netlify.com/drop
+# ══════════════════════════════════════════════════════
+
+[build]
+  publish = "."
+
+# ── REDIRECTS ────────────────────────────────────────
+# /admin-panel → shows the animated router page
+# which auto-redirects to login or dashboard
+
+[[redirects]]
+  from  = "/admin"
+  to    = "/admin-panel.html"
+  status = 200
+
+[[redirects]]
+  from  = "/admin-panel"
+  to    = "/admin-panel.html"
+  status = 200
+
+[[redirects]]
+  from  = "/dashboard"
+  to    = "/admin-panel.html"
+  status = 200
+
+[[redirects]]
+  from  = "/login"
+  to    = "/admin-login.html"
+  status = 200
+
+# 404 → custom page
+[[redirects]]
+  from  = "/*"
+  to    = "/index.html"
+  status = 404
+
+# ── HEADERS ──────────────────────────────────────────
+# Security headers on every page
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options         = "SAMEORIGIN"
+    X-Content-Type-Options  = "nosniff"
+    X-XSS-Protection        = "1; mode=block"
+    Referrer-Policy         = "strict-origin-when-cross-origin"
+    Permissions-Policy      = "camera=(), microphone=(), geolocation=()"
+
+# Cache static assets aggressively
+[[headers]]
+  for = "/css/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/js/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

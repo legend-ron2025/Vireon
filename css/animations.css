@@ -1,0 +1,400 @@
+/* ═══════════════════════════════════════════════════════════
+   VIREON — ADVANCED ANIMATIONS & MICRO-INTERACTIONS v3.0
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── GOLD SHIMMER SWEEP ─────────────────────────────────── */
+@keyframes goldSweep {
+  0%   { background-position: -300% center; }
+  100% { background-position: 300% center; }
+}
+@keyframes shimmer {
+  0%   { background-position: 0% center; }
+  100% { background-position: 300% center; }
+}
+
+/* ── FLOAT ──────────────────────────────────────────────── */
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  33%  { transform: translateY(-18px) rotate(1.5deg); }
+  66%  { transform: translateY(-8px) rotate(-1deg); }
+}
+.float { animation: float 7s ease-in-out infinite; }
+.float-2 { animation: float 9s ease-in-out infinite 2s; }
+
+/* ── PULSE GLOW ─────────────────────────────────────────── */
+@keyframes pulseGold {
+  0%, 100% { box-shadow: 0 0 8px rgba(212,175,55,.3); }
+  50%  { box-shadow: 0 0 35px rgba(212,175,55,.7), 0 0 70px rgba(212,175,55,.3); }
+}
+.pulse-gold { animation: pulseGold 2.8s ease-in-out infinite; }
+
+/* ── SPIN SLOW ──────────────────────────────────────────── */
+@keyframes spinSlow { to { transform: rotate(360deg); } }
+.spin-slow { animation: spinSlow 8s linear infinite; }
+
+/* ── SPIN FAST (loading) ────────────────────────────────── */
+@keyframes spin { to { transform: rotate(360deg); } }
+.spin { animation: spin .7s linear infinite; }
+
+/* ── BOUNCE ─────────────────────────────────────────────── */
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); animation-timing-function: cubic-bezier(.8,0,1,1); }
+  50%  { transform: translateY(-16px); animation-timing-function: cubic-bezier(0,0,.2,1); }
+}
+
+/* ── FLIP (countdown digit change) ─────────────────────── */
+@keyframes flip {
+  0%   { transform: rotateX(0deg); }
+  50%  { transform: rotateX(-90deg); opacity: 0; }
+  51%  { transform: rotateX(90deg); opacity: 0; }
+  100% { transform: rotateX(0deg); opacity: 1; }
+}
+.cd-num.flip { animation: flip .35s ease-in-out; }
+
+/* ── TYPING DOTS (AI chat) ──────────────────────────────── */
+.typing-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--gold); display: inline-block; margin: 0 2px;
+  animation: typingBounce 1.2s ease-in-out infinite;
+}
+.typing-dot:nth-child(2) { animation-delay: .2s; }
+.typing-dot:nth-child(3) { animation-delay: .4s; }
+@keyframes typingBounce {
+  0%, 100% { transform: translateY(0); opacity: .4; }
+  50%  { transform: translateY(-6px); opacity: 1; }
+}
+
+/* ── RIPPLE (button click) ──────────────────────────────── */
+@keyframes rippleOut {
+  0%   { transform: translate(-50%,-50%) scale(0); opacity: .6; }
+  100% { transform: translate(-50%,-50%) scale(4); opacity: 0; }
+}
+.ripple-effect {
+  position: absolute;
+  width: 80px; height: 80px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.15);
+  animation: rippleOut .6s ease-out forwards;
+  pointer-events: none; z-index: 10;
+}
+
+/* ── TRUCK BOUNCE (map marker) ──────────────────────────── */
+@keyframes truckPop {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50%  { transform: translateY(-7px) scale(1.08); }
+}
+
+/* ── ICON ANIMATED STATES ───────────────────────────────── */
+/* Heart beat on wishlist add */
+@keyframes heartBeat {
+  0%   { transform: scale(1); }
+  14%  { transform: scale(1.4); }
+  28%  { transform: scale(1); }
+  42%  { transform: scale(1.3); }
+  70%  { transform: scale(1); }
+}
+.heart-beat { animation: heartBeat .7s ease-in-out; }
+
+/* Cart bounce */
+@keyframes cartPop {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.35) rotate(-8deg); }
+  60%  { transform: scale(.95) rotate(4deg); }
+  100% { transform: scale(1) rotate(0); }
+}
+.cart-pop { animation: cartPop .5s cubic-bezier(.34,1.56,.64,1); }
+
+/* ── PRODUCT CARD SHIMMER ───────────────────────────────── */
+.p-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -120%;
+  width: 60%; height: 100%;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(212,175,55,.06),
+    transparent
+  );
+  transform: skewX(-20deg);
+  transition: none; pointer-events: none; z-index: 5;
+}
+.p-card:hover::after { animation: cardShimmer .9s ease forwards; }
+@keyframes cardShimmer {
+  0%   { left: -120%; }
+  100% { left: 120%; }
+}
+
+/* ── BORDER GLOW PULSE ──────────────────────────────────── */
+@keyframes borderPulse {
+  0%, 100% { border-color: rgba(212,175,55,.15); }
+  50%  { border-color: rgba(212,175,55,.5); box-shadow: 0 0 18px rgba(212,175,55,.15); }
+}
+
+/* ── NUMBER COUNTER (hero stats) ────────────────────────── */
+@keyframes countUp {
+  from { opacity: 0; transform: translateY(15px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── HERO LINE REVEAL ───────────────────────────────────── */
+@keyframes heroLineIn {
+  from { opacity: 0; transform: translateY(40px) skewY(3deg); }
+  to   { opacity: 1; transform: translateY(0) skewY(0); }
+}
+.hero-line.reveal.on { animation: heroLineIn .95s cubic-bezier(.16,1,.3,1) both; }
+.hero-line.reveal.d1.on { animation-delay: .2s; }
+.hero-line.reveal.d2.on { animation-delay: .45s; }
+
+/* ── LABEL SLIDE ────────────────────────────────────────── */
+@keyframes labelSlide {
+  from { opacity: 0; transform: translateX(-25px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+.hero-label.reveal.on { animation: labelSlide .7s ease both; animation-delay: .1s; }
+
+/* ── GOLD RULE EXPAND ───────────────────────────────────── */
+@keyframes ruleExpand {
+  from { width: 0; opacity: 0; }
+  to   { width: 50px; opacity: 1; }
+}
+.gold-rule.reveal.on { animation: ruleExpand .8s ease both; animation-delay: .3s; }
+
+/* ── CATEGORY CARD ICON FLOAT ───────────────────────────── */
+.cat-item:hover .cat-icon { animation: float 3s ease-in-out infinite; }
+
+/* ── NAV ICON HOVER GLOW ────────────────────────────────── */
+.nav-icon {
+  transition: color .3s, transform .3s;
+}
+.nav-icon:hover {
+  transform: scale(1.15);
+}
+.nav-icon:active { transform: scale(.9); }
+
+/* ── FOOTER SOCIAL HOVER ────────────────────────────────── */
+.footer-social:hover i {
+  animation: bounce .5s ease;
+}
+
+/* ── TRUST ITEM ICON HOVER ──────────────────────────────── */
+.trust-item:hover i { animation: heartBeat .7s ease; }
+
+/* ── ELITE PERK ICON HOVER ──────────────────────────────── */
+.elite-perk:hover .elite-perk-icon {
+  animation: pulseGold 1.2s ease infinite;
+  border-color: var(--gold);
+}
+.elite-perk:hover .elite-perk-icon i { animation: bounce .4s ease; }
+
+/* ── GOLD GLITTER PARTICLES ─────────────────────────────── */
+@keyframes glitter {
+  0%   { transform: translateY(0) scale(0) rotate(0deg); opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: .8; }
+  100% { transform: translateY(-120px) scale(1) rotate(360deg); opacity: 0; }
+}
+
+/* ── LOADING PULSE ──────────────────────────────────────── */
+@keyframes loaderPulse {
+  0%, 100% { text-shadow: 0 0 10px rgba(212,175,55,.4); }
+  50%  { text-shadow: 0 0 40px rgba(212,175,55,.9), 0 0 80px rgba(212,175,55,.4); }
+}
+
+/* ── ANNOUNCEMENT TICKER ────────────────────────────────── */
+@keyframes ticker {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* ── PAGE ENTER TRANSITION ──────────────────────────────── */
+@keyframes ptIn {
+  0%   { transform: scaleY(0); transform-origin: bottom; }
+  100% { transform: scaleY(1); transform-origin: bottom; }
+}
+@keyframes ptOut {
+  0%   { transform: scaleY(1); transform-origin: top; }
+  100% { transform: scaleY(0); transform-origin: top; }
+}
+.page-transition.in  { animation: ptIn  .5s cubic-bezier(.76,0,.24,1) forwards; }
+.page-transition.out { animation: ptOut .5s cubic-bezier(.76,0,.24,1) forwards; }
+
+/* ── QUALITY FEATURES ICON ──────────────────────────────── */
+.quality-feat {
+  display: flex; align-items: center; gap: .85rem;
+  font-size: .82rem; color: var(--text-2);
+}
+.quality-feat i {
+  color: var(--gold); font-size: .82rem; flex-shrink: 0;
+  transition: transform .3s cubic-bezier(.34,1.56,.64,1);
+}
+.quality-feat:hover i { transform: scale(1.4) rotate(-5deg); color: var(--gold-2); }
+.quality-feat:hover { color: var(--white); }
+
+/* ── REVIEW CARD ENTRANCE ───────────────────────────────── */
+@keyframes reviewIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.review-card.on { animation: reviewIn .6s ease both; }
+
+/* ── SCROLL LINE ANIMATION ──────────────────────────────── */
+@keyframes scrollPulse {
+  0%, 100% { opacity: 1; transform: scaleX(1); }
+  50%  { opacity: .3; transform: scaleX(.5); }
+}
+
+/* ── MINI CART ITEM SLIDE ───────────────────────────────── */
+@keyframes mcItemIn {
+  from { opacity: 0; transform: translateX(20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+.mc-item { animation: mcItemIn .35s ease both; }
+
+/* ── BADGE BOUNCE ───────────────────────────────────────── */
+@keyframes badgePop {
+  0%   { transform: scale(0); }
+  60%  { transform: scale(1.35); }
+  100% { transform: scale(1); }
+}
+.nav-badge.pop { animation: badgePop .35s cubic-bezier(.34,1.56,.64,1); }
+
+/* ── PRODUCT ACTION ROW ─────────────────────────────────── */
+.p-card-actions { overflow: hidden; }
+.p-btn-cart, .p-btn-wish, .p-btn-quick {
+  transition: all .3s cubic-bezier(.4,0,.2,1);
+}
+.p-btn-cart:active { transform: scale(.96); }
+.p-btn-wish:active i { animation: heartBeat .6s ease; }
+
+/* ── SIZE PICKER SPRING ─────────────────────────────────── */
+.sp { transition: all .25s cubic-bezier(.34,1.56,.64,1); }
+.sp.on { transform: scale(1.05); }
+
+/* ── COLOR SWATCH SPRING ────────────────────────────────── */
+.cp, .swatch { transition: all .25s cubic-bezier(.34,1.56,.64,1); }
+
+/* ── DROPDOWN/MEGA MENU ─────────────────────────────────── */
+.mega-panel { transition: opacity .3s ease, transform .3s ease, visibility .3s; }
+.mega-col a { position: relative; }
+.mega-col a::before {
+  content: ''; position: absolute;
+  left: -.5rem; top: 50%; transform: translateY(-50%);
+  width: 3px; height: 0; background: var(--gold);
+  transition: height .25s ease;
+}
+.mega-col a:hover::before { height: 70%; }
+
+/* ── SEARCH INPUT GROW ──────────────────────────────────── */
+.search-row input:focus { letter-spacing: .01em; }
+
+/* ── AI PANEL ENTRANCE ──────────────────────────────────── */
+@keyframes aiSlideUp {
+  from { opacity: 0; transform: translateY(20px) scale(.95); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+.ai-panel.on { animation: aiSlideUp .35s cubic-bezier(.34,1.56,.64,1) both; }
+
+/* ── TOAST SLIDE ────────────────────────────────────────── */
+@keyframes toastIn {
+  from { opacity: 0; transform: translateX(-30px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+#v-toast.on { animation: toastIn .4s cubic-bezier(.34,1.56,.64,1) both; }
+
+/* ── LIVE TRACKER DOT ───────────────────────────────────── */
+@keyframes liveOrb {
+  0%,100% { box-shadow: 0 0 0 0 rgba(16,185,129,.5); }
+  50%  { box-shadow: 0 0 0 8px rgba(16,185,129,0); }
+}
+.live-dot {
+  width: 8px; height: 8px; border-radius: 50%; background: var(--success);
+  display: inline-block; margin-right: .5rem;
+  animation: liveOrb 1.5s ease-in-out infinite;
+}
+
+/* ── COUNTDOWN FLIP ─────────────────────────────────────── */
+.cd-num {
+  perspective: 300px;
+  transform-style: preserve-3d;
+}
+.cd-num.flip {
+  animation: flip .35s ease-in-out;
+}
+
+/* ── EDITORIAL CARD ─────────────────────────────────────── */
+.ed-title {
+  transition: color .3s ease, letter-spacing .3s ease;
+}
+.ed-card:hover .ed-title { color: var(--gold); letter-spacing: .03em; }
+
+/* ── NAV LOGO HOVER ─────────────────────────────────────── */
+.nav-v {
+  transition: text-shadow .4s ease;
+}
+.nav-logo a:hover .nav-v {
+  text-shadow: 0 0 20px rgba(212,175,55,.8), 0 0 40px rgba(212,175,55,.4);
+}
+
+/* ── SECTION LABEL LINE ─────────────────────────────────── */
+.eyebrow { position: relative; display: inline-block; }
+.eyebrow::after {
+  content: ''; position: absolute;
+  bottom: -4px; left: 0; width: 0; height: 1px;
+  background: var(--gold-grad);
+  transition: width .6s ease .2s;
+}
+.section-head.reveal.on .eyebrow::after,
+.reveal.on .eyebrow::after { width: 100%; }
+
+/* ── CARD ENTRANCE STAGGER ──────────────────────────────── */
+.p-grid .p-card.reveal:nth-child(1)  { transition-delay: .05s; }
+.p-grid .p-card.reveal:nth-child(2)  { transition-delay: .1s; }
+.p-grid .p-card.reveal:nth-child(3)  { transition-delay: .15s; }
+.p-grid .p-card.reveal:nth-child(4)  { transition-delay: .2s; }
+.p-grid .p-card.reveal:nth-child(5)  { transition-delay: .25s; }
+.p-grid .p-card.reveal:nth-child(6)  { transition-delay: .3s; }
+.p-grid .p-card.reveal:nth-child(7)  { transition-delay: .35s; }
+.p-grid .p-card.reveal:nth-child(8)  { transition-delay: .4s; }
+
+/* ── CATEGORY GRID STAGGER ──────────────────────────────── */
+.cat-grid .cat-item.reveal.d1 { transition-delay: .05s; }
+.cat-grid .cat-item.reveal.d2 { transition-delay: .12s; }
+.cat-grid .cat-item.reveal.d3 { transition-delay: .19s; }
+.cat-grid .cat-item.reveal.d4 { transition-delay: .26s; }
+.cat-grid .cat-item.reveal.d5 { transition-delay: .33s; }
+
+/* ── FOOTER LINK HOVER ──────────────────────────────────── */
+.footer-col ul li a {
+  transition: color .25s ease, padding-left .25s ease;
+  position: relative;
+}
+.footer-col ul li a::before {
+  content: '';
+  position: absolute; left: -.5rem; top: 50%;
+  transform: translateY(-50%); width: 0; height: 1px;
+  background: var(--gold); transition: width .25s ease;
+}
+.footer-col ul li a:hover::before { width: 8px; }
+
+/* ── GLASS CARD ─────────────────────────────────────────── */
+.glass-card {
+  background: rgba(27,27,27,.65);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(212,175,55,.12);
+}
+
+/* ── MAGNETIC BUTTON EFFECT (applied via JS) ────────────── */
+.btn {
+  will-change: transform;
+}
+
+/* ── RIPPLE BUTTON ──────────────────────────────────────── */
+.btn { position: relative; overflow: hidden; }
+
+/* ── SCROLL INDICATOR BAR ───────────────────────────────── */
+#scroll-progress {
+  position: fixed; top: 0; left: 0; height: 2px;
+  background: var(--gold-grad);
+  z-index: 9999; width: 0; transition: width .1s;
+}

@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>VIREON — Luxury Couture | Define Your Legacy</title>
+<meta name="description" content="VIREON — A premium luxury fashion house. Handcrafted couture for those who carry presence, authority, and identity.">
+<meta property="og:title" content="VIREON Luxury Couture">
+<meta property="og:description" content="Define Your Legacy. Premium couture crafted by master artisans.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,600&family=Montserrat:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="css/vireon.css">
+<link rel="stylesheet" href="css/animations.css">
+</head>
+<body>
+
+<!-- CURSOR -->
+<div id="v-cursor"></div>
+<div id="v-cursor-ring"></div>
+
+<!-- PAGE TRANSITION -->
+<div class="page-transition" id="page-transition"></div>
+
+<!-- PARTICLES -->
+<canvas id="v-particles" style="position:fixed;top:0;left:0;pointer-events:none;z-index:0;opacity:.45"></canvas>
+
+<!-- LOADER -->
+<div id="v-loader">
+  <div class="loader-logo">
+    <span class="loader-logo-v">V</span>
+    <span class="loader-logo-text">IREON</span>
+  </div>
+  <div class="loader-bar"><div class="loader-fill" id="loader-fill"></div></div>
+  <span class="loader-label">LUXURY COUTURE</span>
+  <span class="loader-pct" id="loader-pct">0%</span>
+</div>
+
+<!-- ANNOUNCEMENT BAR -->
+<div id="ann-bar">
+  <div class="ann-ticker">
+    <span>FREE WORLDWIDE SHIPPING ON ORDERS OVER $500</span><span class="ann-gem">◆</span>
+    <span>NEW COLLECTION 2026 — NOW LIVE</span><span class="ann-gem">◆</span>
+    <span>VIREON ELITE — JOIN FOR 20% OFF EVERY ORDER</span><span class="ann-gem">◆</span>
+    <span>LIMITED DROPS: ONLY 2 PIECES REMAINING</span><span class="ann-gem">◆</span>
+    <span>FREE WORLDWIDE SHIPPING ON ORDERS OVER $500</span><span class="ann-gem">◆</span>
+    <span>NEW COLLECTION 2026 — NOW LIVE</span><span class="ann-gem">◆</span>
+    <span>VIREON ELITE — JOIN FOR 20% OFF EVERY ORDER</span><span class="ann-gem">◆</span>
+    <span>LIMITED DROPS: ONLY 2 PIECES REMAINING</span><span class="ann-gem">◆</span>
+  </div>
+  <button id="ann-close"><i class="fas fa-times"></i></button>
+</div>
+
+<!-- NAVBAR -->
+<nav id="navbar">
+  <div class="nav-wrap">
+    <div class="nav-links">
+      <a href="shop.html?cat=men" class="nav-a">MEN</a>
+      <a href="shop.html?cat=women" class="nav-a">WOMEN</a>
+      <div class="mega-wrap">
+        <a href="shop.html" class="nav-a">SHOP <i class="fas fa-chevron-down" style="font-size:.5rem"></i></a>
+        <div class="mega-panel">
+          <div class="mega-col"><p class="mega-h">CLOTHING</p><a href="shop.html?cat=Coats">Coats</a><a href="shop.html?cat=Shirts">Shirts</a><a href="shop.html?cat=Dresses">Dresses</a><a href="shop.html?cat=Suits">Suits</a><a href="shop.html?cat=Trousers">Trousers</a></div>
+          <div class="mega-col"><p class="mega-h">ACCESSORIES</p><a href="shop.html?cat=Bags">Bags</a><a href="shop.html?cat=Eyewear">Eyewear</a><a href="shop.html?cat=Accessories">Belts & More</a><a href="shop.html?cat=Jewelry">Jewelry</a></div>
+          <div class="mega-col"><p class="mega-h">DISCOVER</p><a href="collections.html">All Collections</a><a href="shop.html?badge=LIMITED">Limited Drops</a><a href="shop.html?badge=NEW">New Arrivals</a><a href="shop.html?badge=SALE" style="color:var(--gold)">SALE</a></div>
+          <div class="mega-visual"><div style="width:100%;height:100%;background:linear-gradient(160deg,#1a0800,#2a1200,#0d0500)"></div><p class="mega-visual-label">NEW COLLECTION 2026</p></div>
+        </div>
+      </div>
+      <a href="collections.html" class="nav-a">COLLECTIONS</a>
+    </div>
+
+    <div class="nav-logo">
+      <a href="index.html">
+        <span class="nav-v">V</span><span class="nav-ireon">IREON</span>
+        <span class="nav-sub">LUXURY COUTURE</span>
+      </a>
+    </div>
+
+    <div class="nav-links nav-links--right">
+      <a href="about.html" class="nav-a">ABOUT</a>
+      <a href="contact.html" class="nav-a">CONTACT</a>
+      <div class="nav-icons">
+        <button class="nav-icon" id="search-icon" title="Search"><i class="fas fa-search"></i></button>
+        <a href="wishlist.html" class="nav-icon" title="Wishlist"><i class="far fa-heart"></i><span class="nav-badge wish-badge">0</span></a>
+        <button class="nav-icon" id="cart-icon" title="Cart"><i class="fas fa-shopping-bag"></i><span class="nav-badge cart-badge">0</span></button>
+        <a href="login.html" class="nav-icon" title="Account"><i class="far fa-user"></i></a>
+        <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- MOBILE MENU -->
+<div id="mobile-menu">
+  <button id="mobile-close">&times;</button>
+  <nav class="mob-nav">
+    <a href="index.html">HOME</a><a href="shop.html?cat=men">MEN</a><a href="shop.html?cat=women">WOMEN</a>
+    <a href="shop.html">SHOP</a><a href="collections.html">COLLECTIONS</a>
+    <a href="about.html">ABOUT</a><a href="contact.html">CONTACT</a>
+  </nav>
+  <div class="mob-icons">
+    <a href="wishlist.html"><i class="far fa-heart"></i> Wishlist</a>
+    <a href="cart.html"><i class="fas fa-shopping-bag"></i> Cart</a>
+    <a href="login.html"><i class="far fa-user"></i> Account</a>
+  </div>
+</div>
+
+<!-- SEARCH OVERLAY -->
+<div id="search-overlay">
+  <button id="search-close-btn">&times;</button>
+  <div class="search-inner">
+    <p class="search-heading">SEARCH VIREON</p>
+    <div class="search-row">
+      <i class="fas fa-search"></i>
+      <input type="text" id="search-main-input" placeholder="Search pieces, collections, SKUs..." autocomplete="off">
+      <button class="search-voice" title="Voice search"><i class="fas fa-microphone"></i></button>
+    </div>
+    <p class="search-trending-label">TRENDING</p>
+    <div class="search-chips">
+      <button class="search-chip" onclick="fillSearch('Sovereign Coat')">Sovereign Coat</button>
+      <button class="search-chip" onclick="fillSearch('Evening Gown')">Evening Gown</button>
+      <button class="search-chip" onclick="fillSearch('Limited')">Limited Drops</button>
+      <button class="search-chip" onclick="fillSearch('Bags')">Luxury Bags</button>
+      <button class="search-chip" onclick="fillSearch('Suits')">Suits</button>
+    </div>
+    <div class="search-results-drop" id="search-results-drop"></div>
+  </div>
+</div>
+
+<!-- ═══════════════ HERO ═══════════════ -->
+<section class="hero" id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-bg-pattern"></div>
+  <div class="hero-bg-vignette"></div>
+  <div class="hero-content">
+    <p class="hero-label reveal reveal--left">NEW COLLECTION 2026</p>
+    <h1 class="hero-h1">
+      <span class="hero-line reveal d1">Define</span>
+      <span class="hero-line hero-line-i reveal d2">Your Legacy</span>
+    </h1>
+    <p class="hero-sub reveal d3">A digital luxury fashion house built for individuals who carry presence, authority, and identity. Not a store — an empire.</p>
+    <div class="hero-ctas reveal d4">
+      <a href="collections.html" class="btn btn--gold">EXPLORE COLLECTION <i class="fas fa-arrow-right"></i></a>
+      <a href="elite.html" class="btn btn--ghost">REQUEST ACCESS</a>
+    </div>
+  </div>
+  <div class="hero-scroll" onclick="document.getElementById('after-hero').scrollIntoView({behavior:'smooth'})">
+    <div class="hero-scroll-line"></div>
+    <span>SCROLL</span>
+  </div>
+  <div class="hero-stats-bar">
+    <div class="h-stat"><span class="h-stat-n"><span data-target="200">0</span><sup>+</sup></span><p class="h-stat-l">HOURS CRAFTED</p></div>
+    <div class="h-stat-div"></div>
+    <div class="h-stat"><span class="h-stat-n"><span data-target="47">0</span></span><p class="h-stat-l">MASTER ARTISANS</p></div>
+    <div class="h-stat-div"></div>
+    <div class="h-stat"><span class="h-stat-n"><span data-target="6">0</span></span><p class="h-stat-l">COLLECTIONS</p></div>
+    <div class="h-stat-div"></div>
+    <div class="h-stat"><span class="h-stat-n"><span data-target="98">0</span><sup>%</sup></span><p class="h-stat-l">CLIENT RETENTION</p></div>
+  </div>
+</section>
+
+<div id="after-hero"></div>
+
+<!-- ═══════════════ LUXURY COLLECTION BANNER ═══════════════ -->
+<section class="lux-banner reveal--scale reveal">
+  <div class="v-wrap">
+    <div class="lux-banner-inner">
+      <div class="reveal reveal--left">
+        <span class="eyebrow">VIREON ATELIER</span>
+        <h2 class="lux-title">The Signature<br><em>Collection</em></h2>
+        <p class="lux-desc">200+ hours of meticulous craftsmanship. Each piece designed for those who settle for nothing less than absolute perfection.</p>
+        <a href="collections.html" class="btn btn--gold">DISCOVER NOW <i class="fas fa-arrow-right"></i></a>
+      </div>
+      <div class="lux-visual reveal reveal--right">
+        <div class="lux-img-main" style="background:linear-gradient(160deg,#1a0800,#2d1200,#0d0500)"></div>
+        <div class="lux-img-accent" style="background:linear-gradient(160deg,#050510,#0d0d20,#030308)"></div>
+        <div class="lux-circle"><span>SINCE</span><strong>2020</strong><span>ELITE</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ FEATURED CATEGORIES ═══════════════ -->
+<section class="section">
+  <div class="v-wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">SHOP BY CATEGORY</span>
+      <h2 class="section-title">Curated <em>For You</em></h2>
+      <div class="gold-rule"></div>
+    </div>
+    <div class="cat-grid">
+      <a href="shop.html?cat=Coats" class="cat-item reveal d1">
+        <div class="cat-img" style="background:linear-gradient(160deg,#1a0f05,#2d1a08,#0a0600)"><div style="position:absolute;inset:0;background:url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2280%22 height=%2280%22 viewBox=%220 0 80 80%22%3E%3Ccircle cx=%2240%22 cy=%2240%22 r=%2235%22 fill=%22none%22 stroke=%22rgba(212,175,55,.07)%22 stroke-width=%221%22/%3E%3C/svg%3E') center/60px"></div></div>
+        <div class="cat-name-wrap"><p class="cat-n">COATS</p><p class="cat-cnt">12 Pieces</p></div>
+      </a>
+      <a href="shop.html?cat=Dresses" class="cat-item reveal d2">
+        <div class="cat-img" style="background:linear-gradient(160deg,#050510,#0d0d20,#030308)"></div>
+        <div class="cat-name-wrap"><p class="cat-n">DRESSES</p><p class="cat-cnt">18 Pieces</p></div>
+      </a>
+      <a href="shop.html?cat=Suits" class="cat-item cat-item--wide reveal d3">
+        <div class="cat-img" style="background:linear-gradient(160deg,#0a0a00,#1a1900,#050500)"></div>
+        <div class="cat-name-wrap"><p class="cat-n">SUITS</p><p class="cat-cnt">9 Pieces</p></div>
+      </a>
+      <a href="shop.html?cat=Accessories" class="cat-item reveal d4">
+        <div class="cat-img" style="background:linear-gradient(160deg,#080008,#150015,#040004)"></div>
+        <div class="cat-name-wrap"><p class="cat-n">ACCESSORIES</p><p class="cat-cnt">24 Pieces</p></div>
+      </a>
+      <a href="shop.html?cat=Bags" class="cat-item reveal d5">
+        <div class="cat-img" style="background:linear-gradient(160deg,#001010,#002020,#001a1a)"></div>
+        <div class="cat-name-wrap"><p class="cat-n">BAGS</p><p class="cat-cnt">15 Pieces</p></div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ NEW ARRIVALS ═══════════════ -->
+<section class="section section--dark">
+  <div class="v-wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">JUST DROPPED</span>
+      <h2 class="section-title">New <em>Arrivals</em></h2>
+      <div class="gold-rule"></div>
+    </div>
+    <div class="p-grid" id="new-arrivals-grid"></div>
+    <div style="text-align:center;margin-top:4rem" class="reveal">
+      <a href="shop.html?badge=NEW" class="btn btn--outline">VIEW ALL NEW ARRIVALS <i class="fas fa-arrow-right"></i></a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ LIMITED DROP ═══════════════ -->
+<section class="drop-section reveal--scale reveal">
+  <div class="v-wrap">
+    <div class="drop-inner">
+      <div class="drop-visual reveal reveal--left">
+        <div class="drop-img" style="background:linear-gradient(160deg,#1a0800,#2d1200,#0d0500)"></div>
+        <div class="drop-label-tag">EXCLUSIVE DROP</div>
+      </div>
+      <div class="reveal reveal--right">
+        <span class="eyebrow shimmer-text">LIMITED EDITION</span>
+        <h2 class="drop-title">Night Luxe<br><em>Collection</em></h2>
+        <p class="drop-desc">Only 50 numbered pieces. Dramatic, bold, and unforgettable. For evenings that demand complete presence. Once gone — they're gone forever.</p>
+        <div style="margin-bottom:1rem">
+          <p style="font-size:.55rem;letter-spacing:.25em;color:var(--gray);text-transform:uppercase;margin-bottom:.8rem">SALE ENDS IN</p>
+          <div class="countdown">
+            <div class="cd-box"><span class="cd-num" id="cd-d">02</span><p class="cd-label">DAYS</p></div>
+            <div class="cd-sep">:</div>
+            <div class="cd-box"><span class="cd-num" id="cd-h">14</span><p class="cd-label">HRS</p></div>
+            <div class="cd-sep">:</div>
+            <div class="cd-box"><span class="cd-num" id="cd-m">32</span><p class="cd-label">MIN</p></div>
+            <div class="cd-sep">:</div>
+            <div class="cd-box"><span class="cd-num" id="cd-s">09</span><p class="cd-label">SEC</p></div>
+          </div>
+        </div>
+        <p class="drop-stock"><i class="fas fa-fire"></i> Only 7 pieces remaining</p>
+        <a href="collections.html" class="btn btn--gold">CLAIM YOURS <i class="fas fa-arrow-right"></i></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ BEST SELLERS ═══════════════ -->
+<section class="section section--dark">
+  <div class="v-wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">MOST COVETED</span>
+      <h2 class="section-title">Best <em>Sellers</em></h2>
+      <div class="gold-rule"></div>
+    </div>
+    <div style="display:flex;justify-content:center;gap:.6rem;margin-bottom:4rem;flex-wrap:wrap" class="reveal">
+      <button class="btn btn--sm btn--gold on" data-bs-tab="all">ALL</button>
+      <button class="btn btn--sm btn--outline" data-bs-tab="Coats" style="padding:.5rem 1.2rem">COATS</button>
+      <button class="btn btn--sm btn--outline" data-bs-tab="Dresses" style="padding:.5rem 1.2rem">DRESSES</button>
+      <button class="btn btn--sm btn--outline" data-bs-tab="Bags" style="padding:.5rem 1.2rem">BAGS</button>
+      <button class="btn btn--sm btn--outline" data-bs-tab="Accessories" style="padding:.5rem 1.2rem">ACCESSORIES</button>
+    </div>
+    <div class="p-grid" id="best-grid"></div>
+    <div style="text-align:center;margin-top:4rem" class="reveal">
+      <a href="shop.html" class="btn btn--outline">VIEW ALL PIECES <i class="fas fa-arrow-right"></i></a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ QUALITY SECTION ═══════════════ -->
+<section class="section reveal--scale reveal">
+  <div class="v-wrap">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:7rem;align-items:center" class="quality-grid-wrap">
+      <div class="reveal reveal--left" style="position:relative">
+        <div style="width:100%;aspect-ratio:4/5;background:linear-gradient(160deg,#1a0800,#2d1200,#0d0500);border:1px solid var(--border);position:relative;overflow:hidden">
+          <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(11,11,11,.6),transparent 60%)"></div>
+          <div style="position:absolute;inset:0;background:url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22 viewBox=%220 0 100 100%22%3E%3Ccircle cx=%2250%22 cy=%2250%22 r=%2245%22 fill=%22none%22 stroke=%22rgba(212,175,55,.05)%22 stroke-width=%221%22/%3E%3C/svg%3E') center/80px"></div>
+          <div style="position:absolute;bottom:2rem;right:2rem;font-family:var(--font-sans);font-size:.5rem;letter-spacing:.4em;color:rgba(212,175,55,.35);text-transform:uppercase">VIREON ATELIER</div>
+        </div>
+        <div style="position:absolute;bottom:-2.5rem;left:-2.5rem;width:110px;height:110px;border-radius:50%;background:var(--gold-grad);display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--bg);box-shadow:var(--gold-glow)">
+          <span style="font-size:.45rem;font-weight:700;letter-spacing:.15em">SINCE</span>
+          <strong style="font-family:var(--font-serif);font-size:1.7rem;line-height:1">2020</strong>
+          <span style="font-size:.4rem;font-weight:700;letter-spacing:.1em">MILAN</span>
+        </div>
+      </div>
+      <div class="reveal reveal--right">
+        <span class="eyebrow">UNPARALLELED QUALITY</span>
+        <h2 class="section-title" style="text-align:left">Crafted for<br><em>Eternity</em></h2>
+        <div class="gold-rule gold-rule--left" style="margin-bottom:2rem"></div>
+        <p style="font-size:.88rem;color:var(--text-2);line-height:1.95;margin-bottom:1.5rem">Every VIREON piece undergoes 200+ hours of meticulous hand-crafting. From initial sketch to final stitch, our master artisans dedicate themselves to creating heirlooms — not garments.</p>
+        <p style="font-size:.88rem;color:var(--text-2);line-height:1.95;margin-bottom:2.5rem">We source only from the world's finest mills — Loro Piana, Dormeuil, Ermenegildo Zegna. The result is clothing that transcends fashion and becomes legacy.</p>
+        <div style="display:flex;flex-direction:column;gap:.8rem;margin-bottom:2.5rem">
+          <div class="quality-feat"><i class="fas fa-check-circle"></i><span>Hand-stitched by master artisans in Milan</span></div>
+          <div class="quality-feat"><i class="fas fa-check-circle"></i><span>Sourced from premier European fabric mills</span></div>
+          <div class="quality-feat"><i class="fas fa-check-circle"></i><span>300-point quality inspection on every piece</span></div>
+          <div class="quality-feat"><i class="fas fa-check-circle"></i><span>Lifetime craftsmanship guarantee included</span></div>
+        </div>
+        <a href="about.html" class="btn btn--gold">OUR CRAFT <i class="fas fa-arrow-right"></i></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ EDITORIAL LOOKBOOK ═══════════════ -->
+<section class="section section--dark">
+  <div class="v-wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">VIREON EDITORIAL</span>
+      <h2 class="section-title">Lookbook <em>2026</em></h2>
+      <div class="gold-rule"></div>
+    </div>
+    <div class="editorial-grid">
+      <a href="collections.html" class="ed-card ed-card--tall reveal reveal--left">
+        <div class="ed-img" style="background:linear-gradient(160deg,#1a0700,#2d1000,#0d0500)"></div>
+        <div class="ed-overlay"></div>
+        <div class="ed-body"><p class="ed-issue">VOL. I — 2026</p><h3 class="ed-title">The Sovereign Edit</h3><p class="ed-link">EXPLORE <i class="fas fa-arrow-right"></i></p></div>
+      </a>
+      <div class="ed-col">
+        <a href="collections.html" class="ed-card reveal d2">
+          <div class="ed-img" style="background:linear-gradient(160deg,#050510,#0d0d20,#030308)"></div>
+          <div class="ed-overlay"></div>
+          <div class="ed-body"><p class="ed-issue">VOL. II</p><h3 class="ed-title">Midnight Power</h3><p class="ed-link">EXPLORE <i class="fas fa-arrow-right"></i></p></div>
+        </a>
+        <a href="collections.html" class="ed-card reveal d3">
+          <div class="ed-img" style="background:linear-gradient(160deg,#0a0a0a,#1a1a1a,#111111)"></div>
+          <div class="ed-overlay"></div>
+          <div class="ed-body"><p class="ed-issue">VOL. III</p><h3 class="ed-title">The Minimalist</h3><p class="ed-link">EXPLORE <i class="fas fa-arrow-right"></i></p></div>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ ELITE MEMBERSHIP ═══════════════ -->
+<section class="elite-section reveal--scale reveal">
+  <div class="v-wrap--narrow" style="text-align:center">
+    <span class="eyebrow shimmer-text">INVITATION ONLY</span>
+    <h2 class="elite-title">VIREON <em style="font-style:italic;color:var(--gold)">Elite</em></h2>
+    <p class="elite-sub">Early access to drops. Exclusive member pricing. Birthday rewards.<br>Private events. Invite-only collections. This is your world.</p>
+    <div class="elite-perks">
+      <div class="elite-perk"><div class="elite-perk-icon"><i class="fas fa-crown"></i></div><span>Early Access</span></div>
+      <div class="elite-perk"><div class="elite-perk-icon"><i class="fas fa-gift"></i></div><span>Birthday Rewards</span></div>
+      <div class="elite-perk"><div class="elite-perk-icon"><i class="fas fa-lock"></i></div><span>Exclusive Drops</span></div>
+      <div class="elite-perk"><div class="elite-perk-icon"><i class="fas fa-gem"></i></div><span>Member Pricing</span></div>
+      <div class="elite-perk"><div class="elite-perk-icon"><i class="fas fa-star"></i></div><span>VIP Events</span></div>
+    </div>
+    <a href="login.html" class="btn btn--gold" style="font-size:.68rem;padding:1.1rem 3rem">JOIN VIREON ELITE <i class="fas fa-arrow-right"></i></a>
+  </div>
+</section>
+
+<!-- ═══════════════ REVIEWS ═══════════════ -->
+<section class="section section--dark">
+  <div class="v-wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">TESTIMONIALS</span>
+      <h2 class="section-title">What They <em>Say</em></h2>
+      <div class="gold-rule"></div>
+    </div>
+    <div class="reviews-wrap reveal">
+      <div class="reviews-track" id="reviews-track">
+        <div class="review-card">
+          <p class="r-stars">★★★★★</p>
+          <p class="r-text">"The Sovereign Coat redefines what luxury means. I've worn Gucci and Burberry — VIREON surpasses both. Every stitch speaks of mastery and intention."</p>
+          <div class="r-author"><strong>Alexandra Rothschild</strong><span>Fashion Editor, Vogue UK</span></div>
+          <span class="r-verified"><i class="fas fa-check-circle"></i> Verified Purchase</span>
+        </div>
+        <div class="review-card">
+          <p class="r-stars">★★★★★</p>
+          <p class="r-text">"The packaging alone is a luxury experience. When the VIREON box arrived — the garment bag, the tissue, the scent — I knew I'd found my new house."</p>
+          <div class="r-author"><strong>Marcus Bellingham</strong><span>CEO, Axiom Capital Group</span></div>
+          <span class="r-verified"><i class="fas fa-check-circle"></i> Verified Purchase</span>
+        </div>
+        <div class="review-card">
+          <p class="r-stars">★★★★★</p>
+          <p class="r-text">"The Evening Gown stopped every conversation at the Met Gala afterparty. VIREON understands drama, presence, and what it means to be truly unforgettable."</p>
+          <div class="r-author"><strong>Isabelle Fontaine</strong><span>Creative Director & Stylist</span></div>
+          <span class="r-verified"><i class="fas fa-check-circle"></i> Verified Purchase</span>
+        </div>
+      </div>
+    </div>
+    <div class="review-controls reveal">
+      <button class="r-btn" id="rev-prev"><i class="fas fa-chevron-left"></i></button>
+      <div class="r-dots" id="review-dots"></div>
+      <button class="r-btn" id="rev-next"><i class="fas fa-chevron-right"></i></button>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ INSTAGRAM ═══════════════ -->
+<section class="section">
+  <div class="v-wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">@VIREON.OFFICIAL</span>
+      <h2 class="section-title">Follow The <em>Story</em></h2>
+      <div class="gold-rule"></div>
+    </div>
+    <div class="insta-grid">
+      <a href="#" class="insta-cell reveal d1" style="background:linear-gradient(135deg,#1a0700,#2d1000)"><div class="insta-hover"><i class="fab fa-instagram"></i></div></a>
+      <a href="#" class="insta-cell reveal d2" style="background:linear-gradient(135deg,#050510,#0d0d20)"><div class="insta-hover"><i class="fab fa-instagram"></i></div></a>
+      <a href="#" class="insta-cell reveal d3" style="background:linear-gradient(135deg,#0a0a00,#1a1900)"><div class="insta-hover"><i class="fab fa-instagram"></i></div></a>
+      <a href="#" class="insta-cell reveal d4" style="background:linear-gradient(135deg,#08000a,#150015)"><div class="insta-hover"><i class="fab fa-instagram"></i></div></a>
+      <a href="#" class="insta-cell reveal d5" style="background:linear-gradient(135deg,#001010,#002020)"><div class="insta-hover"><i class="fab fa-instagram"></i></div></a>
+      <a href="#" class="insta-cell reveal d6" style="background:linear-gradient(135deg,#0a0500,#1a0d00)"><div class="insta-hover"><i class="fab fa-instagram"></i></div></a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ TRUST BAR ═══════════════ -->
+<div class="trust-bar">
+  <div class="v-wrap">
+    <div class="trust-grid">
+      <div class="trust-item"><i class="fas fa-shield-alt"></i><div><p class="trust-item-t">100% SECURE</p><span class="trust-item-s">SSL encrypted checkout</span></div></div>
+      <div class="trust-item"><i class="fas fa-undo-alt"></i><div><p class="trust-item-t">30-DAY RETURNS</p><span class="trust-item-s">Hassle-free returns</span></div></div>
+      <div class="trust-item"><i class="fas fa-gem"></i><div><p class="trust-item-t">PREMIUM QUALITY</p><span class="trust-item-s">200+ hours craftsmanship</span></div></div>
+      <div class="trust-item"><i class="fas fa-shipping-fast"></i><div><p class="trust-item-t">WORLDWIDE SHIPPING</p><span class="trust-item-s">Free on orders over $500</span></div></div>
+      <div class="trust-item"><i class="fas fa-headset"></i><div><p class="trust-item-t">24/7 CONCIERGE</p><span class="trust-item-s">Elite client support</span></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ NEWSLETTER ═══════════════ -->
+<section class="nl-section reveal--scale reveal">
+  <div class="nl-inner">
+    <div class="reveal reveal--left">
+      <span class="eyebrow shimmer-text">THE INNER CIRCLE</span>
+      <h2 class="nl-title">Join VIREON <em style="font-style:italic;color:var(--gold)">Club</em></h2>
+      <p class="nl-sub">Exclusive offers, early drops, member discounts, and priority access to limited collections.</p>
+      <div class="nl-perks">
+        <p class="nl-perk"><i class="fas fa-check"></i> 10% off your first order</p>
+        <p class="nl-perk"><i class="fas fa-check"></i> Early drop access</p>
+        <p class="nl-perk"><i class="fas fa-check"></i> Birthday surprises</p>
+        <p class="nl-perk"><i class="fas fa-check"></i> Exclusive editorial content</p>
+      </div>
+    </div>
+    <form class="nl-form reveal reveal--right">
+      <input type="text" placeholder="Your first name" class="nl-input" required>
+      <input type="email" placeholder="Your email address" class="nl-input" required>
+      <button type="submit" class="btn btn--gold btn--block">JOIN THE INNER CIRCLE <i class="fas fa-arrow-right"></i></button>
+      <p class="nl-privacy"><i class="fas fa-lock"></i> Your privacy is protected. Unsubscribe anytime.</p>
+    </form>
+  </div>
+</section>
+
+<!-- ═══════════════ FOOTER ═══════════════ -->
+<footer class="v-footer">
+  <div class="v-wrap">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="footer-brand-logo"><span class="nav-v">V</span><span class="nav-ireon">IREON</span></div>
+        <p class="footer-brand-tagline">LUXURY COUTURE</p>
+        <p class="footer-brand-desc">A digital luxury fashion house built for individuals who carry presence, authority, and identity. Where modern technology meets timeless craftsmanship.</p>
+        <div class="footer-socials">
+          <a href="#" class="footer-social"><i class="fab fa-instagram"></i></a>
+          <a href="#" class="footer-social"><i class="fab fa-twitter"></i></a>
+          <a href="#" class="footer-social"><i class="fab fa-pinterest"></i></a>
+          <a href="#" class="footer-social"><i class="fab fa-facebook-f"></i></a>
+          <a href="#" class="footer-social"><i class="fab fa-tiktok"></i></a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>COLLECTIONS</h4>
+        <ul>
+          <li><a href="collections.html">Signature Collection</a></li>
+          <li><a href="collections.html">Royal Formals</a></li>
+          <li><a href="collections.html">Minimal Classics</a></li>
+          <li><a href="collections.html">Limited Drops</a></li>
+          <li><a href="shop.html?badge=NEW">New Arrivals</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>SHOP</h4>
+        <ul>
+          <li><a href="shop.html?cat=Coats">Coats</a></li>
+          <li><a href="shop.html?cat=Dresses">Dresses</a></li>
+          <li><a href="shop.html?cat=Suits">Suits</a></li>
+          <li><a href="shop.html?cat=Bags">Bags</a></li>
+          <li><a href="shop.html?badge=SALE" style="color:var(--gold)">SALE</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>INFO</h4>
+        <ul>
+          <li><a href="about.html">About VIREON</a></li>
+          <li><a href="contact.html">Contact</a></li>
+          <li><a href="tracking.html">Track Order</a></li>
+          <li><a href="wishlist.html">Wishlist</a></li>
+          <li><a href="admin-login.html">Admin Panel</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-payments">
+      <span>SECURE PAYMENTS</span>
+      <div class="pay-icons">
+        <i class="fab fa-cc-visa"></i><i class="fab fa-cc-mastercard"></i>
+        <i class="fab fa-cc-amex"></i><i class="fab fa-cc-paypal"></i>
+        <i class="fab fa-cc-stripe"></i><i class="fab fa-apple-pay"></i>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2026 VIREON Luxury Couture. All rights reserved.</p>
+      <div class="footer-legal">
+        <a href="#">Privacy Policy</a><a href="#">Terms of Service</a>
+        <a href="#">Cookie Settings</a><a href="#">GDPR</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- MINI CART -->
+<div class="cart-overlay" id="cart-overlay"></div>
+<div class="mini-cart" id="mini-cart">
+  <div class="mc-head">
+    <h3>Shopping Bag <span id="mc-qty">(0)</span></h3>
+    <button class="mc-close" id="mc-close">&times;</button>
+  </div>
+  <div class="mc-body" id="mc-body"></div>
+  <div class="mc-foot">
+    <div class="mc-subtotal"><span>Subtotal</span><span id="mc-total">$0</span></div>
+    <a href="cart.html" class="btn btn--gold btn--block" style="margin-bottom:.8rem">VIEW BAG <i class="fas fa-arrow-right"></i></a>
+    <a href="cart.html#checkout" class="btn btn--outline btn--block">CHECKOUT</a>
+  </div>
+</div>
+
+<!-- AI ASSISTANT -->
+<button class="ai-fab" id="ai-fab" title="AI Style Assistant">
+  <i class="fas fa-robot"></i>
+  <span class="ai-pulse"></span>
+</button>
+<div class="ai-panel" id="ai-panel">
+  <div class="ai-head">
+    <div class="ai-head-label"><i class="fas fa-robot"></i> AI Style Assistant</div>
+    <button class="ai-head-close" id="ai-close">&times;</button>
+  </div>
+  <div class="ai-body" id="ai-body">
+    <div class="ai-msg-wrap">
+      <div class="ai-avatar">AI</div>
+      <div class="ai-bubble">Welcome to VIREON. I'm your personal style assistant. How can I help you today?</div>
+    </div>
+  </div>
+  <div class="ai-input-row">
+    <input type="text" id="ai-input" placeholder="Ask about style, sizing, outfits...">
+    <button id="ai-send"><i class="fas fa-paper-plane"></i></button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="v-toast"><i class="fas fa-check-circle"></i><span id="v-toast-msg"></span></div>
+
+<script src="js/vireon.js"></script>
+</body>
+</html>

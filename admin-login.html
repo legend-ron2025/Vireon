@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Admin Login — VIREON Enterprise</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+/* ── DESIGN TOKENS ── */
+:root{
+  --bg:#0B0B0B;--bg-2:#141414;--bg-3:#1B1B1B;--border:#2A2A2A;
+  --gold:#D4AF37;--gold-2:#F5D76E;--gold-dark:#B8962E;
+  --white:#FFFFFF;--text-2:#B5B5B5;--gray:#6B6B6B;
+  --success:#10B981;--error:#EF4444;--warning:#F59E0B;
+  --gold-grad:linear-gradient(135deg,#D4AF37,#F5D76E,#B8962E);
+  --font-serif:'Cormorant Garamond',Georgia,serif;
+  --font-sans:'Montserrat',sans-serif;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;font-family:var(--font-sans);font-weight:300}
+body{background:var(--bg);color:var(--white);overflow:hidden;display:grid;grid-template-columns:1fr 1fr}
+a{text-decoration:none;color:inherit}
+button{cursor:pointer;font-family:var(--font-sans);border:none;outline:none}
+input{font-family:var(--font-sans);outline:none}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-thumb{background:var(--gold)}
+
+/* ── PARTICLES ── */
+#particles{position:fixed;inset:0;pointer-events:none;z-index:0}
+
+/* ── LEFT PANEL ── */
+.left-panel{
+  position:relative;overflow:hidden;
+  background:linear-gradient(160deg,#0d0600 0%,#1a0c00 40%,#0B0B0B 100%);
+  display:flex;flex-direction:column;justify-content:flex-end;padding:5rem;z-index:1;
+}
+.left-bg-grid{position:absolute;inset:0;background-image:repeating-linear-gradient(0deg,transparent,transparent 59px,rgba(212,175,55,.04) 60px),repeating-linear-gradient(90deg,transparent,transparent 59px,rgba(212,175,55,.04) 60px);pointer-events:none}
+.orb{position:absolute;border-radius:50%;pointer-events:none}
+.orb-1{width:500px;height:500px;top:-150px;right:-150px;background:radial-gradient(circle,rgba(212,175,55,.06),transparent 70%);animation:orbFloat 10s ease-in-out infinite}
+.orb-2{width:300px;height:300px;bottom:0;left:0;background:radial-gradient(circle,rgba(180,80,0,.08),transparent 70%);animation:orbFloat 7s ease-in-out infinite 2s}
+@keyframes orbFloat{0%,100%{transform:translate(0,0)}50%{transform:translate(20px,-30px)}}
+.left-logo{margin-bottom:3rem;position:relative;z-index:1}
+.left-v{font-family:var(--font-serif);font-size:5rem;color:var(--gold);line-height:1;display:block;animation:glow 3s ease-in-out infinite}
+.left-ireon{font-size:1.2rem;font-weight:700;letter-spacing:.4em;color:var(--white);display:block}
+.left-sub{font-size:.5rem;letter-spacing:.4em;color:var(--gray);text-transform:uppercase;margin-top:.3rem}
+@keyframes glow{0%,100%{text-shadow:0 0 10px rgba(212,175,55,.3)}50%{text-shadow:0 0 40px rgba(212,175,55,.9),0 0 80px rgba(212,175,55,.4)}}
+.left-quote{font-family:var(--font-serif);font-size:2.2rem;font-weight:300;color:var(--white);line-height:1.3;margin-bottom:1.5rem;position:relative;z-index:1}
+.left-quote em{font-style:italic;color:var(--gold)}
+.left-desc{font-size:.82rem;color:var(--text-2);line-height:1.9;max-width:420px;margin-bottom:3rem;position:relative;z-index:1}
+.left-feats{display:flex;flex-direction:column;gap:.8rem;position:relative;z-index:1}
+.left-feat{display:flex;align-items:center;gap:.9rem;font-size:.75rem;color:var(--text-2)}
+.left-feat i{color:var(--gold);width:16px}
+
+/* ── RIGHT PANEL ── */
+.right-panel{background:var(--bg-2);display:flex;align-items:center;justify-content:center;padding:2.5rem;overflow-y:auto;border-left:1px solid var(--border);position:relative;z-index:1}
+.login-box{width:100%;max-width:440px}
+
+/* ── STEPS ── */
+.step{display:none;animation:stepIn .4s ease both}
+.step.on{display:block}
+@keyframes stepIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+
+/* Step indicator */
+.step-indicator{display:flex;align-items:center;gap:.5rem;margin-bottom:2.5rem}
+.si-dot{width:28px;height:28px;border-radius:50%;border:1px solid var(--border);color:var(--gray);font-size:.62rem;font-weight:700;display:flex;align-items:center;justify-content:center;transition:all .35s;flex-shrink:0}
+.si-dot.done{background:var(--gold);border-color:var(--gold);color:var(--bg)}
+.si-dot.active{border-color:var(--gold);color:var(--gold);box-shadow:0 0 10px rgba(212,175,55,.35)}
+.si-line{flex:1;height:1px;background:var(--border);transition:background .35s}
+.si-line.done{background:var(--gold)}
+.si-lbl{font-size:.5rem;letter-spacing:.18em;color:var(--gray);text-transform:uppercase;margin-top:.2rem;text-align:center}
+
+/* Heading */
+.login-h{font-family:var(--font-serif);font-size:2.4rem;font-weight:300;color:var(--white);margin-bottom:.4rem;line-height:1.2}
+.login-h em{font-style:italic;color:var(--gold)}
+.login-sub{font-size:.78rem;color:var(--text-2);margin-bottom:2.5rem;line-height:1.7}
+
+/* Account card */
+.acc-card{display:flex;align-items:center;gap:1rem;padding:1rem 1.2rem;background:rgba(212,175,55,.05);border:1px solid rgba(212,175,55,.2);margin-bottom:2rem}
+.acc-av{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1rem;flex-shrink:0;color:var(--bg)}
+.acc-name{font-size:.88rem;font-weight:600;color:var(--white)}
+.acc-role{font-size:.62rem;letter-spacing:.12em;color:var(--text-2);text-transform:uppercase}
+
+/* Inputs */
+.ig{margin-bottom:1.5rem;position:relative}
+.ig-label{display:block;font-size:.58rem;font-weight:700;letter-spacing:.22em;color:var(--gold);text-transform:uppercase;margin-bottom:.5rem}
+.ig-wrap{position:relative}
+.ig-icon{position:absolute;left:1rem;top:50%;transform:translateY(-50%);color:var(--gray);font-size:.85rem;pointer-events:none;transition:color .3s}
+.lg-input{width:100%;background:var(--bg-3);border:1px solid var(--border);color:var(--white);padding:.95rem 1rem .95rem 2.8rem;font-size:.85rem;letter-spacing:.04em;transition:all .3s}
+.lg-input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,175,55,.07)}
+.lg-input:focus~.ig-icon,.ig-wrap:focus-within .ig-icon{color:var(--gold)}
+.lg-input::placeholder{color:var(--gray)}
+.pw-toggle{position:absolute;right:1rem;top:50%;transform:translateY(-50%);background:none;color:var(--gray);font-size:.85rem;transition:color .3s}
+.pw-toggle:hover{color:var(--gold)}
+
+/* PIN digits */
+.pin-row{display:flex;gap:.7rem;justify-content:center;margin:1.5rem 0}
+.pin-digit{width:54px;height:64px;background:var(--bg-3);border:1px solid var(--border);color:var(--white);font-family:var(--font-serif);font-size:1.9rem;font-weight:300;text-align:center;transition:all .3s;-webkit-text-security:disc}
+.pin-digit:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,175,55,.07)}
+.pin-digit.filled{border-color:rgba(212,175,55,.4);color:var(--gold)}
+.pin-digit.err{border-color:var(--error);animation:shake .4s ease}
+@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-5px)}40%,80%{transform:translateX(5px)}}
+
+/* Buttons */
+.btn-gold{width:100%;background:var(--gold-grad);border:none;color:var(--bg);font-size:.65rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;padding:1.1rem;transition:all .3s;position:relative;overflow:hidden}
+.btn-gold:hover{box-shadow:0 0 30px rgba(212,175,55,.5);transform:translateY(-2px)}
+.btn-gold:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
+.btn-gold .spin{display:none;width:16px;height:16px;border:2px solid rgba(0,0,0,.25);border-top-color:#000;border-radius:50%;animation:spin .6s linear infinite;margin:0 auto}
+.btn-gold.loading .btn-txt{display:none}
+.btn-gold.loading .spin{display:block}
+@keyframes spin{to{transform:rotate(360deg)}}
+.btn-ghost{width:100%;background:transparent;border:1px solid var(--border);color:var(--text-2);font-size:.62rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;padding:.9rem;transition:all .3s;margin-top:.7rem}
+.btn-ghost:hover{border-color:var(--gold);color:var(--gold)}
+.btn-choice{width:100%;background:var(--bg-3);border:1px solid var(--border);color:var(--white);padding:1.2rem 1.5rem;text-align:left;transition:all .3s;display:flex;align-items:center;gap:1rem;margin-bottom:.8rem}
+.btn-choice:hover{border-color:var(--gold);background:rgba(212,175,55,.05)}
+.btn-choice i{color:var(--gold);font-size:1.1rem;width:24px;flex-shrink:0}
+.btn-choice-title{font-size:.82rem;color:var(--white);margin-bottom:.15rem}
+.btn-choice-sub{font-size:.68rem;color:var(--text-2)}
+
+/* Alerts */
+.alert{font-size:.72rem;padding:.7rem 1rem;margin-bottom:1rem;display:none;align-items:center;gap:.5rem;border-left:3px solid}
+.alert.on{display:flex}
+.alert-err{background:rgba(239,68,68,.07);border-color:var(--error);color:var(--error)}
+.alert-ok{background:rgba(16,185,129,.07);border-color:var(--success);color:var(--success)}
+.alert-info{background:rgba(212,175,55,.07);border-color:var(--gold);color:var(--gold)}
+
+/* Password strength */
+.pw-bar{height:3px;background:var(--border);margin-top:.4rem;overflow:hidden}
+.pw-fill{height:100%;width:0;transition:all .4s}
+.pw-lbl{font-size:.6rem;color:var(--gray);margin-top:.2rem;text-align:right}
+
+/* Lock overlay */
+.lock-screen{position:fixed;inset:0;background:rgba(11,11,11,.97);z-index:99;display:none;flex-direction:column;align-items:center;justify-content:center;gap:1.5rem}
+.lock-screen.on{display:flex}
+
+/* Footer */
+.login-footer{display:flex;justify-content:space-between;margin-top:2.5rem;padding-top:1.5rem;border-top:1px solid var(--border);font-size:.65rem;color:var(--gray)}
+.login-footer a{color:var(--text-2);transition:color .3s}
+.login-footer a:hover{color:var(--gold)}
+</style>
+</head>
+<body>
+<canvas id="particles"></canvas>
+
+<!-- LOCK SCREEN -->
+<div class="lock-screen" id="lockScreen">
+  <i class="fas fa-lock" style="font-size:4rem;color:var(--error);animation:glow 2s ease-in-out infinite"></i>
+  <h2 style="font-family:var(--font-serif);font-size:2rem;font-weight:300;color:var(--white)">Account Locked</h2>
+  <p style="font-size:.82rem;color:var(--text-2);text-align:center;max-width:340px;line-height:1.8">Too many failed attempts. This account is temporarily locked.<br>Contact your system administrator to unlock it.</p>
+  <button onclick="document.getElementById('lockScreen').classList.remove('on');resetToStep('s-username')" style="background:transparent;border:1px solid var(--border);color:var(--text-2);padding:.7rem 2rem;font-size:.65rem;letter-spacing:.15em;cursor:pointer;transition:all .3s" onmouseover="this.style.borderColor='var(--gold)';this.style.color='var(--gold)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-2)'">TRY DIFFERENT ACCOUNT</button>
+</div>
+
+<!-- LEFT PANEL -->
+<div class="left-panel">
+  <div class="left-bg-grid"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="left-logo">
+    <span class="left-v">V</span>
+    <span class="left-ireon">IREON</span>
+    <span class="left-sub">ENTERPRISE ADMIN</span>
+  </div>
+  <h2 class="left-quote">Your command<br>centre.<br><em>Secured.</em></h2>
+  <p class="left-desc">Manage products, orders, customers, analytics, and the entire VIREON commerce operation from one secure, role-protected dashboard.</p>
+  <div class="left-feats">
+    <div class="left-feat"><i class="fas fa-shield-alt"></i><span>Role-based access control for 4 admins</span></div>
+    <div class="left-feat"><i class="fas fa-lock"></i><span>6-digit PIN protection after first login</span></div>
+    <div class="left-feat"><i class="fas fa-ban"></i><span>Auto-lock after 5 failed attempts</span></div>
+    <div class="left-feat"><i class="fas fa-envelope-open-text"></i><span>OTP email verification for password changes</span></div>
+    <div class="left-feat"><i class="fas fa-chart-bar"></i><span>Real-time analytics & live order feed</span></div>
+  </div>
+</div>
+
+<!-- RIGHT PANEL -->
+<div class="right-panel">
+<div class="login-box">
+
+  <!-- STEP INDICATOR (hidden on first-login special steps) -->
+  <div id="step-indicator" class="step-indicator">
+    <div style="display:flex;flex-direction:column;align-items:center">
+      <div class="si-dot active" id="si-1">1</div>
+      <p class="si-lbl">Identity</p>
+    </div>
+    <div class="si-line" id="si-l1"></div>
+    <div style="display:flex;flex-direction:column;align-items:center">
+      <div class="si-dot" id="si-2">2</div>
+      <p class="si-lbl">Password</p>
+    </div>
+    <div class="si-line" id="si-l2"></div>
+    <div style="display:flex;flex-direction:column;align-items:center">
+      <div class="si-dot" id="si-3">3</div>
+      <p class="si-lbl">Access</p>
+    </div>
+  </div>
+
+  <!-- ════ STEP 1: USERNAME ════ -->
+  <div class="step on" id="s-username">
+    <h1 class="login-h">Welcome<br><em>Back</em></h1>
+    <p class="login-sub">Enter your admin username to continue.</p>
+    <div class="alert alert-err" id="err-u"><i class="fas fa-times-circle"></i><span id="err-u-msg"></span></div>
+    <div class="ig">
+      <label class="ig-label">Username</label>
+      <div class="ig-wrap">
+        <input type="text" class="lg-input" id="inp-username" placeholder="Enter username" autocomplete="username" autocapitalize="off">
+        <i class="fas fa-user ig-icon"></i>
+      </div>
+    </div>
+    <button class="btn-gold" id="btn-username" onclick="handleUsername()">
+      <span class="btn-txt">CONTINUE <i class="fas fa-arrow-right"></i></span>
+      <div class="spin"></div>
+    </button>
+    <div class="login-footer">
+      <span>&copy; 2026 VIREON Enterprise</span>
+      <a href="index.html"><i class="fas fa-store"></i> Back to Store</a>
+    </div>
+  </div>
+
+  <!-- ════ STEP 2: PASSWORD ════ -->
+  <div class="step" id="s-password">
+    <div class="acc-card">
+      <div class="acc-av" id="pw-av">R</div>
+      <div><p class="acc-name" id="pw-name">Loading...</p><p class="acc-role" id="pw-role">Role</p></div>
+      <button onclick="resetToStep('s-username')" style="margin-left:auto;background:none;color:var(--gray);font-size:.85rem;transition:color .3s" onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color='var(--gray)'" title="Switch account"><i class="fas fa-exchange-alt"></i></button>
+    </div>
+    <h1 class="login-h">Enter<br><em>Password</em></h1>
+    <p class="login-sub">Password for <strong id="pw-username-lbl" style="color:var(--gold)"></strong></p>
+    <div class="alert alert-err" id="err-p"><i class="fas fa-times-circle"></i><span id="err-p-msg"></span></div>
+    <div class="ig">
+      <label class="ig-label">Password</label>
+      <div class="ig-wrap" style="position:relative">
+        <i class="fas fa-lock" style="position:absolute;left:1rem;top:50%;transform:translateY(-50%);color:var(--gray);font-size:.85rem;pointer-events:none"></i>
+        <input type="password" class="lg-input" id="inp-password" placeholder="••••••••••••" style="padding-right:3rem" autocomplete="current-password">
+        <button class="pw-toggle" onclick="togglePw('inp-password','eye-p')"><i id="eye-p" class="fas fa-eye"></i></button>
+      </div>
+    </div>
+    <button class="btn-gold" id="btn-password" onclick="handlePassword()">
+      <span class="btn-txt" id="btn-p-label">CONTINUE <i class="fas fa-arrow-right"></i></span>
+      <div class="spin"></div>
+    </button>
+    <button class="btn-ghost" onclick="resetToStep('s-username')"><i class="fas fa-arrow-left"></i> BACK</button>
+    <div class="login-footer"><span>&copy; 2026 VIREON Enterprise</span><a href="index.html"><i class="fas fa-store"></i> Back to Store</a></div>
+  </div>
+
+  <!-- ════ STEP 3a: OTP (returning users only) ════ -->
+  <div class="step" id="s-otp">
+    <div style="text-align:center;margin-bottom:2rem">
+      <div style="font-size:3rem;color:var(--gold);margin-bottom:1rem;animation:glow 3s ease-in-out infinite"><i class="fas fa-envelope-open-text"></i></div>
+      <h1 class="login-h" style="text-align:center">Verify <em>Identity</em></h1>
+      <p class="login-sub" style="text-align:center">Enter your 6-digit PIN.<br><span style="font-size:.7rem;color:var(--gray)">Or use the OTP sent to your email.</span></p>
+    </div>
+    <div class="alert alert-err" id="err-otp"><i class="fas fa-times-circle"></i><span id="err-otp-msg"></span></div>
+    <div class="alert alert-ok" id="ok-otp"><i class="fas fa-check-circle"></i><span id="ok-otp-msg"></span></div>
+    <div class="pin-row" id="pin-inputs">
+      <input type="text" class="pin-digit" maxlength="1" inputmode="numeric" data-pi="0">
+      <input type="text" class="pin-digit" maxlength="1" inputmode="numeric" data-pi="1">
+      <input type="text" class="pin-digit" maxlength="1" inputmode="numeric" data-pi="2">
+      <input type="text" class="pin-digit" maxlength="1" inputmode="numeric" data-pi="3">
+      <input type="text" class="pin-digit" maxlength="1" inputmode="numeric" data-pi="4">
+      <input type="text" class="pin-digit" maxlength="1" inputmode="numeric" data-pi="5">
+    </div>
+    <button class="btn-gold" id="btn-otp" onclick="handlePINLogin()">
+      <span class="btn-txt">CONFIRM ACCESS <i class="fas fa-unlock-alt"></i></span>
+      <div class="spin"></div>
+    </button>
+    <p style="text-align:center;font-size:.7rem;color:var(--gray);margin-top:1rem">Forgot PIN? <button onclick="sendOTPForPINReset()" style="background:none;color:var(--gold);font-size:.7rem;cursor:pointer;text-decoration:underline">Use OTP instead</button></p>
+    <button class="btn-ghost" onclick="resetToStep('s-password')"><i class="fas fa-arrow-left"></i> BACK</button>
+    <div class="login-footer"><span>&copy; 2026 VIREON Enterprise</span><a href="index.html"><i class="fas fa-store"></i> Back to Store</a></div>
+  </div>
+
+  <!-- ════ STEP FL-1: FIRST LOGIN — Welcome ════ -->
+  <div class="step" id="s-first-welcome">
+    <div style="text-align:center;margin-bottom:2rem">
+      <div style="font-size:3.5rem;color:var(--gold);margin-bottom:1.2rem"><i class="fas fa-crown" style="animation:glow 3s ease-in-out infinite"></i></div>
+      <h1 class="login-h" style="text-align:center">Welcome to<br><em>VIREON Admin</em></h1>
+      <p class="login-sub" style="text-align:center">This is your first login, <strong id="fl-name" style="color:var(--gold)"></strong>!<br>Let's secure your account in 2 quick steps.</p>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:.8rem;margin-bottom:2rem">
+      <div style="display:flex;align-items:center;gap:1rem;padding:1rem;background:var(--bg-3);border:1px solid var(--border)"><div style="width:32px;height:32px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:var(--bg);flex-shrink:0">1</div><div><p style="font-size:.8rem;color:var(--white)">Set a 6-digit PIN</p><p style="font-size:.68rem;color:var(--text-2)">Used for quick login from now on</p></div></div>
+      <div style="display:flex;align-items:center;gap:1rem;padding:1rem;background:var(--bg-3);border:1px solid var(--border)"><div style="width:32px;height:32px;border-radius:50%;background:rgba(212,175,55,.2);border:1px solid rgba(212,175,55,.4);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:var(--gold);flex-shrink:0">2</div><div><p style="font-size:.8rem;color:var(--white)">Optional: Change your password</p><p style="font-size:.68rem;color:var(--text-2)">You can keep the default or set a new one</p></div></div>
+    </div>
+    <button class="btn-gold" onclick="goToStep('s-set-pin')">
+      <span class="btn-txt">LET'S GO <i class="fas fa-arrow-right"></i></span>
+    </button>
+    <div class="login-footer"><span>&copy; 2026 VIREON Enterprise</span><a href="index.html"><i class="fas fa-store"></i> Back to Store</a></div>
+  </div>
+
+  <!-- ════ STEP FL-2: SET PIN ════ -->
+  <div class="step" id="s-set-pin">
+    <h1 class="login-h">Set Your<br><em>6-Digit PIN</em></h1>
+    <p class="login-sub">This PIN will be used for quick login from now on. Do not share it with anyone.</p>
+    <div class="alert alert-err" id="err-pin-set"><i class="fas fa-times-circle"></i><span id="err-pin-set-msg"></span></div>
+    <div class="alert alert-info" id="info-pin"><i class="fas fa-shield-alt"></i><span>Choose a PIN you'll remember. It's separate from your password.</span></div>
+    <label class="ig-label" style="margin-bottom:.6rem">ENTER PIN</label>
+    <div class="pin-row" id="set-pin-inputs">
+      <input type="text" class="pin-digit" maxlength="1" inputmode="numeric" data-spi="0">
+      <input type="text" class="pin-digit" maxlength="1" inputmode="numeric" data-spi="1">
+      <input type="text" class="pin-digit" maxlength="1" inputmode="numeric" data-spi="2">
+      <input type="text" class="pin-digit" maxlength="1" inputmode="numeric" data-spi="3">
+      <input type="text" class="pin-digit" maxlength="1" inputmode="numeric" data-spi="4">
+      <input type="text" class="pin-digit" maxlength="1" inputmode="numeric" data-spi="5">
+    </div>
+    <label class="ig-label" style="margin-bottom:.6rem;margin-top:1rem">CONFIRM PIN</label>
+    <div class="pin-row" id="confirm-pin-inputs">
+      <input type="text" class="pin-digit" maxlength="1" inputmode="numeric" data-cpi="0">
+      <input type="text" class="pin-digit" maxlength="1" inputmode="numeric" data-cpi="1">
+      <input type="text" class="pin-digit" maxlength="1" inputmode="numeric" data-cpi="2">
+      <input type="text" class="pin-digit" maxlength="1" inputmode="numeric" data-cpi="3">
+      <input type="text" class="pin-digit" maxlength="1" inputmode="numeric" data-cpi="4">
+      <input type="text" class="pin-digit" maxlength="1" inputmode="numeric" data-cpi="5">
+    </div>
+    <button class="btn-gold" style="margin-top:1.5rem" onclick="handleSetPIN()">
+      <span class="btn-txt">SAVE PIN & CONTINUE <i class="fas fa-arrow-right"></i></span>
+    </button>
+    <div class="login-footer"><span>&copy; 2026 VIREON Enterprise</span><a href="index.html"><i class="fas fa-store"></i> Back to Store</a></div>
+  </div>
+
+  <!-- ════ STEP FL-3: CHANGE PASSWORD PROMPT ════ -->
+  <div class="step" id="s-pw-prompt">
+    <div style="text-align:center;margin-bottom:2rem">
+      <div style="font-size:3rem;color:var(--gold);margin-bottom:1rem"><i class="fas fa-key" style="animation:glow 3s ease-in-out infinite"></i></div>
+      <h1 class="login-h" style="text-align:center">Change<br><em>Password?</em></h1>
+      <p class="login-sub" style="text-align:center">Your current password is the default one provided.<br>Would you like to set a new personal password?</p>
+    </div>
+    <button class="btn-choice" onclick="goToStep('s-change-pw')">
+      <i class="fas fa-lock-open"></i>
+      <div><p class="btn-choice-title">Yes, set a new password</p><p class="btn-choice-sub">Recommended — more secure than the default</p></div>
+      <i class="fas fa-chevron-right" style="margin-left:auto;color:var(--gold);font-size:.75rem"></i>
+    </button>
+    <button class="btn-choice" onclick="skipPasswordChange()">
+      <i class="fas fa-forward"></i>
+      <div><p class="btn-choice-title">No, keep my current password</p><p class="btn-choice-sub">Continue to dashboard with existing password</p></div>
+      <i class="fas fa-chevron-right" style="margin-left:auto;color:var(--gray);font-size:.75rem"></i>
+    </button>
+    <div class="login-footer"><span>&copy; 2026 VIREON Enterprise</span><a href="index.html"><i class="fas fa-store"></i> Back to Store</a></div>
+  </div>
+
+  <!-- ════ STEP FL-4: NEW PASSWORD FORM ════ -->
+  <div class="step" id="s-change-pw">
+    <h1 class="login-h">New<br><em>Password</em></h1>
+    <p class="login-sub">Set a strong personal password. You'll use this for future logins.</p>
+    <div class="alert alert-err" id="err-cpw"><i class="fas fa-times-circle"></i><span id="err-cpw-msg"></span></div>
+    <div class="ig">
+      <label class="ig-label">New Password</label>
+      <div class="ig-wrap" style="position:relative">
+        <i class="fas fa-lock" style="position:absolute;left:1rem;top:50%;transform:translateY(-50%);color:var(--gray);pointer-events:none"></i>
+        <input type="password" class="lg-input" id="new-pw-inp" placeholder="Min 8 chars, uppercase, number, special" style="padding-right:3rem" oninput="updatePwStrength(this.value)">
+        <button class="pw-toggle" onclick="togglePw('new-pw-inp','eye-np')"><i id="eye-np" class="fas fa-eye"></i></button>
+      </div>
+      <div class="pw-bar"><div class="pw-fill" id="pw-str-bar"></div></div>
+      <p class="pw-lbl" id="pw-str-lbl"></p>
+    </div>
+    <div class="ig">
+      <label class="ig-label">Confirm Password</label>
+      <div class="ig-wrap" style="position:relative">
+        <i class="fas fa-lock" style="position:absolute;left:1rem;top:50%;transform:translateY(-50%);color:var(--gray);pointer-events:none"></i>
+        <input type="password" class="lg-input" id="conf-pw-inp" placeholder="Repeat new password" style="padding-right:3rem">
+        <button class="pw-toggle" onclick="togglePw('conf-pw-inp','eye-cp')"><i id="eye-cp" class="fas fa-eye"></i></button>
+      </div>
+    </div>
+    <button class="btn-gold" onclick="handleChangePassword()">
+      <span class="btn-txt">SAVE & ENTER DASHBOARD <i class="fas fa-arrow-right"></i></span>
+    </button>
+    <button class="btn-ghost" onclick="goToStep('s-pw-prompt')"><i class="fas fa-arrow-left"></i> BACK</button>
+    <div class="login-footer"><span>&copy; 2026 VIREON Enterprise</span></div>
+  </div>
+
+</div><!-- /login-box -->
+</div><!-- /right-panel -->
+
+<script src="js/admin-auth.js"></script>
+<script>
+/* ════════════════════════════════════════════════════════
+   VIREON LOGIN CONTROLLER
+   ════════════════════════════════════════════════════════ */
+'use strict';
+
+/* ── STATE ─────────────────────────────────────────── */
+let _account = null;    // current account object
+let _isFirst = false;   // is this a first login?
+
+/* ── PARTICLES ─────────────────────────────────────── */
+(function initParticles(){
+  const c = document.getElementById('particles');
+  if (!c) return;
+  const ctx = c.getContext('2d');
+  let W, H, pts = [];
+  function resize(){ W = c.width = window.innerWidth; H = c.height = window.innerHeight; }
+  resize(); window.addEventListener('resize', resize);
+  class P {
+    constructor(){ this.x=Math.random()*W; this.y=H+5; this.r=Math.random()*1.8+.4; this.vy=-(Math.random()*.5+.2); this.vx=(Math.random()-.5)*.25; this.op=Math.random()*.45+.1; this.life=0; this.max=Math.random()*180+80; }
+    tick(){ this.x+=this.vx; this.y+=this.vy; this.life++; }
+    draw(){ const f=this.life<20?this.life/20:this.life>this.max-20?(this.max-this.life)/20:1; ctx.save(); ctx.globalAlpha=this.op*f; ctx.fillStyle='#D4AF37'; ctx.beginPath(); ctx.arc(this.x,this.y,this.r,0,Math.PI*2); ctx.fill(); ctx.restore(); }
+    alive(){ return this.life<this.max&&this.y>-5; }
+  }
+  function loop(){ ctx.clearRect(0,0,W,H); if(pts.length<25) pts.push(new P()); pts=pts.filter(p=>{p.tick();p.draw();return p.alive();}); requestAnimationFrame(loop); }
+  loop();
+})();
+
+/* ── STEP NAVIGATION ───────────────────────────────── */
+const INDICATOR_STEPS = {
+  's-username':     { active:1, done:[] },
+  's-password':     { active:2, done:[1] },
+  's-otp':          { active:3, done:[1,2] },
+  's-first-welcome':{ hidden:true },
+  's-set-pin':      { hidden:true },
+  's-pw-prompt':    { hidden:true },
+  's-change-pw':    { hidden:true },
+};
+
+function goToStep(id) {
+  document.querySelectorAll('.step').forEach(s => s.classList.remove('on'));
+  document.getElementById(id)?.classList.add('on');
+  // Update indicator
+  const cfg = INDICATOR_STEPS[id];
+  const ind = document.getElementById('step-indicator');
+  if (!ind) return;
+  if (cfg?.hidden) { ind.style.display = 'none'; return; }
+  ind.style.display = 'flex';
+  if (!cfg) return;
+  [1,2,3].forEach(n => {
+    const dot  = document.getElementById('si-'+n);
+    const done = cfg.done.includes(n);
+    const act  = cfg.active === n;
+    if (dot) {
+      dot.classList.toggle('done',   done);
+      dot.classList.toggle('active', act && !done);
+      dot.innerHTML = done ? '<i class="fas fa-check" style="font-size:.6rem"></i>' : n;
+    }
+  });
+  [1,2].forEach(n => {
+    const line = document.getElementById('si-l'+n);
+    if (line) line.classList.toggle('done', cfg.done.length >= n);
+  });
+}
+function resetToStep(id) { _account = null; _isFirst = false; goToStep(id); }
+
+/* ── HELPERS ────────────────────────────────────────── */
+function showErr(id, msg) { const el=document.getElementById(id); if(el){el.classList.add('on'); const m=document.getElementById(id+'-msg'); if(m) m.textContent=msg;} }
+function hideErr(id)      { document.getElementById(id)?.classList.remove('on'); }
+function showOk(id, msg)  { const el=document.getElementById(id); if(el){el.classList.add('on'); const m=document.getElementById(id+'-msg'); if(m) m.textContent=msg;} }
+function hideOk(id)       { document.getElementById(id)?.classList.remove('on'); }
+function setLoading(id, on){ const btn=document.getElementById(id); if(btn){btn.classList.toggle('loading',on); btn.disabled=on;} }
+function sleep(ms)         { return new Promise(r=>setTimeout(r,ms)); }
+function togglePw(inp,icon){ const i=document.getElementById(inp); const ic=document.getElementById(icon); if(i.type==='password'){i.type='text';ic.className='fas fa-eye-slash';}else{i.type='password';ic.className='fas fa-eye';} }
+
+function populateAccountCard(acc) {
+  ['pw-av'].forEach(id=>{const el=document.getElementById(id); if(el){el.textContent=acc.avatar; el.style.background=acc.color; el.style.color='#0B0B0B';}});
+  const n=document.getElementById('pw-name'); if(n) n.textContent=acc.displayName;
+  const r=document.getElementById('pw-role'); if(r) r.textContent=acc.role;
+  const u=document.getElementById('pw-username-lbl'); if(u) u.textContent=acc.username;
+  const fl=document.getElementById('fl-name'); if(fl) fl.textContent=acc.displayName;
+}
+
+/* ── STEP 1: USERNAME ───────────────────────────────── */
+async function handleUsername() {
+  hideErr('err-u');
+  const val = document.getElementById('inp-username')?.value.trim();
+  if (!val) { showErr('err-u','Please enter your username.'); return; }
+  setLoading('btn-username', true);
+  await sleep(500);
+  const acc = AdminAuth.findAccount(val);
+  setLoading('btn-username', false);
+  if (!acc) { showErr('err-u','Account not found. Check your username.'); return; }
+  if (acc.locked) { document.getElementById('lockScreen').classList.add('on'); return; }
+  _account = acc;
+  populateAccountCard(acc);
+  goToStep('s-password');
+  setTimeout(() => document.getElementById('inp-password')?.focus(), 150);
+}
+
+/* ── STEP 2: PASSWORD ───────────────────────────────── */
+async function handlePassword() {
+  hideErr('err-p');
+  const pw = document.getElementById('inp-password')?.value;
+  if (!pw) { showErr('err-p','Please enter your password.'); return; }
+  if (!_account) { resetToStep('s-username'); return; }
+  setLoading('btn-password', true);
+  await sleep(600);
+  if (!AdminAuth.verifyPassword(_account, pw)) {
+    AdminAuth.trackLoginAttempt(_account, false);
+    setLoading('btn-password', false);
+    if (_account.locked) { document.getElementById('lockScreen').classList.add('on'); return; }
+    const left = 5 - (_account.loginAttempts || 0);
+    showErr('err-p', `Incorrect password. ${left} attempt${left!==1?'s':''} remaining.`);
+    document.getElementById('inp-password').value = '';
+    return;
+  }
+  setLoading('btn-password', false);
+  _isFirst = AdminAuth.isFirstLogin(_account.id);
+  if (_isFirst) {
+    // First ever login — skip OTP, go straight to first-login flow
+    goToStep('s-first-welcome');
+  } else {
+    // Returning user — go to PIN entry
+    goToStep('s-otp');
+    setTimeout(() => document.querySelector('[data-pi="0"]')?.focus(), 150);
+  }
+}
+
+/* ── PIN LOGIN (returning users) ────────────────────── */
+function handlePINLogin() {
+  hideErr('err-otp');
+  const code = getPINValue('#pin-inputs [data-pi]');
+  if (code.length < 6) { showErr('err-otp','Please enter all 6 digits.'); return; }
+  if (!AdminAuth.verifyPin(_account.id, code)) {
+    showErr('err-otp','Incorrect PIN. Please try again.');
+    flashPINError('#pin-inputs .pin-digit');
+    return;
+  }
+  // Success
+  AdminAuth.trackLoginAttempt(_account, true);
+  AdminAuth.setSession(_account);
+  showOk('ok-otp','Access granted! Entering dashboard...');
+  setTimeout(() => window.location.replace('dashboard.html'), 1000);
+}
+
+/* OTP fallback (forgot PIN) */
+async function sendOTPForPINReset() {
+  if (!_account) return;
+  const otp = AdminAuth.generateOTP();
+  AdminAuth.storeOTP(otp, 'pin_reset', _account.id);
+  const r = await AdminAuth.sendOTPEmail(_account, otp, 'pin_reset');
+  if (!r.ok && r.demoOtp) {
+    const entered = prompt(`[DEMO] OTP sent to ${_account.email}: ${r.demoOtp}\n\nEnter OTP to reset PIN:`);
+    if (!entered) return;
+    const result = AdminAuth.verifyOTP(entered.trim());
+    if (result.ok) {
+      // Let them set a new PIN
+      goToStep('s-set-pin');
+    } else {
+      showErr('err-otp', result.reason);
+    }
+  } else {
+    showOk('ok-otp', `OTP sent to ${_account.email}. Check your inbox.`);
+  }
+}
+
+/* ── FIRST LOGIN: SET PIN ───────────────────────────── */
+function handleSetPIN() {
+  hideErr('err-pin-set');
+  const pin  = getPINValue('#set-pin-inputs [data-spi]');
+  const conf = getPINValue('#confirm-pin-inputs [data-cpi]');
+  if (pin.length < 6)  { showErr('err-pin-set','Please enter all 6 digits of your PIN.'); return; }
+  if (conf.length < 6) { showErr('err-pin-set','Please confirm your PIN.'); return; }
+  if (pin !== conf)    { showErr('err-pin-set','PINs do not match. Please try again.');
+    flashPINError('#confirm-pin-inputs .pin-digit');
+    document.querySelectorAll('#confirm-pin-inputs .pin-digit').forEach(d => { d.value=''; d.classList.remove('filled'); });
+    document.querySelector('#confirm-pin-inputs [data-cpi="0"]')?.focus();
+    return;
+  }
+  if (/^(\d)\1{5}$/.test(pin)) { showErr('err-pin-set','PIN cannot be all the same digit (e.g. 111111).'); return; }
+  AdminAuth.setPin(_account.id, pin);
+  goToStep('s-pw-prompt');
+}
+
+/* ── FIRST LOGIN: PASSWORD PROMPT ───────────────────── */
+function skipPasswordChange() {
+  // Mark first login complete, enter dashboard
+  AdminAuth.markFirstLoginDone(_account.id);
+  AdminAuth.trackLoginAttempt(_account, true);
+  AdminAuth.setSession(_account);
+  window.location.replace('dashboard.html');
+}
+
+function goChangePassword() { goToStep('s-change-pw'); }
+
+/* ── FIRST LOGIN: CHANGE PASSWORD ───────────────────── */
+function updatePwStrength(pw) {
+  const r = AdminAuth.validatePasswordStrength(pw);
+  const bar = document.getElementById('pw-str-bar');
+  const lbl = document.getElementById('pw-str-lbl');
+  if (bar) { bar.style.width = (r.score/5*100)+'%'; bar.style.background = r.color; }
+  if (lbl) { lbl.textContent = pw ? r.label : ''; lbl.style.color = r.color; }
+}
+
+function handleChangePassword() {
+  hideErr('err-cpw');
+  const newPw  = document.getElementById('new-pw-inp')?.value;
+  const confPw = document.getElementById('conf-pw-inp')?.value;
+  if (!newPw)  { showErr('err-cpw','Please enter a new password.'); return; }
+  const str = AdminAuth.validatePasswordStrength(newPw);
+  if (!str.valid) { showErr('err-cpw','Password too weak. Include uppercase, number and special character.'); return; }
+  if (newPw !== confPw) { showErr('err-cpw','Passwords do not match.'); return; }
+  if (AdminAuth.verifyPassword(_account, newPw)) { showErr('err-cpw','New password must differ from your current one.'); return; }
+  AdminAuth.changePassword(_account.id, newPw);
+  AdminAuth.markFirstLoginDone(_account.id);
+  AdminAuth.trackLoginAttempt(_account, true);
+  AdminAuth.setSession(_account);
+  window.location.replace('dashboard.html');
+}
+
+/* ── PIN INPUT HELPERS ──────────────────────────────── */
+function getPINValue(selector) {
+  return [...document.querySelectorAll(selector)].map(i => i.value).join('');
+}
+
+function initPINInputs(selector, attrKey, onComplete) {
+  const inputs = document.querySelectorAll(selector);
+  inputs.forEach((inp, i) => {
+    inp.addEventListener('input', function () {
+      this.value = this.value.replace(/[^0-9]/g,'').slice(-1);
+      this.classList.toggle('filled', this.value !== '');
+      if (this.value && i < inputs.length-1) inputs[i+1].focus();
+      const val = [...inputs].map(x=>x.value).join('');
+      if (val.length === 6 && onComplete) onComplete(val);
+    });
+    inp.addEventListener('keydown', function(e) {
+      if (e.key==='Backspace' && !this.value && i>0) { inputs[i-1].focus(); inputs[i-1].value=''; inputs[i-1].classList.remove('filled'); }
+    });
+    inp.addEventListener('paste', function(e) {
+      e.preventDefault();
+      const pasted = (e.clipboardData||window.clipboardData).getData('text').replace(/\D/g,'').slice(0,6);
+      [...pasted].forEach((ch,j)=>{ if(inputs[i+j]){inputs[i+j].value=ch;inputs[i+j].classList.add('filled');} });
+      const next = Math.min(i+pasted.length, inputs.length-1);
+      inputs[next]?.focus();
+    });
+  });
+}
+
+function flashPINError(selector) {
+  document.querySelectorAll(selector).forEach(d => {
+    d.classList.add('err');
+    setTimeout(() => d.classList.remove('err'), 450);
+  });
+}
+
+/* ── ENTER KEY SUPPORT ──────────────────────────────── */
+document.getElementById('inp-username')?.addEventListener('keydown', e => { if(e.key==='Enter') handleUsername(); });
+document.getElementById('inp-password')?.addEventListener('keydown', e => { if(e.key==='Enter') handlePassword(); });
+
+/* ── INIT ───────────────────────────────────────────── */
+// Init all PIN input groups
+initPINInputs('#pin-inputs [data-pi]',      'pi',  null);
+initPINInputs('#set-pin-inputs [data-spi]', 'spi', null);
+initPINInputs('#confirm-pin-inputs [data-cpi]', 'cpi', null);
+
+// If already logged in, go straight to dashboard
+if (AdminAuth.getSession()) window.location.replace('dashboard.html');
+</script>
+</body>
+</html>
