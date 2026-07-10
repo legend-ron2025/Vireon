@@ -1,0 +1,13 @@
+{
+  "name": "vireon-luxury-couture",
+  "version": "1.0.0",
+  "description": "VIREON — Premium Luxury Fashion E-Commerce Website",
+  "private": true,
+  "scripts": {
+    "build": "echo 'Static site - no build needed'",
+    "dev": "npx serve ."
+  },
+  "keywords": ["luxury", "fashion", "ecommerce"],
+  "author": "VIREON",
+  "license": "UNLICENSED"
+}
