@@ -1,4 +1,4 @@
-/* ═══════════════════════════════════════════════════════════
+﻿/* ═══════════════════════════════════════════════════════════
    VIREON LUXURY COUTURE — ENTERPRISE ENGINE v3.0
    ═══════════════════════════════════════════════════════════ */
 'use strict';
@@ -1053,3 +1053,75 @@ document.addEventListener('DOMContentLoaded',()=>{
   initFilterGroups();
   initStaggeredGrids();
 });
+
+/* ─────────────────────────────────────────────────────────
+   LUXURY CURSOR OVERRIDE — Gold Fleur-de-lis ⚜
+   Replaces the basic dot cursor with the royal symbol.
+   ───────────────────────────────────────────────────────── */
+(function overrideCursor(){
+  document.addEventListener('DOMContentLoaded', function(){
+    const c    = document.getElementById('v-cursor');
+    const ring = document.getElementById('v-cursor-ring');
+    if(!c || !ring || window.matchMedia('(hover:none)').matches) return;
+
+    /* Set the ⚜ symbol */
+    c.innerHTML = '';
+    c.textContent = '\u269C';
+    c.style.cssText = [
+      'position:fixed','pointer-events:none','z-index:999999',
+      'transform:translate(-50%,-50%)','font-size:1.35rem','line-height:1',
+      'color:#D4AF37','transition:transform .15s ease, opacity .3s',
+      'animation:cursorGlow 2.5s ease-in-out infinite',
+      'will-change:left,top','user-select:none'
+    ].join(';');
+
+    ring.style.cssText = [
+      'position:fixed','pointer-events:none','z-index:999998',
+      'transform:translate(-50%,-50%)','width:34px','height:34px',
+      'border-radius:50%','border:1px solid rgba(212,175,55,.4)',
+      'transition:width .3s,height .3s,border-color .3s','will-change:left,top'
+    ].join(';');
+
+    let mx=0,my=0,rx=0,ry=0;
+    document.addEventListener('mousemove',function(e){
+      mx=e.clientX; my=e.clientY;
+      c.style.left=mx+'px'; c.style.top=my+'px';
+    },{passive:true});
+
+    function trail(){
+      rx+=(mx-rx)*0.16; ry+=(my-ry)*0.16;
+      ring.style.left=rx+'px'; ring.style.top=ry+'px';
+      requestAnimationFrame(trail);
+    }
+    trail();
+
+    document.addEventListener('mouseover',function(e){
+      if(e.target.closest('a,button,.p-card,.cat-item,.btn,.ed-card,.vireon-logo')){
+        ring.style.width='56px'; ring.style.height='56px';
+        ring.style.borderColor='rgba(212,175,55,.75)';
+        ring.style.background='rgba(212,175,55,.04)';
+        c.style.transform='translate(-50%,-50%) scale(1.2) rotate(12deg)';
+      }
+    });
+    document.addEventListener('mouseout',function(e){
+      if(e.target.closest('a,button,.p-card,.cat-item,.btn,.ed-card,.vireon-logo')){
+        ring.style.width='34px'; ring.style.height='34px';
+        ring.style.borderColor='rgba(212,175,55,.4)';
+        ring.style.background='';
+        c.style.transform='translate(-50%,-50%) scale(1) rotate(0deg)';
+      }
+    });
+    document.addEventListener('mousedown',function(){
+      ring.style.width='20px'; ring.style.height='20px';
+      ring.style.borderColor='#D4AF37'; ring.style.borderWidth='2px';
+      c.style.transform='translate(-50%,-50%) scale(0.7)';
+    });
+    document.addEventListener('mouseup',function(){
+      ring.style.width='34px'; ring.style.height='34px';
+      ring.style.borderWidth='1px';
+      c.style.transform='translate(-50%,-50%) scale(1)';
+    });
+    document.addEventListener('mouseleave',function(){ c.style.opacity='0'; ring.style.opacity='0'; });
+    document.addEventListener('mouseenter',function(){ c.style.opacity='1'; ring.style.opacity='1'; });
+  });
+})();

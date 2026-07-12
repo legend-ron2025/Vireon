@@ -398,3 +398,22 @@
   background: var(--gold-grad);
   z-index: 9999; width: 0; transition: width .1s;
 }
+
+/* ── LUXURY CURSOR ⚜ ──────────────────────────────────────── */
+@keyframes cursorGlow {
+  0%,100% {
+    color: #D4AF37;
+    text-shadow: 0 0 6px rgba(212,175,55,.65), 0 0 14px rgba(212,175,55,.3);
+  }
+  50% {
+    color: #F5D76E;
+    text-shadow: 0 0 18px rgba(212,175,55,1), 0 0 35px rgba(212,175,55,.6), 0 0 55px rgba(212,175,55,.22);
+  }
+}
+/* Hide browser cursor everywhere */
+html, body, *, *::before, *::after { cursor: none !important; }
+/* Restore on mobile / touch */
+@media (hover: none) {
+  html, body, *, *::before, *::after { cursor: auto !important; }
+  #v-cursor, #v-cursor-ring { display: none !important; }
+}

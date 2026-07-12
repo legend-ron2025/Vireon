@@ -1,287 +1,202 @@
 /* ═══════════════════════════════════════════════════════════
-   VIREON — BRANDED LOGO COMPONENT
-   The V is the actual logo image.
-   IREON has animated gold/black/white gradient strip lighting.
+   VIREON — BRAND LOGO COMPONENT v4
+   Layout: [logo image above] + [VIREON wordmark] + [LUXURY COUTURE]
+   VIREON = single serif word with animated gradient strip
    ═══════════════════════════════════════════════════════════ */
 
-/* ── MAIN LOGO WRAPPER ──────────────────────────────────── */
-.v-logo-brand {
+/* ── WRAPPER ─────────────────────────────────────────────── */
+.vireon-logo {
   display: inline-flex;
+  flex-direction: column;
   align-items: center;
-  gap: 0;
   text-decoration: none;
+  gap: 0;
   position: relative;
-  line-height: 1;
+  cursor: pointer;
 }
 
-/* ── THE V — bold gold letter ───────────────────────────── */
-.v-logo-v {
+/* ── LOGO IMAGE (above wordmark) ─────────────────────────── */
+.vireon-logo-img {
+  width: auto;
+  object-fit: contain;
+  display: block;
+  margin-bottom: .35em;
+  transition: filter .4s ease, transform .4s ease;
+  filter: drop-shadow(0 0 10px rgba(212,175,55,.45));
+}
+.vireon-logo:hover .vireon-logo-img {
+  filter: drop-shadow(0 0 22px rgba(212,175,55,.9))
+          drop-shadow(0 0 45px rgba(212,175,55,.35));
+  transform: scale(1.06);
+}
+
+/* ── VIREON WORDMARK ─────────────────────────────────────── */
+.vireon-logo-word {
   font-family: 'Cormorant Garamond', Georgia, serif;
-  font-weight: 700;
-  font-style: normal;
-  color: var(--gold, #D4AF37);
-  line-height: 1;
-  display: inline-block;
-  position: relative;
-  z-index: 2;
-  text-shadow: 0 0 12px rgba(212,175,55,.5);
-  transition: text-shadow .4s;
-  /* optionally overlay the logo image as texture inside V */
-  background: linear-gradient(160deg, #F5D76E 0%, #D4AF37 40%, #B8962E 70%, #F5D76E 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  font-size: inherit;
-}
-.v-logo-brand:hover .v-logo-v {
-  background: linear-gradient(160deg, #ffffff 0%, #F5D76E 30%, #D4AF37 60%, #F5D76E 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  filter: drop-shadow(0 0 12px rgba(212,175,55,.9));
-}
-
-/* ── IREON TEXT — LIGHT weight, animated gradient strip ─── */
-.v-logo-ireon {
-  font-family: 'Montserrat', sans-serif;
-  font-weight: 300;  /* light — not bold */
-  letter-spacing: .3em;
+  font-weight: 400;
+  letter-spacing: .22em;
   text-transform: uppercase;
-  position: relative;
-  display: inline-block;
   line-height: 1;
-  color: transparent;
+  display: block;
+  position: relative;
+
+  /* Animated gradient strip: white → gold → black → white */
   background: linear-gradient(
-    105deg,
-    #D4AF37  0%,
-    #F5D76E  12%,
-    #ffffff  22%,
-    #D4AF37  34%,
-    #B8962E  44%,
-    #0B0B0B  54%,
+    90deg,
+    #ffffff  0%,
+    #F5D76E  8%,
+    #D4AF37  16%,
+    #ffffff  26%,
+    #F5D76E  35%,
+    #D4AF37  44%,
+    #0a0a0a  54%,
     #2A2A2A  60%,
-    #D4AF37  70%,
-    #F5D76E  80%,
-    #ffffff  88%,
-    #D4AF37  100%
+    #D4AF37  68%,
+    #F5D76E  76%,
+    #ffffff  84%,
+    #D4AF37  92%,
+    #ffffff  100%
   );
-  background-size: 300% 100%;
+  background-size: 250% auto;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  animation: ireonStrip 3.5s linear infinite;
-  font-size: inherit;
+  animation: vireonStrip 4s linear infinite;
 }
-.v-logo-brand:hover .v-logo-ireon { animation-duration: 1.6s; }
+@keyframes vireonStrip {
+  0%   { background-position: 200% center; }
+  100% { background-position: -50% center; }
+}
 
-/* sparkle sweep layer */
-.v-logo-ireon::after {
+/* Sparkle sweep on top */
+.vireon-logo-word::after {
   content: attr(data-text);
   position: absolute;
   inset: 0;
   background: linear-gradient(
-    105deg,
+    90deg,
     transparent 0%,
-    transparent 40%,
-    rgba(255,255,255,.5) 50%,
-    transparent 60%,
+    transparent 35%,
+    rgba(255,255,255,.65) 48%,
+    rgba(255,255,255,.25) 52%,
+    transparent 65%,
     transparent 100%
   );
-  background-size: 200% 100%;
+  background-size: 200% auto;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  animation: sparklePass 4s ease-in-out infinite;
+  animation: vireonSparkle 5s ease-in-out infinite;
   pointer-events: none;
 }
-@keyframes ireonStrip {
-  0%   { background-position: 200% center; }
-  100% { background-position: -100% center; }
-}
-@keyframes sparklePass {
-  0%,40%  { background-position: -200% center; }
-  60%,100%{ background-position:  200% center; }
+@keyframes vireonSparkle {
+  0%,30%  { background-position: -200% center; }
+  55%,100%{ background-position:  250% center; }
 }
 
-/* ── SIZE VARIANTS ──────────────────────────────────────── */
-.v-logo-brand--nav { font-size: 1.85rem; gap: .02em; align-items: baseline; }
-.v-logo-brand--nav .v-logo-sub {
-  font-size: .42rem;
-  font-weight: 400;
-  letter-spacing: .52em;
-  color: rgba(212,175,55,.55);
-  text-transform: uppercase;
+.vireon-logo:hover .vireon-logo-word {
+  animation-duration: 2s;
+}
+
+/* ── GOLD RULE LINE ──────────────────────────────────────── */
+.vireon-logo-rule {
   display: block;
-  margin-top: -.1em;
-  -webkit-text-fill-color: rgba(212,175,55,.55);
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #D4AF37, #F5D76E, #D4AF37, transparent);
+  margin: .35em 0 .3em;
+  opacity: .8;
+  animation: ruleGlow 3s ease-in-out infinite;
 }
-
-.v-logo-brand--footer { font-size: 1.55rem; gap: .02em; align-items: baseline; }
-
-.v-logo-brand--loader {
-  font-size: 3.8rem;
-  flex-direction: column;
-  align-items: center;
-  gap: .2rem;
-}
-.v-logo-brand--loader .v-logo-v {
-  font-size: 5rem;
-  animation: vPulse 2.5s ease-in-out infinite;
-}
-@keyframes vPulse {
-  0%,100% { filter: drop-shadow(0 0 8px rgba(212,175,55,.4)); }
-  50%     { filter: drop-shadow(0 0 35px rgba(212,175,55,.95)) drop-shadow(0 0 60px rgba(212,175,55,.4)); }
-}
-.v-logo-brand--loader .v-logo-ireon { font-size: 2.8rem; letter-spacing: .42em; }
-
-.v-logo-brand--admin { font-size: 1.3rem; gap: .02em; align-items: baseline; }
-
-/* ── HIDE OLD TEXT-BASED LOGO SPANS ─────────────────────── */
-.nav-v, .nav-ireon,
-.loader-logo-v, .loader-logo-text,
-.footer-brand-logo .nav-v,
-.footer-brand-logo .nav-ireon { display: none !important; }
-
-/* ── IREON TEXT — animated gradient strip ───────────────── */
-.v-logo-ireon {
-  font-family: 'Montserrat', sans-serif;
-  font-weight: 800;
-  font-size: var(--logo-size, 42px);
-  letter-spacing: .28em;
-  text-transform: uppercase;
-  position: relative;
-  display: inline-block;
-  line-height: 1;
-  padding-right: .05em; /* right spacing for letter-spacing */
-
-  /* Base text is white so it shows through mask */
-  color: transparent;
-
-  /* Animated gradient: Gold → White → Black → Gold → White */
-  background: linear-gradient(
-    105deg,
-    #D4AF37  0%,
-    #F5D76E  12%,
-    #ffffff  22%,
-    #D4AF37  34%,
-    #B8962E  44%,
-    #0B0B0B  54%,
-    #2A2A2A  60%,
-    #D4AF37  70%,
-    #F5D76E  80%,
-    #ffffff  88%,
-    #D4AF37  100%
-  );
-  background-size: 300% 100%;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-
-  animation: ireonStrip 3.5s linear infinite;
-}
-
-@keyframes ireonStrip {
-  0%   { background-position: 200% center; }
-  100% { background-position: -100% center; }
-}
-
-/* Hover = faster + brighter strip */
-.v-logo-brand:hover .v-logo-ireon {
-  animation-duration: 1.6s;
+@keyframes ruleGlow {
+  0%,100%{ opacity:.5; box-shadow:none; }
+  50%    { opacity:1;  box-shadow:0 0 8px rgba(212,175,55,.6); }
 }
 
 /* ── SUBTITLE ────────────────────────────────────────────── */
-.v-logo-sub {
-  display: block;
+.vireon-logo-sub {
   font-family: 'Montserrat', sans-serif;
-  font-size: .38em;
   font-weight: 400;
-  letter-spacing: .55em;
-  color: rgba(212,175,55,.6);
+  letter-spacing: .45em;
   text-transform: uppercase;
-  margin-top: .15em;
+  color: rgba(212,175,55,.72);
+  display: block;
   line-height: 1;
+  -webkit-text-fill-color: rgba(212,175,55,.72);
 }
 
-/* ── SIZE VARIANTS ──────────────────────────────────────── */
+/* ══ SIZE VARIANTS ══════════════════════════════════════════ */
 
-/* Navbar (default) */
-.v-logo-brand--nav {
-  --logo-size: 36px;
+/* NAVBAR — compact horizontal, no image, no subtitle */
+.vireon-logo--nav {
   flex-direction: row;
   align-items: baseline;
+  gap: 0;
 }
-.v-logo-brand--nav .v-logo-img   { height: 38px; }
-.v-logo-brand--nav .v-logo-ireon { font-size: 1.9rem; letter-spacing: .32em; }
-
-/* Hero (large) */
-.v-logo-brand--hero {
-  --logo-size: 80px;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: .3rem;
+.vireon-logo--nav .vireon-logo-img { display: none; }
+.vireon-logo--nav .vireon-logo-rule { display: none; }
+.vireon-logo--nav .vireon-logo-sub {
+  font-size: .38rem;
+  margin-left: .6em;
+  align-self: flex-end;
+  padding-bottom: .15em;
 }
-.v-logo-brand--hero .v-logo-img   { height: 80px; }
-.v-logo-brand--hero .v-logo-ireon { font-size: 4.5rem; letter-spacing: .32em; }
+.vireon-logo--nav .vireon-logo-word { font-size: 1.75rem; letter-spacing: .25em; }
 
-/* Footer */
-.v-logo-brand--footer {
-  --logo-size: 30px;
+/* FOOTER — same as nav but slightly smaller */
+.vireon-logo--footer {
+  flex-direction: row;
   align-items: baseline;
+  gap: 0;
 }
-.v-logo-brand--footer .v-logo-img   { height: 32px; }
-.v-logo-brand--footer .v-logo-ireon { font-size: 1.5rem; letter-spacing: .3em; }
+.vireon-logo--footer .vireon-logo-img  { display: none; }
+.vireon-logo--footer .vireon-logo-rule { display: none; }
+.vireon-logo--footer .vireon-logo-sub {
+  font-size: .35rem;
+  margin-left: .5em;
+  align-self: flex-end;
+  padding-bottom: .1em;
+}
+.vireon-logo--footer .vireon-logo-word { font-size: 1.45rem; letter-spacing: .25em; }
 
-/* Loader */
-.v-logo-brand--loader {
-  --logo-size: 70px;
-  flex-direction: column;
+/* HERO / LOADING — full stack with image */
+.vireon-logo--hero,
+.vireon-logo--loader {
   align-items: center;
-  gap: .4rem;
 }
-.v-logo-brand--loader .v-logo-img   { height: 72px; }
-.v-logo-brand--loader .v-logo-ireon { font-size: 3.2rem; letter-spacing: .4em; }
+.vireon-logo--hero   .vireon-logo-img { height: 72px; }
+.vireon-logo--loader .vireon-logo-img { height: 64px; animation: logoImgPulse 2.5s ease-in-out infinite; }
+@keyframes logoImgPulse {
+  0%,100%{ filter:drop-shadow(0 0 10px rgba(212,175,55,.4)); }
+  50%    { filter:drop-shadow(0 0 35px rgba(212,175,55,.95)) drop-shadow(0 0 60px rgba(212,175,55,.35)); }
+}
+.vireon-logo--hero   .vireon-logo-word { font-size: 3.5rem; }
+.vireon-logo--loader .vireon-logo-word { font-size: 2.8rem; letter-spacing: .3em; }
+.vireon-logo--hero   .vireon-logo-sub  { font-size: .6rem; }
+.vireon-logo--loader .vireon-logo-sub  { font-size: .52rem; }
 
-/* Admin */
-.v-logo-brand--admin {
-  --logo-size: 28px;
+/* ADMIN SIDEBAR */
+.vireon-logo--admin {
+  flex-direction: row;
   align-items: baseline;
+  gap: 0;
 }
-.v-logo-brand--admin .v-logo-img   { height: 30px; }
-.v-logo-brand--admin .v-logo-ireon { font-size: 1.35rem; letter-spacing: .28em; }
+.vireon-logo--admin .vireon-logo-img  { display: none; }
+.vireon-logo--admin .vireon-logo-rule { display: none; }
+.vireon-logo--admin .vireon-logo-sub  { display: none; }
+.vireon-logo--admin .vireon-logo-word { font-size: 1.25rem; letter-spacing: .22em; }
 
-/* ── PULSE GLOW on Loader ────────────────────────────────── */
-.v-logo-brand--loader .v-logo-img {
-  animation: logoPulse 2.5s ease-in-out infinite;
+/* ADMIN LOGIN LEFT PANEL */
+.vireon-logo--login {
+  align-items: flex-start;
 }
-@keyframes logoPulse {
-  0%,100% { filter: drop-shadow(0 0 10px rgba(212,175,55,.4)); }
-  50%     { filter: drop-shadow(0 0 35px rgba(212,175,55,.95))
-                    drop-shadow(0 0 60px rgba(212,175,55,.4)); }
-}
+.vireon-logo--login .vireon-logo-img { height: 56px; margin-bottom: .5em; }
+.vireon-logo--login .vireon-logo-word { font-size: 2.6rem; letter-spacing: .28em; }
+.vireon-logo--login .vireon-logo-sub  { font-size: .52rem; letter-spacing: .42em; }
 
-/* ── STRIP SHIMMER EXTRA LAYER (pseudo-element sparkle) ──── */
-.v-logo-ireon::after {
-  content: attr(data-text);
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    105deg,
-    transparent 0%,
-    transparent 40%,
-    rgba(255,255,255,.55) 50%,
-    transparent 60%,
-    transparent 100%
-  );
-  background-size: 200% 100%;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  animation: sparklePass 4s ease-in-out infinite;
-  pointer-events: none;
-}
-@keyframes sparklePass {
-  0%   { background-position: -200% center; }
-  40%  { background-position: -200% center; }
-  60%  { background-position: 200% center; }
-  100% { background-position: 200% center; }
-}
+/* ── HIDE ALL OLD LEGACY LOGO SPANS ─────────────────────── */
+.nav-v, .nav-ireon, .nav-sub,
+.loader-logo-v, .loader-logo-text,
+.v-logo-v, .v-logo-ireon,
+.footer-brand-logo .nav-v,
+.footer-brand-logo .nav-ireon { display: none !important; }
