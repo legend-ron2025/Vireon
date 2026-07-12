@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -9,7 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,600&family=Montserrat:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <link rel="stylesheet" href="css/vireon.css">
-<link rel="stylesheet" href="css/animations.css">
+<link rel="stylesheet" href="css/animations.css"><link rel="stylesheet" href="css/logo.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <!-- Route guard -->
 <script src="js/admin-auth.js"></script>
@@ -33,6 +33,7 @@ body{padding-top:0;overflow:hidden}
 .admin-link:hover{color:var(--gold);background:rgba(212,175,55,.04);border-left-color:rgba(212,175,55,.4)}
 .admin-link.on{color:var(--gold);background:rgba(212,175,55,.07);border-left-color:var(--gold)}
 .admin-link i{width:16px;font-size:.8rem;flex-shrink:0}
+@keyframes ireonStrip{0%{background-position:200% center}100%{background-position:-100% center}}
 
 /* Panel system */
 .admin-panel{display:none;animation:panelIn .35s ease both}
@@ -155,14 +156,14 @@ body{padding-top:0;overflow:hidden}
 </head>
 <body style="padding-top:0">
 
-<div id="v-loader"><div class="loader-logo"><span class="loader-logo-v">V</span><span class="loader-logo-text">IREON</span></div><div class="loader-bar"><div class="loader-fill" id="loader-fill"></div></div><span class="loader-label">ADMIN PANEL</span><span class="loader-pct" id="loader-pct">0%</span></div>
+<div id="v-loader"><div class="v-logo-brand v-logo-brand--loader" style="margin-bottom:.5rem"><img src="https://i.postimg.cc/x1xz6B2p/Chat-GPT-Image-Jul-10-2026-01-52-54-PM.png" class="v-logo-img" alt="V"><span class="v-logo-ireon" data-text="IREON">IREON</span></div><div class="loader-bar"><div class="loader-fill" id="loader-fill"></div></div><span class="loader-label">ADMIN PANEL</span><span class="loader-pct" id="loader-pct">0%</span></div>
 
 <div class="admin-layout" id="admin-root">
 
 <!-- ══════════════ SIDEBAR ══════════════ -->
 <aside class="admin-sidebar">
   <div class="admin-logo-wrap">
-    <div class="admin-logo"><span>V</span>IREON <em>ADMIN</em></div>
+    <div class="admin-logo" style="display:flex;align-items:center;gap:.3rem"><img src="https://i.postimg.cc/x1xz6B2p/Chat-GPT-Image-Jul-10-2026-01-52-54-PM.png" style="height:28px;width:auto;filter:drop-shadow(0 0 8px rgba(212,175,55,.5))"><span style="font-family:Montserrat,sans-serif;font-size:1.1rem;font-weight:800;letter-spacing:.28em;background:linear-gradient(105deg,#D4AF37 0%,#F5D76E 18%,#fff 28%,#D4AF37 40%,#0B0B0B 55%,#D4AF37 68%,#F5D76E 82%,#D4AF37 100%);background-size:300% 100%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:ireonStrip 3.5s linear infinite">IREON</span><em style="font-size:.52rem;letter-spacing:.28em;color:var(--text-2);font-style:normal;margin-left:.2rem">ADMIN</em></div>
     <p style="font-size:.6rem;color:var(--gray);margin-top:.3rem" id="sidebar-user">Loading...</p>
   </div>
   <nav class="admin-nav" style="padding:.5rem 0 2rem;flex:1">

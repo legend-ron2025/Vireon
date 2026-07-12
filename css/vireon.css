@@ -1118,3 +1118,16 @@ details summary i { transition: transform .3s ease; display: inline-block; }
   font-size: .78rem; color: var(--gold); line-height: 1.7;
   max-width: 85%; margin-left: auto;
 }
+
+/* ── LOGO IREON STRIP ANIMATION ──────────────────────────── */
+@keyframes ireonStrip {
+  0%   { background-position: 200% center; }
+  100% { background-position: -100% center; }
+}
+/* Override old text-based logo spans — hide if still present */
+.nav-v { display: none !important; }
+.nav-ireon { display: none !important; }
+.loader-logo-v { display: none !important; }
+.loader-logo-text { display: none !important; }
+.footer-brand-logo .nav-v,
+.footer-brand-logo .nav-ireon { display: none !important; }
