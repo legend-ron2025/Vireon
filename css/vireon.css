@@ -269,9 +269,44 @@ h1,h2,h3,h4,h5,h6 { font-family:var(--font-serif); font-weight:400; line-height:
 .mega-visual-label { position:absolute; bottom:1.5rem; left:1.5rem; font-size:.52rem; letter-spacing:.25em; color:var(--gold); text-transform:uppercase; }
 
 /* Nav Logo */
-.nav-logo a { display:flex; flex-direction:column; align-items:center; }
-.nav-v { font-family:var(--font-serif); font-size:2.2rem; color:var(--gold); line-height:1; }
-.nav-ireon { font-size:.9rem; font-weight:700; letter-spacing:.4em; color:var(--white); }
+/* Nav Logo */
+.nav-logo a { display:flex; flex-direction:row; align-items:baseline; gap:.05em; }
+/* v-logo-v — bold gold V */
+.v-logo-v {
+  font-family: var(--font-serif);
+  font-weight: 700;
+  color: var(--gold);
+  line-height: 1;
+  background: linear-gradient(160deg,#F5D76E 0%,#D4AF37 40%,#B8962E 70%,#F5D76E 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  display: inline-block;
+}
+/* v-logo-ireon — light weight, animated gradient */
+.v-logo-ireon {
+  font-family: var(--font-sans);
+  font-weight: 300;
+  letter-spacing: .32em;
+  text-transform: uppercase;
+  display: inline-block;
+  line-height: 1;
+  background: linear-gradient(
+    105deg,
+    #D4AF37 0%, #F5D76E 12%, #ffffff 22%,
+    #D4AF37 34%, #B8962E 44%, #0B0B0B 54%,
+    #2A2A2A 60%, #D4AF37 70%, #F5D76E 80%,
+    #ffffff 88%, #D4AF37 100%
+  );
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: ireonStrip 3.5s linear infinite;
+}
+.nav-v { display: none !important; }
+.nav-ireon { display: none !important; }
+.nav-sub { font-size:.42rem; letter-spacing:.4em; color:rgba(212,175,55,.55); text-transform:uppercase; display:block; -webkit-text-fill-color:rgba(212,175,55,.55); }
 .nav-sub { font-size:.42rem; letter-spacing:.4em; color:var(--gray); text-transform:uppercase; margin-top:.1rem; }
 
 /* Nav icons */
@@ -1124,10 +1159,20 @@ details summary i { transition: transform .3s ease; display: inline-block; }
   0%   { background-position: 200% center; }
   100% { background-position: -100% center; }
 }
-/* Override old text-based logo spans — hide if still present */
-.nav-v { display: none !important; }
-.nav-ireon { display: none !important; }
-.loader-logo-v { display: none !important; }
-.loader-logo-text { display: none !important; }
+/* Nav size */
+.nav-logo .v-logo-v   { font-size: 2rem; }
+.nav-logo .v-logo-ireon { font-size: 1.1rem; }
+/* Footer size */
+.footer-brand-logo .v-logo-v    { font-size: 1.8rem; }
+.footer-brand-logo .v-logo-ireon { font-size: 1rem; }
+/* Loader size */
+#v-loader .v-logo-v    { font-size: 4.5rem; }
+#v-loader .v-logo-ireon { font-size: 2.6rem; letter-spacing: .4em; }
+/* Admin sidebar */
+.admin-logo .v-logo-v    { font-size: 1.6rem; }
+.admin-logo .v-logo-ireon { font-size: .9rem; }
+/* Suppress old text-based spans everywhere */
+.nav-v, .nav-ireon,
+.loader-logo-v, .loader-logo-text,
 .footer-brand-logo .nav-v,
 .footer-brand-logo .nav-ireon { display: none !important; }

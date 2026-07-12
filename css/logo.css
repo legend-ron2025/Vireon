@@ -14,22 +14,132 @@
   line-height: 1;
 }
 
-/* ── THE V — logo image ─────────────────────────────────── */
-.v-logo-img {
-  height: var(--logo-size, 42px);
-  width: auto;
-  display: block;
-  flex-shrink: 0;
-  filter: drop-shadow(0 0 8px rgba(212,175,55,.5));
-  transition: filter .4s ease;
+/* ── THE V — bold gold letter ───────────────────────────── */
+.v-logo-v {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-weight: 700;
+  font-style: normal;
+  color: var(--gold, #D4AF37);
+  line-height: 1;
+  display: inline-block;
   position: relative;
   z-index: 2;
-  margin-right: -2px; /* tuck into IREON */
+  text-shadow: 0 0 12px rgba(212,175,55,.5);
+  transition: text-shadow .4s;
+  /* optionally overlay the logo image as texture inside V */
+  background: linear-gradient(160deg, #F5D76E 0%, #D4AF37 40%, #B8962E 70%, #F5D76E 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-size: inherit;
 }
-.v-logo-brand:hover .v-logo-img {
-  filter: drop-shadow(0 0 18px rgba(212,175,55,.9))
-          drop-shadow(0 0 35px rgba(212,175,55,.4));
+.v-logo-brand:hover .v-logo-v {
+  background: linear-gradient(160deg, #ffffff 0%, #F5D76E 30%, #D4AF37 60%, #F5D76E 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  filter: drop-shadow(0 0 12px rgba(212,175,55,.9));
 }
+
+/* ── IREON TEXT — LIGHT weight, animated gradient strip ─── */
+.v-logo-ireon {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 300;  /* light — not bold */
+  letter-spacing: .3em;
+  text-transform: uppercase;
+  position: relative;
+  display: inline-block;
+  line-height: 1;
+  color: transparent;
+  background: linear-gradient(
+    105deg,
+    #D4AF37  0%,
+    #F5D76E  12%,
+    #ffffff  22%,
+    #D4AF37  34%,
+    #B8962E  44%,
+    #0B0B0B  54%,
+    #2A2A2A  60%,
+    #D4AF37  70%,
+    #F5D76E  80%,
+    #ffffff  88%,
+    #D4AF37  100%
+  );
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: ireonStrip 3.5s linear infinite;
+  font-size: inherit;
+}
+.v-logo-brand:hover .v-logo-ireon { animation-duration: 1.6s; }
+
+/* sparkle sweep layer */
+.v-logo-ireon::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 0%,
+    transparent 40%,
+    rgba(255,255,255,.5) 50%,
+    transparent 60%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: sparklePass 4s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes ireonStrip {
+  0%   { background-position: 200% center; }
+  100% { background-position: -100% center; }
+}
+@keyframes sparklePass {
+  0%,40%  { background-position: -200% center; }
+  60%,100%{ background-position:  200% center; }
+}
+
+/* ── SIZE VARIANTS ──────────────────────────────────────── */
+.v-logo-brand--nav { font-size: 1.85rem; gap: .02em; align-items: baseline; }
+.v-logo-brand--nav .v-logo-sub {
+  font-size: .42rem;
+  font-weight: 400;
+  letter-spacing: .52em;
+  color: rgba(212,175,55,.55);
+  text-transform: uppercase;
+  display: block;
+  margin-top: -.1em;
+  -webkit-text-fill-color: rgba(212,175,55,.55);
+}
+
+.v-logo-brand--footer { font-size: 1.55rem; gap: .02em; align-items: baseline; }
+
+.v-logo-brand--loader {
+  font-size: 3.8rem;
+  flex-direction: column;
+  align-items: center;
+  gap: .2rem;
+}
+.v-logo-brand--loader .v-logo-v {
+  font-size: 5rem;
+  animation: vPulse 2.5s ease-in-out infinite;
+}
+@keyframes vPulse {
+  0%,100% { filter: drop-shadow(0 0 8px rgba(212,175,55,.4)); }
+  50%     { filter: drop-shadow(0 0 35px rgba(212,175,55,.95)) drop-shadow(0 0 60px rgba(212,175,55,.4)); }
+}
+.v-logo-brand--loader .v-logo-ireon { font-size: 2.8rem; letter-spacing: .42em; }
+
+.v-logo-brand--admin { font-size: 1.3rem; gap: .02em; align-items: baseline; }
+
+/* ── HIDE OLD TEXT-BASED LOGO SPANS ─────────────────────── */
+.nav-v, .nav-ireon,
+.loader-logo-v, .loader-logo-text,
+.footer-brand-logo .nav-v,
+.footer-brand-logo .nav-ireon { display: none !important; }
 
 /* ── IREON TEXT — animated gradient strip ───────────────── */
 .v-logo-ireon {

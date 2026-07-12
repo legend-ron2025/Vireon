@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -43,9 +43,10 @@ input{font-family:var(--font-sans);outline:none}
 .orb-2{width:300px;height:300px;bottom:0;left:0;background:radial-gradient(circle,rgba(180,80,0,.08),transparent 70%);animation:orbFloat 7s ease-in-out infinite 2s}
 @keyframes orbFloat{0%,100%{transform:translate(0,0)}50%{transform:translate(20px,-30px)}}
 .left-logo{margin-bottom:3rem;position:relative;z-index:1}
-.left-v{font-family:var(--font-serif);font-size:5rem;color:var(--gold);line-height:1;display:block;animation:glow 3s ease-in-out infinite}
-.left-ireon{font-size:1.2rem;font-weight:700;letter-spacing:.4em;color:var(--white);display:block}
-.left-sub{font-size:.5rem;letter-spacing:.4em;color:var(--gray);text-transform:uppercase;margin-top:.3rem}
+.left-v{display:none}/* replaced by v-logo-v */
+.left-ireon{display:none}/* replaced by v-logo-ireon */
+.v-logo-v{font-family:'Cormorant Garamond',Georgia,serif;font-weight:700;font-size:2.8rem;line-height:1;background:linear-gradient(160deg,#F5D76E 0%,#D4AF37 40%,#B8962E 70%,#F5D76E 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;display:inline-block}
+.left-sub{font-size:.5rem;letter-spacing:.4em;color:var(--gray);text-transform:uppercase;margin-top:.3rem}.left-sub{font-size:.5rem;letter-spacing:.4em;color:var(--gray);text-transform:uppercase;margin-top:.3rem}
 @keyframes glow{0%,100%{text-shadow:0 0 10px rgba(212,175,55,.3)}50%{text-shadow:0 0 40px rgba(212,175,55,.9),0 0 80px rgba(212,175,55,.4)}}
 @keyframes ireonStrip{0%{background-position:200% center}100%{background-position:-100% center}}
 .left-quote{font-family:var(--font-serif);font-size:2.2rem;font-weight:300;color:var(--white);line-height:1.3;margin-bottom:1.5rem;position:relative;z-index:1}
@@ -159,13 +160,9 @@ input{font-family:var(--font-sans);outline:none}
   <div class="orb orb-1"></div>
   <div class="orb orb-2"></div>
   <div class="left-logo">
-    <a href="index.html" style="display:inline-flex;align-items:center;gap:0;text-decoration:none">
-      <img src="https://i.postimg.cc/x1xz6B2p/Chat-GPT-Image-Jul-10-2026-01-52-54-PM.png"
-           style="height:62px;width:auto;filter:drop-shadow(0 0 12px rgba(212,175,55,.6));animation:glow 3s ease-in-out infinite">
-      <span style="font-family:'Montserrat',sans-serif;font-size:2.8rem;font-weight:800;letter-spacing:.32em;
-        background:linear-gradient(105deg,#D4AF37 0%,#F5D76E 15%,#fff 25%,#D4AF37 38%,#B8962E 48%,#0B0B0B 58%,#2A2A2A 64%,#D4AF37 74%,#F5D76E 84%,#fff 92%,#D4AF37 100%);
-        background-size:300% 100%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-        animation:ireonStrip 3.5s linear infinite;display:inline-block">IREON</span>
+    <a href="index.html" style="display:inline-flex;align-items:baseline;gap:.05em;text-decoration:none">
+      <span class="v-logo-v" style="font-size:3rem;font-weight:700;font-family:'Cormorant Garamond',Georgia,serif;background:linear-gradient(160deg,#F5D76E 0%,#D4AF37 40%,#B8962E 70%,#F5D76E 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1">V</span>
+      <span style="font-family:'Montserrat',sans-serif;font-size:2rem;font-weight:300;letter-spacing:.35em;background:linear-gradient(105deg,#D4AF37 0%,#F5D76E 15%,#fff 25%,#D4AF37 38%,#B8962E 48%,#0B0B0B 58%,#2A2A2A 64%,#D4AF37 74%,#F5D76E 84%,#fff 92%,#D4AF37 100%);background-size:300% 100%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:ireonStrip 3.5s linear infinite;display:inline-block;line-height:1">IREON</span>
     </a>
     <p class="left-sub" style="margin-top:.4rem">ENTERPRISE ADMIN</p>
   </div>
