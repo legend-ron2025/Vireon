@@ -400,6 +400,9 @@
 }
 
 /* ── LUXURY CURSOR ♱ ──────────────────────────────────────── */
+/* Only the symbol — no ring, no dot, no circle */
+#v-cursor-ring { display: none !important; }
+
 @keyframes cursorGlow {
   0%,100% {
     color: #D4AF37;

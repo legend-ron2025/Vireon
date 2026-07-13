@@ -1196,70 +1196,12 @@ details summary i { transition: transform .3s ease; display: inline-block; }
    VIREON — LUXURY ⚜ CURSOR SYSTEM
    ══════════════════════════════════════════════════════════ */
 
-/* Hide the default browser cursor sitewide */
+/* ── LUXURY ♱ CURSOR — symbol only, no ring/dot/circle ─────── */
+#v-cursor-ring { display: none !important; }
 *, *::before, *::after { cursor: none !important; }
-
-/* The luxury symbol cursor element */
-#v-cursor {
-  position: fixed;
-  pointer-events: none;
-  z-index: 999999;
-  transform: translate(-50%, -50%);
-  transition: transform .08s ease, opacity .3s;
-  font-size: 1.4rem;
-  line-height: 1;
-  color: #D4AF37;
-  text-shadow:
-    0 0 8px rgba(212,175,55,.8),
-    0 0 20px rgba(212,175,55,.4);
-  user-select: none;
-  /* animate a slow golden glow pulse */
-  animation: cursorGlow 2.5s ease-in-out infinite;
-  will-change: left, top;
-}
-@keyframes cursorGlow {
-  0%,100% {
-    text-shadow: 0 0 6px rgba(212,175,55,.6), 0 0 14px rgba(212,175,55,.3);
-    color: #D4AF37;
-  }
-  50% {
-    text-shadow: 0 0 18px rgba(212,175,55,1), 0 0 35px rgba(212,175,55,.6), 0 0 55px rgba(212,175,55,.25);
-    color: #F5D76E;
-  }
-}
-
-/* Follower ring — thin gold circle that trails */
-#v-cursor-ring {
-  position: fixed;
-  pointer-events: none;
-  z-index: 999998;
-  transform: translate(-50%, -50%);
-  width: 36px; height: 36px;
-  border-radius: 50%;
-  border: 1px solid rgba(212,175,55,.4);
-  transition: width .3s ease, height .3s ease, border-color .3s, left .14s ease, top .14s ease;
-  will-change: left, top;
-}
-#v-cursor-ring.grow {
-  width: 58px; height: 58px;
-  border-color: rgba(212,175,55,.75);
-  background: rgba(212,175,55,.04);
-}
-#v-cursor-ring.clicking {
-  width: 22px; height: 22px;
-  border-color: var(--gold);
-  border-width: 2px;
-}
-
-/* Restore pointer on interactive elements — cursor still hidden,
-   but the custom one shows ⚜ so UX is preserved */
 a, button, [role="button"], label, select,
-input[type="submit"], input[type="button"] {
-  cursor: none !important;
-}
-
-/* On touch / mobile — restore normal cursor */
+input[type="submit"], input[type="button"] { cursor: none !important; }
 @media (hover: none) {
   *, *::before, *::after { cursor: auto !important; }
-  #v-cursor, #v-cursor-ring { display: none !important; }
+  #v-cursor { display: none !important; }
 }
