@@ -463,43 +463,106 @@ body{padding-top:0;overflow:hidden}
 
 <!-- ════════════ PANEL: CATEGORIES ════════════ -->
 <div class="admin-panel" id="panel-categories">
-  <div class="panel-header"><h2 class="panel-title">Categories <em>Management</em></h2><p class="panel-subtitle">Organise your product taxonomy.</p></div>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem">
-    <div>
-      <div class="d-table-wrap">
-        <div style="padding:1.2rem 1.5rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between"><p style="font-size:.68rem;font-weight:700;letter-spacing:.18em;color:var(--white);text-transform:uppercase">All Categories</p></div>
-        <table class="d-table">
-          <thead><tr><th>Category</th><th>Products</th><th>Status</th><th>Actions</th></tr></thead>
-          <tbody>
-            <tr><td><i class="fas fa-circle" style="color:var(--gold);font-size:.5rem;margin-right:.5rem"></i>Coats</td><td>5</td><td><span class="badge badge-active">Active</span></td><td><button class="tbl-action">EDIT</button></td></tr>
-            <tr><td><i class="fas fa-circle" style="color:var(--gold);font-size:.5rem;margin-right:.5rem"></i>Dresses</td><td>4</td><td><span class="badge badge-active">Active</span></td><td><button class="tbl-action">EDIT</button></td></tr>
-            <tr><td><i class="fas fa-circle" style="color:var(--gold);font-size:.5rem;margin-right:.5rem"></i>Suits</td><td>2</td><td><span class="badge badge-active">Active</span></td><td><button class="tbl-action">EDIT</button></td></tr>
-            <tr><td><i class="fas fa-circle" style="color:var(--gold);font-size:.5rem;margin-right:.5rem"></i>Bags</td><td>2</td><td><span class="badge badge-active">Active</span></td><td><button class="tbl-action">EDIT</button></td></tr>
-            <tr><td><i class="fas fa-circle" style="color:var(--gold);font-size:.5rem;margin-right:.5rem"></i>Accessories</td><td>3</td><td><span class="badge badge-active">Active</span></td><td><button class="tbl-action">EDIT</button></td></tr>
-            <tr><td><i class="fas fa-circle" style="color:var(--gold);font-size:.5rem;margin-right:.5rem"></i>Eyewear</td><td>1</td><td><span class="badge badge-active">Active</span></td><td><button class="tbl-action">EDIT</button></td></tr>
-            <tr><td><i class="fas fa-circle" style="color:var(--gray);font-size:.5rem;margin-right:.5rem"></i>Shoes</td><td>0</td><td><span class="badge badge-inactive">Inactive</span></td><td><button class="tbl-action">EDIT</button></td></tr>
-          </tbody>
-        </table>
-      </div>
+  <div class="panel-header">
+    <h2 class="panel-title">Categories <em>Management</em></h2>
+    <p class="panel-subtitle">Create, organise and manage your product taxonomy.</p>
+  </div>
+
+  <!-- Stats -->
+  <div class="stat-row stat-row-4" style="margin-bottom:1.5rem">
+    <div class="stat-card"><div class="stat-card-icon"><i class="fas fa-tags"></i></div><div class="stat-card-n" id="cat-total-count">10</div><div class="stat-card-label">Total Categories</div></div>
+    <div class="stat-card"><div class="stat-card-icon" style="color:var(--success)"><i class="fas fa-check-circle"></i></div><div class="stat-card-n" style="color:var(--success)" id="cat-active-count">8</div><div class="stat-card-label">Active</div></div>
+    <div class="stat-card"><div class="stat-card-icon" style="color:var(--gray)"><i class="fas fa-ban"></i></div><div class="stat-card-n" style="color:var(--gray)" id="cat-inactive-count">2</div><div class="stat-card-label">Inactive</div></div>
+    <div class="stat-card"><div class="stat-card-icon"><i class="fas fa-box-open"></i></div><div class="stat-card-n" id="cat-products-count">19</div><div class="stat-card-label">Products Assigned</div></div>
+  </div>
+
+  <!-- Toolbar -->
+  <div class="panel-toolbar">
+    <div class="pt-left">
+      <div class="d-search-wrap"><i class="fas fa-search"></i><input type="text" class="d-search" id="cat-search" placeholder="Search categories..."></div>
+      <span id="cat-count" class="shop-count">10 categories</span>
     </div>
-    <div class="d-form-section">
-      <p class="d-form-section-title">Add New Category</p>
-      <div class="d-form-group"><label class="d-form-label">Category Name *</label><input type="text" class="d-form-input" placeholder="e.g. Jewellery"></div>
-      <div class="d-form-group"><label class="d-form-label">Slug</label><input type="text" class="d-form-input" placeholder="jewellery"></div>
-      <div class="d-form-group"><label class="d-form-label">Parent Category</label><select class="d-form-select"><option value="">None (Top Level)</option><option>Accessories</option></select></div>
-      <div class="d-form-group"><label class="d-form-label">Description</label><textarea class="d-form-textarea" placeholder="Category description..." style="min-height:70px"></textarea></div>
-      <div class="d-form-group"><label class="d-form-label">Status</label>
-        <div style="display:flex;align-items:center;gap:.8rem;margin-top:.3rem">
-          <label class="d-toggle"><input type="checkbox" checked><span class="d-slider"></span></label>
-          <span style="font-size:.75rem;color:var(--text-2)">Active</span>
-        </div>
-      </div>
-      <button class="d-btn"><i class="fas fa-save"></i> SAVE CATEGORY</button>
+    <div class="pt-right">
+      <button class="d-btn" onclick="document.getElementById('cat-form-section').style.display='block';document.getElementById('cat-form-title').textContent='Add New Category';document.getElementById('cat-submit-btn').textContent='CREATE CATEGORY';document.getElementById('cat-add-form').removeAttribute('data-edit-id');document.getElementById('cat-add-form').reset();document.getElementById('cat-form-section').scrollIntoView({behavior:'smooth'})">
+        <i class="fas fa-plus"></i> ADD CATEGORY
+      </button>
     </div>
   </div>
-</div>
 
-<!-- ════════════ PANEL: INVENTORY ════════════ -->
+  <!-- Categories Table -->
+  <div class="d-table-wrap" style="margin-bottom:1.5rem">
+    <table class="d-table">
+      <thead>
+        <tr>
+          <th>Category</th>
+          <th>Parent</th>
+          <th>Products</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="categories-table-body">
+        <tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--gray)">Loading...</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Add / Edit Category Form -->
+  <div id="cat-form-section" style="display:none">
+    <div class="d-form-section">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem">
+        <p class="d-form-section-title" style="margin-bottom:0" id="cat-form-title">Add New Category</p>
+        <button class="d-btn-ghost" onclick="document.getElementById('cat-form-section').style.display='none'"><i class="fas fa-times"></i> CLOSE</button>
+      </div>
+      <form id="cat-add-form">
+        <div class="d-form-grid-2">
+          <div class="d-form-group">
+            <label class="d-form-label">Category Name *</label>
+            <input type="text" class="d-form-input" id="cat-name-input" placeholder="e.g. Jewellery" required>
+          </div>
+          <div class="d-form-group">
+            <label class="d-form-label">Slug (auto-generated)</label>
+            <input type="text" class="d-form-input" id="cat-slug-preview" placeholder="jewellery" readonly style="opacity:.6">
+          </div>
+        </div>
+        <div class="d-form-grid-2">
+          <div class="d-form-group">
+            <label class="d-form-label">Parent Category</label>
+            <select class="d-form-select" id="cat-parent-input">
+              <option value="">None (Top Level)</option>
+            </select>
+          </div>
+          <div class="d-form-group">
+            <label class="d-form-label">Icon Class (Font Awesome)</label>
+            <input type="text" class="d-form-input" id="cat-icon-input" placeholder="fas fa-tag" value="fas fa-tag">
+            <p style="font-size:.62rem;color:var(--gray);margin-top:.3rem">Preview: <i id="cat-icon-preview" class="fas fa-tag" style="color:var(--gold)"></i></p>
+          </div>
+        </div>
+        <div class="d-form-group">
+          <label class="d-form-label">Description</label>
+          <textarea class="d-form-textarea" id="cat-desc-input" placeholder="Brief category description..." style="min-height:70px"></textarea>
+        </div>
+        <div class="d-form-group">
+          <label class="d-form-label">Status</label>
+          <div style="display:flex;align-items:center;gap:.8rem;margin-top:.4rem">
+            <label class="d-toggle"><input type="checkbox" id="cat-status-toggle" checked><span class="d-slider"></span></label>
+            <span style="font-size:.75rem;color:var(--text-2)" id="cat-status-label">Active</span>
+          </div>
+        </div>
+        <div style="display:flex;gap:.8rem">
+          <button type="submit" class="d-btn" id="cat-submit-btn"><i class="fas fa-save"></i> CREATE CATEGORY</button>
+          <button type="button" class="d-btn-ghost" onclick="document.getElementById('cat-form-section').style.display='none'">CANCEL</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Category Tree View -->
+  <div class="d-form-section">
+    <p class="d-form-section-title">Category Tree</p>
+    <div id="cat-tree" style="display:flex;flex-direction:column;gap:.5rem"></div>
+  </div>
+</div>
 <div class="admin-panel" id="panel-inventory">
   <div class="panel-header"><h2 class="panel-title">Inventory <em>Control</em></h2><p class="panel-subtitle">Monitor stock levels, set alerts and manage warehouse operations.</p></div>
   <div class="d-alert d-alert-warn"><i class="fas fa-exclamation-triangle"></i><div><strong>4 items running low.</strong> Stock below reorder threshold. Review and reorder before items sell out.</div></div>
@@ -1080,6 +1143,7 @@ body{padding-top:0;overflow:hidden}
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="js/admin-auth.js"></script>
+<script src="js/vireon.js"></script>
 <script src="js/dashboard.js"></script>
 </body>
 </html>

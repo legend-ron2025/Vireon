@@ -691,3 +691,307 @@ document.addEventListener('DOMContentLoaded', () => {
   initDashboardCharts();
   showPanel('panel-dashboard');
 });
+
+/* ────────────────────────────────────────────────────────────
+   CATEGORIES MANAGEMENT
+   ──────────────────────────────────────────────────────────── */
+const CATEGORIES_STORE_KEY = 'vireon_categories';
+
+const DEFAULT_CATEGORIES = [
+  { id: 'cat_001', name: 'Coats',       slug: 'coats',       parent: null,  products: 5,  status: 'Active',   icon: 'fas fa-vest' },
+  { id: 'cat_002', name: 'Dresses',     slug: 'dresses',     parent: null,  products: 4,  status: 'Active',   icon: 'fas fa-female' },
+  { id: 'cat_003', name: 'Suits',       slug: 'suits',       parent: null,  products: 2,  status: 'Active',   icon: 'fas fa-user-tie' },
+  { id: 'cat_004', name: 'Shirts',      slug: 'shirts',      parent: null,  products: 1,  status: 'Active',   icon: 'fas fa-tshirt' },
+  { id: 'cat_005', name: 'Trousers',    slug: 'trousers',    parent: null,  products: 1,  status: 'Active',   icon: 'fas fa-arrows-alt-v' },
+  { id: 'cat_006', name: 'Bags',        slug: 'bags',        parent: null,  products: 2,  status: 'Active',   icon: 'fas fa-shopping-bag' },
+  { id: 'cat_007', name: 'Accessories', slug: 'accessories', parent: null,  products: 3,  status: 'Active',   icon: 'fas fa-ring' },
+  { id: 'cat_008', name: 'Eyewear',     slug: 'eyewear',     parent: null,  products: 1,  status: 'Active',   icon: 'fas fa-glasses' },
+  { id: 'cat_009', name: 'Shoes',       slug: 'shoes',       parent: null,  products: 0,  status: 'Inactive', icon: 'fas fa-shoe-prints' },
+  { id: 'cat_010', name: 'Jewelry',     slug: 'jewelry',     parent: 'cat_007', products: 0, status: 'Inactive', icon: 'fas fa-gem' },
+];
+
+function getCategories() {
+  try {
+    const stored = JSON.parse(localStorage.getItem(CATEGORIES_STORE_KEY));
+    return stored && stored.length ? stored : DEFAULT_CATEGORIES;
+  } catch { return DEFAULT_CATEGORIES; }
+}
+
+function saveCategories(cats) {
+  localStorage.setItem(CATEGORIES_STORE_KEY, JSON.stringify(cats));
+}
+
+function generateCatId() {
+  return 'cat_' + Date.now().toString(36);
+}
+
+function initCategoriesPanel() {
+  const panel = document.getElementById('panel-categories');
+  if (!panel) return;
+
+  renderCategoriesTable();
+  bindCategoryForm();
+}
+
+function renderCategoriesTable(filter = '') {
+  const tbody = document.getElementById('categories-table-body');
+  if (!tbody) return;
+  let cats = getCategories();
+  if (filter) cats = cats.filter(c =>
+    c.name.toLowerCase().includes(filter.toLowerCase()) ||
+    c.slug.toLowerCase().includes(filter.toLowerCase())
+  );
+
+  tbody.innerHTML = cats.map(cat => {
+    const parent = cat.parent ? getCategories().find(c => c.id === cat.parent)?.name || '—' : 'Top Level';
+    return `
+    <tr>
+      <td>
+        <div style="display:flex;align-items:center;gap:.8rem">
+          <div style="width:36px;height:36px;background:rgba(212,175,55,.1);border:1px solid rgba(212,175,55,.2);display:flex;align-items:center;justify-content:center;color:var(--gold);font-size:.85rem;flex-shrink:0">
+            <i class="${cat.icon}"></i>
+          </div>
+          <div>
+            <p style="font-size:.8rem;color:var(--white);font-weight:500">${cat.name}</p>
+            <p style="font-size:.65rem;color:var(--gray)">#${cat.slug}</p>
+          </div>
+        </div>
+      </td>
+      <td style="font-size:.72rem;color:var(--text-2)">${parent}</td>
+      <td style="font-size:.82rem;color:var(--gold);font-family:var(--font-serif)">${cat.products}</td>
+      <td><span class="o-status ${cat.status === 'Active' ? 's-delivered' : 's-cancelled'}">${cat.status}</span></td>
+      <td>
+        <button class="v-action-btn" onclick="editCategory('${cat.id}')"><i class="fas fa-edit"></i> EDIT</button>
+        <button class="v-action-btn" style="border-color:rgba(239,68,68,.3);color:#EF4444;margin-left:.3rem" onclick="deleteCategory('${cat.id}')"><i class="fas fa-trash"></i></button>
+        <button class="v-action-btn" style="margin-left:.3rem" onclick="toggleCategoryStatus('${cat.id}')"><i class="fas fa-power-off"></i></button>
+      </td>
+    </tr>`;
+  }).join('') || `<tr><td colspan="5" style="text-align:center;padding:3rem;color:var(--gray)">No categories found</td></tr>`;
+
+  // Update count
+  const countEl = document.getElementById('cat-count');
+  if (countEl) countEl.textContent = cats.length + ' categories';
+}
+
+function bindCategoryForm() {
+  const form = document.getElementById('cat-add-form');
+  if (!form) return;
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    const name = document.getElementById('cat-name-input')?.value.trim();
+    if (!name) { toast('Please enter a category name', 'error'); return; }
+
+    const cats = getCategories();
+    const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    const icon = document.getElementById('cat-icon-input')?.value || 'fas fa-tag';
+    const parent = document.getElementById('cat-parent-input')?.value || null;
+    const desc  = document.getElementById('cat-desc-input')?.value || '';
+
+    // Check duplicate
+    if (cats.find(c => c.slug === slug)) { toast(`Category "${name}" already exists`, 'error'); return; }
+
+    const newCat = {
+      id: generateCatId(),
+      name,
+      slug,
+      parent: parent || null,
+      products: 0,
+      status: 'Active',
+      icon,
+      description: desc,
+    };
+    cats.push(newCat);
+    saveCategories(cats);
+    renderCategoriesTable();
+    updateParentDropdown();
+    form.reset();
+    document.getElementById('cat-form-section').style.display = 'none';
+    toast(`Category "${name}" created successfully`, 'success');
+  });
+
+  // Search
+  document.getElementById('cat-search')?.addEventListener('input', function(){
+    renderCategoriesTable(this.value);
+  });
+}
+
+function editCategory(id) {
+  const cats = getCategories();
+  const cat = cats.find(c => c.id === id);
+  if (!cat) return;
+
+  // Fill form with existing values
+  document.getElementById('cat-form-section').style.display = 'block';
+  document.getElementById('cat-form-title').textContent = 'Edit Category';
+  const nameEl = document.getElementById('cat-name-input');
+  const iconEl = document.getElementById('cat-icon-input');
+  const descEl = document.getElementById('cat-desc-input');
+  if (nameEl) nameEl.value = cat.name;
+  if (iconEl) iconEl.value = cat.icon;
+  if (descEl) descEl.value = cat.description || '';
+
+  // Change submit to update
+  const form = document.getElementById('cat-add-form');
+  form.dataset.editId = id;
+  document.getElementById('cat-submit-btn').textContent = 'UPDATE CATEGORY';
+  document.getElementById('cat-form-section').scrollIntoView({ behavior: 'smooth' });
+}
+
+function deleteCategory(id) {
+  const cats = getCategories();
+  const cat = cats.find(c => c.id === id);
+  if (!cat) return;
+  if (!confirm(`Delete category "${cat.name}"? This cannot be undone.`)) return;
+  saveCategories(cats.filter(c => c.id !== id));
+  renderCategoriesTable();
+  toast(`"${cat.name}" deleted`, 'error');
+}
+
+function toggleCategoryStatus(id) {
+  const cats = getCategories();
+  const cat = cats.find(c => c.id === id);
+  if (!cat) return;
+  cat.status = cat.status === 'Active' ? 'Inactive' : 'Active';
+  saveCategories(cats);
+  renderCategoriesTable();
+  toast(`"${cat.name}" ${cat.status.toLowerCase()}`, cat.status === 'Active' ? 'success' : '');
+}
+
+function updateParentDropdown() {
+  const sel = document.getElementById('cat-parent-input');
+  if (!sel) return;
+  const cats = getCategories();
+  const topLevel = cats.filter(c => !c.parent);
+  sel.innerHTML = '<option value="">None (Top Level)</option>' +
+    topLevel.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+}
+
+// Extend showPanel to init categories
+const _origShowPanel = window.showPanel;
+window.showPanel = function(id) {
+  if (_origShowPanel) _origShowPanel(id);
+  if (id === 'panel-categories') {
+    initCategoriesPanel();
+    updateParentDropdown();
+  }
+};
+
+/* ── CATEGORY FORM LIVE INTERACTIONS ─────────────────────── */
+document.addEventListener('DOMContentLoaded', function() {
+
+  // Auto-generate slug from name
+  document.addEventListener('input', function(e) {
+    if (e.target.id === 'cat-name-input') {
+      const slug = e.target.value.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+      const preview = document.getElementById('cat-slug-preview');
+      if (preview) preview.value = slug;
+    }
+    // Live icon preview
+    if (e.target.id === 'cat-icon-input') {
+      const icon = document.getElementById('cat-icon-preview');
+      if (icon) icon.className = e.target.value || 'fas fa-tag';
+    }
+  });
+
+  // Status toggle label
+  document.addEventListener('change', function(e) {
+    if (e.target.id === 'cat-status-toggle') {
+      const label = document.getElementById('cat-status-label');
+      if (label) label.textContent = e.target.checked ? 'Active' : 'Inactive';
+    }
+  });
+
+  // Category form submit override to handle edit mode
+  document.addEventListener('submit', function(e) {
+    if (e.target.id !== 'cat-add-form') return;
+    e.preventDefault();
+    const editId = e.target.dataset.editId;
+    const name   = document.getElementById('cat-name-input')?.value.trim();
+    if (!name) { toast('Please enter a category name', 'error'); return; }
+    const slug   = name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    const icon   = document.getElementById('cat-icon-input')?.value || 'fas fa-tag';
+    const parent = document.getElementById('cat-parent-input')?.value || null;
+    const desc   = document.getElementById('cat-desc-input')?.value || '';
+    const active = document.getElementById('cat-status-toggle')?.checked !== false;
+    const cats   = getCategories();
+
+    if (editId) {
+      // UPDATE
+      const cat = cats.find(c => c.id === editId);
+      if (cat) {
+        cat.name = name; cat.slug = slug; cat.icon = icon;
+        cat.parent = parent || null; cat.description = desc;
+        cat.status = active ? 'Active' : 'Inactive';
+        saveCategories(cats);
+        renderCategoriesTable();
+        renderCategoryTree();
+        toast(`"${name}" updated`, 'success');
+      }
+    } else {
+      // CREATE
+      if (cats.find(c => c.slug === slug)) { toast(`"${name}" already exists`, 'error'); return; }
+      cats.push({ id: generateCatId(), name, slug, parent: parent||null, products:0, status: active?'Active':'Inactive', icon, description:desc });
+      saveCategories(cats);
+      renderCategoriesTable();
+      renderCategoryTree();
+      updateParentDropdown();
+      updateCategoryStats();
+      toast(`"${name}" created`, 'success');
+    }
+    document.getElementById('cat-form-section').style.display = 'none';
+    e.target.reset();
+    delete e.target.dataset.editId;
+    document.getElementById('cat-submit-btn').textContent = 'CREATE CATEGORY';
+    document.getElementById('cat-form-title').textContent  = 'Add New Category';
+  });
+});
+
+/* ── CATEGORY TREE VIEW ───────────────────────────────────── */
+function renderCategoryTree() {
+  const tree = document.getElementById('cat-tree');
+  if (!tree) return;
+  const cats = getCategories();
+  const topLevel = cats.filter(c => !c.parent);
+  tree.innerHTML = topLevel.map(cat => {
+    const children = cats.filter(c => c.parent === cat.id);
+    const childHtml = children.map(ch => `
+      <div style="display:flex;align-items:center;gap:.8rem;padding:.5rem .8rem;margin-left:2rem;background:var(--bg-3);border:1px solid var(--border);margin-top:.3rem">
+        <i class="${ch.icon}" style="color:var(--gold);width:14px;font-size:.78rem"></i>
+        <span style="font-size:.75rem;color:var(--text-2)">${ch.name}</span>
+        <span style="font-size:.6rem;color:var(--gray);margin-left:auto">${ch.products} products</span>
+        <span class="o-status ${ch.status==='Active'?'s-delivered':'s-cancelled'}" style="font-size:.5rem">${ch.status}</span>
+      </div>`).join('');
+    return `
+      <div style="background:var(--bg-2);border:1px solid rgba(212,175,55,.2);border-left:3px solid var(--gold)">
+        <div style="display:flex;align-items:center;gap:1rem;padding:.8rem 1.2rem">
+          <i class="${cat.icon}" style="color:var(--gold);width:18px;font-size:1rem"></i>
+          <span style="font-size:.82rem;color:var(--white);font-weight:600">${cat.name}</span>
+          <span style="font-size:.68rem;color:var(--gray)">${cat.products} products</span>
+          ${children.length ? `<span style="font-size:.6rem;color:var(--gold);margin-left:.3rem">${children.length} sub-categories</span>` : ''}
+          <span class="o-status ${cat.status==='Active'?'s-delivered':'s-cancelled'}" style="margin-left:auto">${cat.status}</span>
+        </div>
+        ${childHtml}
+      </div>`;
+  }).join('');
+}
+
+/* ── CATEGORY STATS UPDATE ────────────────────────────────── */
+function updateCategoryStats() {
+  const cats = getCategories();
+  const activeCount   = cats.filter(c => c.status === 'Active').length;
+  const inactiveCount = cats.filter(c => c.status !== 'Active').length;
+  const totalProducts = cats.reduce((s, c) => s + c.products, 0);
+  const set = (id, v) => { const el=document.getElementById(id); if(el) el.textContent=v; };
+  set('cat-total-count',    cats.length);
+  set('cat-active-count',   activeCount);
+  set('cat-inactive-count', inactiveCount);
+  set('cat-products-count', totalProducts);
+}
+
+/* ── EXTEND initCategoriesPanel ──────────────────────────── */
+const _origInitCat = window.initCategoriesPanel;
+window.initCategoriesPanel = function() {
+  if (_origInitCat) _origInitCat();
+  renderCategoryTree();
+  updateCategoryStats();
+};
