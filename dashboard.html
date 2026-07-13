@@ -9,7 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,600&family=Montserrat:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <link rel="stylesheet" href="css/vireon.css">
-<link rel="stylesheet" href="css/animations.css"><link rel="stylesheet" href="css/logo.css">
+<link rel="stylesheet" href="css/animations.css"><link rel="stylesheet" href="css/mobile.css"><link rel="stylesheet" href="css/logo.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <!-- Route guard -->
 <script src="js/admin-auth.js"></script>
@@ -164,9 +164,11 @@ body{padding-top:0;overflow:hidden}
 <!-- ══════════════ SIDEBAR ══════════════ -->
 <aside class="admin-sidebar">
   <div class="admin-logo-wrap">
-    <div class="admin-logo" style="display:flex;align-items:center;gap:.3rem"><span class="v-logo-v">V</span><span style="font-family:Montserrat,sans-serif;font-size:1.1rem;font-weight:800;letter-spacing:.28em;background:linear-gradient(105deg,#D4AF37 0%,#F5D76E 18%,#fff 28%,#D4AF37 40%,#0B0B0B 55%,#D4AF37 68%,#F5D76E 82%,#D4AF37 100%);background-size:300% 100%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:ireonStrip 3.5s linear infinite">IREON</span><em style="font-size:.52rem;letter-spacing:.28em;color:var(--text-2);font-style:normal;margin-left:.2rem">ADMIN</em></div>
-    <p style="font-size:.6rem;color:var(--gray);margin-top:.3rem" id="sidebar-user">Loading...</p>
-  </div>
+      <a href="index.html" class="vireon-logo vireon-logo--admin" style="text-decoration:none">
+        <span class="vireon-logo-word" data-text="VIREON">VIREON</span>
+      </a>
+      <p style="font-size:.5rem;letter-spacing:.28em;color:var(--gray);text-transform:uppercase;margin-top:.2rem">ADMIN PANEL</p>
+    </div>
   <nav class="admin-nav" style="padding:.5rem 0 2rem;flex:1">
     <p class="admin-nav-group-label">OVERVIEW</p>
     <button class="admin-link on" data-panel="panel-dashboard"><i class="fas fa-chart-bar"></i>Dashboard</button>
@@ -398,6 +400,41 @@ body{padding-top:0;overflow:hidden}
         <div class="d-form-group"><label class="d-form-label">Compare Price</label><input type="number" class="d-form-input" placeholder="2400"></div>
       </div>
       <div class="d-form-group"><label class="d-form-label">Description</label><textarea class="d-form-textarea" placeholder="Product description..."></textarea></div>
+    </div>
+    <div class="d-form-section">
+      <p class="d-form-section-title">Product Images & Colors</p>
+      <div class="d-form-grid-2">
+        <div class="d-form-group">
+          <label class="d-form-label">Main Product Image</label>
+          <div id="main-img-preview" style="width:100%;height:180px;background:var(--bg-3);border:2px dashed rgba(212,175,55,.3);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:border-color .3s;margin-bottom:.8rem" onclick="document.getElementById('main-img-input').click()" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='rgba(212,175,55,.3)'">
+            <i class="fas fa-cloud-upload-alt" style="font-size:2rem;color:var(--gold);margin-bottom:.5rem"></i>
+            <p style="font-size:.72rem;color:var(--text-2)">Click to upload main image</p>
+            <p style="font-size:.62rem;color:var(--gray)">PNG, JPG, WEBP — max 5MB</p>
+          </div>
+          <input type="file" id="main-img-input" accept="image/*" style="display:none" onchange="previewProductImage(this,'main-img-preview')">
+          <label class="d-form-label">Or paste image URL</label>
+          <input type="url" class="d-form-input" id="main-img-url" placeholder="https://example.com/image.jpg" oninput="updateImgPreviewFromUrl(this,'main-img-preview')">
+        </div>
+        <div class="d-form-group">
+          <label class="d-form-label">Additional Images (Gallery)</label>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:.8rem">
+            <div class="gallery-img-slot" onclick="document.getElementById('gal-1').click()" style="height:80px;background:var(--bg-3);border:1px dashed rgba(212,175,55,.25);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.6rem;color:var(--gray);transition:all .3s" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='rgba(212,175,55,.25)'"><i class="fas fa-plus" style="color:var(--gold)"></i></div>
+            <div class="gallery-img-slot" onclick="document.getElementById('gal-2').click()" style="height:80px;background:var(--bg-3);border:1px dashed rgba(212,175,55,.25);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.6rem;color:var(--gray);transition:all .3s" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='rgba(212,175,55,.25)'"><i class="fas fa-plus" style="color:var(--gold)"></i></div>
+            <div class="gallery-img-slot" onclick="document.getElementById('gal-3').click()" style="height:80px;background:var(--bg-3);border:1px dashed rgba(212,175,55,.25);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.6rem;color:var(--gray);transition:all .3s" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='rgba(212,175,55,.25)'"><i class="fas fa-plus" style="color:var(--gold)"></i></div>
+            <div class="gallery-img-slot" onclick="document.getElementById('gal-4').click()" style="height:80px;background:var(--bg-3);border:1px dashed rgba(212,175,55,.25);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.6rem;color:var(--gray);transition:all .3s" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='rgba(212,175,55,.25)'"><i class="fas fa-plus" style="color:var(--gold)"></i></div>
+          </div>
+          <input type="file" id="gal-1" accept="image/*" style="display:none" onchange="previewGallerySlot(this,0)">
+          <input type="file" id="gal-2" accept="image/*" style="display:none" onchange="previewGallerySlot(this,1)">
+          <input type="file" id="gal-3" accept="image/*" style="display:none" onchange="previewGallerySlot(this,2)">
+          <input type="file" id="gal-4" accept="image/*" style="display:none" onchange="previewGallerySlot(this,3)">
+        </div>
+      </div>
+      <div class="d-form-group">
+        <label class="d-form-label">Color Variants with Images</label>
+        <div id="color-variants-list" style="display:flex;flex-direction:column;gap:.8rem"></div>
+        <button type="button" class="d-btn-ghost" style="margin-top:.8rem;font-size:.58rem" onclick="addColorVariant()"><i class="fas fa-plus"></i> ADD COLOR VARIANT</button>
+      </div>
+    <div style="display:none">
     </div>
     <div class="d-form-section">
       <p class="d-form-section-title">Variants & Inventory</p>

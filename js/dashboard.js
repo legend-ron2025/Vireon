@@ -995,3 +995,145 @@ window.initCategoriesPanel = function() {
   renderCategoryTree();
   updateCategoryStats();
 };
+
+/* ────────────────────────────────────────────────────────────
+   PRODUCT IMAGE UPLOAD HELPERS
+   ──────────────────────────────────────────────────────────── */
+function previewProductImage(input, previewId) {
+  const file = input.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const el = document.getElementById(previewId);
+    if (!el) return;
+    el.style.backgroundImage  = `url(${e.target.result})`;
+    el.style.backgroundSize   = 'cover';
+    el.style.backgroundPosition = 'center';
+    el.innerHTML = `<button onclick="clearImg('${previewId}','${input.id}')" style="background:rgba(0,0,0,.7);border:1px solid var(--gold);color:var(--gold);padding:.3rem .8rem;font-size:.6rem;letter-spacing:.1em;cursor:pointer">REMOVE</button>`;
+  };
+  reader.readAsDataURL(file);
+}
+
+function updateImgPreviewFromUrl(input, previewId) {
+  const url = input.value.trim(); if (!url) return;
+  const el = document.getElementById(previewId);
+  if (!el) return;
+  el.style.backgroundImage   = `url(${url})`;
+  el.style.backgroundSize    = 'cover';
+  el.style.backgroundPosition = 'center';
+  el.innerHTML = `<button onclick="clearImgUrl('${previewId}','${input.id}')" style="background:rgba(0,0,0,.7);border:1px solid var(--gold);color:var(--gold);padding:.3rem .8rem;font-size:.6rem;cursor:pointer">REMOVE</button>`;
+}
+
+function clearImg(previewId, inputId) {
+  const el = document.getElementById(previewId);
+  const inp = document.getElementById(inputId);
+  if (el)  { el.style.backgroundImage=''; el.innerHTML='<i class="fas fa-cloud-upload-alt" style="font-size:2rem;color:var(--gold);margin-bottom:.5rem"></i><p style="font-size:.72rem;color:var(--text-2)">Click to upload main image</p>'; }
+  if (inp) inp.value = '';
+}
+function clearImgUrl(previewId, inputId) { clearImg(previewId, inputId); }
+
+function previewGallerySlot(input, idx) {
+  const file = input.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const slots = document.querySelectorAll('.gallery-img-slot');
+    if (slots[idx]) {
+      slots[idx].style.backgroundImage   = `url(${e.target.result})`;
+      slots[idx].style.backgroundSize    = 'cover';
+      slots[idx].style.backgroundPosition = 'center';
+      slots[idx].innerHTML = '<i class="fas fa-check" style="color:var(--gold)"></i>';
+    }
+  };
+  reader.readAsDataURL(file);
+}
+
+let colorVariantCount = 0;
+function addColorVariant() {
+  colorVariantCount++;
+  const list = document.getElementById('color-variants-list');
+  if (!list) return;
+  const variantId = 'cv-' + colorVariantCount;
+  const div = document.createElement('div');
+  div.style.cssText = 'display:grid;grid-template-columns:auto 1fr 1fr auto;gap:.8rem;align-items:center;padding:1rem;background:var(--bg-3);border:1px solid var(--border)';
+  div.id = variantId;
+  div.innerHTML = `
+    <div style="width:36px;height:36px;border-radius:50%;background:#1a1a1a;border:2px solid var(--border);cursor:pointer;position:relative;overflow:hidden" onclick="document.getElementById('cp-${variantId}').click()" title="Pick color">
+      <input type="color" id="cp-${variantId}" value="#1a1a1a" style="position:absolute;inset:-4px;width:calc(100%+8px);height:calc(100%+8px);opacity:0;cursor:pointer" onchange="this.parentElement.style.background=this.value">
+    </div>
+    <input type="text" class="d-form-input" placeholder="Color name (e.g. Midnight Black)" style="margin:0">
+    <div style="position:relative">
+      <div id="cvp-${variantId}" style="width:100%;height:44px;background:var(--bg-2);border:1px dashed rgba(212,175,55,.25);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.62rem;color:var(--gray)" onclick="document.getElementById('cvi-${variantId}').click()">
+        <i class="fas fa-image" style="margin-right:.4rem;color:var(--gold)"></i> Upload color image
+      </div>
+      <input type="file" id="cvi-${variantId}" accept="image/*" style="display:none" onchange="previewColorVariantImg(this,'cvp-${variantId}')">
+    </div>
+    <button type="button" style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:#EF4444;padding:.5rem;cursor:pointer;font-size:.75rem" onclick="document.getElementById('${variantId}').remove()"><i class="fas fa-trash"></i></button>`;
+  list.appendChild(div);
+}
+
+function previewColorVariantImg(input, previewId) {
+  const file = input.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const el = document.getElementById(previewId);
+    if (!el) return;
+    el.style.backgroundImage   = `url(${e.target.result})`;
+    el.style.backgroundSize    = 'cover';
+    el.style.backgroundPosition = 'center';
+    el.innerHTML = '';
+  };
+  reader.readAsDataURL(file);
+}
+
+/* ── CATEGORY IMAGE UPLOAD ───────────────────────────────── */
+function addCategoryImageUpload() {
+  const formSection = document.querySelector('#cat-add-form');
+  if (!formSection || document.getElementById('cat-img-group')) return;
+  const group = document.createElement('div');
+  group.className = 'd-form-group';
+  group.id = 'cat-img-group';
+  group.innerHTML = `
+    <label class="d-form-label">Category Image</label>
+    <div id="cat-img-preview" style="width:100%;height:140px;background:var(--bg-3);border:2px dashed rgba(212,175,55,.3);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:border-color .3s;margin-bottom:.8rem" onclick="document.getElementById('cat-img-file').click()" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='rgba(212,175,55,.3)'">
+      <i class="fas fa-image" style="font-size:1.8rem;color:var(--gold);margin-bottom:.5rem"></i>
+      <p style="font-size:.7rem;color:var(--text-2)">Click to upload category image</p>
+    </div>
+    <input type="file" id="cat-img-file" accept="image/*" style="display:none" onchange="previewCategoryImage(this)">
+    <label class="d-form-label" style="margin-top:.5rem">Or paste image URL</label>
+    <input type="url" class="d-form-input" id="cat-img-url" placeholder="https://example.com/category.jpg" oninput="updateCatImgFromUrl(this)">`;
+  formSection.insertBefore(group, formSection.querySelector('.d-form-group:last-of-type'));
+}
+
+function previewCategoryImage(input) {
+  const file = input.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const el = document.getElementById('cat-img-preview');
+    if (!el) return;
+    el.style.backgroundImage   = `url(${e.target.result})`;
+    el.style.backgroundSize    = 'cover';
+    el.style.backgroundPosition = 'center';
+    el.innerHTML = '';
+  };
+  reader.readAsDataURL(file);
+}
+
+function updateCatImgFromUrl(input) {
+  const el = document.getElementById('cat-img-preview');
+  if (!el || !input.value) return;
+  el.style.backgroundImage   = `url(${input.value})`;
+  el.style.backgroundSize    = 'cover';
+  el.style.backgroundPosition = 'center';
+  el.innerHTML = '';
+}
+
+// Auto-attach category image upload when panel opens
+const _origInitCat2 = window.initCategoriesPanel;
+window.initCategoriesPanel = function() {
+  if (_origInitCat2) _origInitCat2();
+  setTimeout(addCategoryImageUpload, 100);
+};
+window.previewProductImage   = previewProductImage;
+window.updateImgPreviewFromUrl = updateImgPreviewFromUrl;
+window.previewGallerySlot    = previewGallerySlot;
+window.addColorVariant       = addColorVariant;
+window.previewColorVariantImg = previewColorVariantImg;
