@@ -54,5 +54,5 @@ function resize(){W=cv.width=window.innerWidth;H=cv.height=window.innerHeight;}r
 class P{constructor(){this.x=Math.random()*W;this.y=H+5;this.r=Math.random()*2+.5;this.vy=-(Math.random()*.6+.2);this.vx=(Math.random()-.5)*.3;this.op=Math.random()*.5+.1;this.life=0;this.max=Math.random()*200+100;}tick(){this.x+=this.vx;this.y+=this.vy;this.life++;}draw(){const f=this.life<20?this.life/20:this.life>this.max-20?(this.max-this.life)/20:1;ctx.save();ctx.globalAlpha=this.op*f;ctx.fillStyle='#D4AF37';ctx.beginPath();ctx.arc(this.x,this.y,this.r,0,Math.PI*2);ctx.fill();ctx.restore();}alive(){return this.life<this.max&&this.y>-5;}}
 function loop(){ctx.clearRect(0,0,W,H);if(pts.length<30)pts.push(new P());pts=pts.filter(p=>{p.tick();p.draw();return p.alive();});requestAnimationFrame(loop);}loop();
 </script>
-</body>
+<script src="js/cursor.js"></script></body>
 </html>
