@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /admin-login.html
+Disallow: /admin-panel.html
+Disallow: /dashboard.html
+Disallow: /js/admin-auth.js
+Disallow: /js/dashboard.js
+
+Sitemap: https://official-vireon.vercel.app/sitemap.xml

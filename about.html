@@ -1,4 +1,19 @@
-﻿<!DOCTYPE html>
+﻿<section class="section">
+  <div class="v-wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">THE PEOPLE</span>
+      <h2 class="section-title">Master <em>Artisans</em></h2>
+      <div class="gold-rule"></div>
+    </div>
+    <div id="about-team-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:2rem">
+      <!-- Populated from Credits in admin dashboard -->
+      <div style="text-align:center;padding:4rem;color:var(--gray);grid-column:span 3">
+        <i class="fas fa-users" style="font-size:3rem;color:var(--border);display:block;margin-bottom:1rem"></i>
+        <p>Team members will appear here once added via the Admin Dashboard → Credits.</p>
+      </div>
+    </div>
+  </div>
+</section><!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -97,7 +112,7 @@
         <p class="eyebrow">THE BEGINNING</p>
         <h2 style="font-family:var(--font-serif);font-size:clamp(2rem,3.5vw,2.8rem);color:var(--white);font-weight:300;margin-bottom:1rem">Our <em style="font-style:italic;color:var(--gold)">Philosophy</em></h2>
         <div style="width:50px;height:1px;background:var(--gold-grad);margin-bottom:2rem"></div>
-        <p style="font-size:.9rem;color:var(--text-2);line-height:1.95;margin-bottom:1.5rem">VIREON was born from a singular vision: to create luxury fashion that transcends trends and stands as enduring testaments to human craftsmanship. Founded in the heart of our atelier, we bring together the finest artisans, the rarest materials, and a relentless pursuit of perfection.</p>
+        <p style="font-size:.9rem;color:var(--text-2);line-height:1.95;margin-bottom:1.5rem">VIREON was born from a singular vision: to create luxury fashion that transcends trends and stands as enduring testaments to human craftsmanship. Founded in the heart of our Milan atelier, we bring together the finest artisans, the rarest materials, and a relentless pursuit of perfection.</p>
         <p style="font-size:.9rem;color:var(--text-2);line-height:1.95;margin-bottom:1.5rem">Each VIREON piece undergoes 200+ hours of meticulous crafting. From the initial sketch to the final stitch, every step is guided by an unwavering commitment to excellence. This is not merely production — this is the creation of wearable heirlooms.</p>
         <p style="font-size:.9rem;color:var(--text-2);line-height:1.95">We source fabrics from the world's finest mills — Loro Piana, Dormeuil, Ermenegildo Zegna — partnering only with suppliers who share our values of sustainability and excellence.</p>
       </div>
@@ -204,4 +219,36 @@
 <div id="v-toast"><i class="fas fa-check-circle"></i><span id="v-toast-msg"></span></div>
 <script src="js/vireon.js"></script>
 <script>window.addEventListener('scroll',()=>{const el=document.getElementById('scroll-progress');if(el){const p=window.scrollY/(document.body.scrollHeight-window.innerHeight);el.style.width=(p*100)+'%';}},{passive:true});</script>
-<script src="js/cursor.js"></script></body></html>
+<script src="js/cursor.js"></script><script>
+// Load team members from admin dashboard credits
+(function loadTeam() {
+  const grid = document.getElementById('about-team-grid');
+  if (!grid) return;
+  try {
+    const members = JSON.parse(localStorage.getItem('vireon_about_team') || '[]');
+    if (!members.length) return; // Keep the placeholder
+    grid.innerHTML = members.map(m => {
+      const socials = [
+        m.instagram ? `<a href="${m.instagram}" target="_blank" style="color:#E1306C;font-size:1.1rem"><i class="fab fa-instagram"></i></a>` : '',
+        m.facebook  ? `<a href="${m.facebook}"  target="_blank" style="color:#1877F2;font-size:1.1rem"><i class="fab fa-facebook-f"></i></a>` : '',
+        m.twitter   ? `<a href="${m.twitter}"   target="_blank" style="color:#1DA1F2;font-size:1.1rem"><i class="fab fa-twitter"></i></a>` : '',
+        m.whatsapp  ? `<a href="https://wa.me/${m.whatsapp.replace(/\D/g,'')}" target="_blank" style="color:#25D366;font-size:1.1rem"><i class="fab fa-whatsapp"></i></a>` : '',
+      ].filter(Boolean).join('');
+      return `
+        <div class="reveal" style="background:var(--bg-2);border:1px solid var(--border);overflow:hidden;transition:all .3s" onmouseover="this.style.borderColor='var(--gold)';this.style.transform='translateY(-5px)'" onmouseout="this.style.borderColor='var(--border)';this.style.transform=''">
+          <div style="height:260px;overflow:hidden;background:var(--bg-3)">
+            ${m.photo
+              ? `<img src="${m.photo}" style="width:100%;height:100%;object-fit:cover;object-position:top" alt="${m.name}">`
+              : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center"><i class="fas fa-user" style="font-size:4rem;color:var(--border)"></i></div>`}
+          </div>
+          <div style="padding:1.8rem;text-align:center">
+            <h4 style="font-family:var(--font-serif);font-size:1.4rem;color:var(--white);margin-bottom:.3rem">${m.name}</h4>
+            <p style="font-size:.6rem;letter-spacing:.22em;color:var(--gold);text-transform:uppercase;margin-bottom:.8rem">${m.position}</p>
+            <p style="font-size:.78rem;color:var(--text-2);line-height:1.8;margin-bottom:1.2rem">${m.bio}</p>
+            ${socials ? `<div style="display:flex;gap:1rem;justify-content:center">${socials}</div>` : ''}
+          </div>
+        </div>`;
+    }).join('');
+  } catch(e) { console.log('Team load error:', e); }
+})();
+</script></body></html>

@@ -1,4 +1,4 @@
-/* ═══════════════════════════════════════════════════════════
+﻿/* ═══════════════════════════════════════════════════════════
    VIREON — ADMIN DASHBOARD ENGINE
    Full SPA panel system, data, charts, interactions
    ═══════════════════════════════════════════════════════════ */
@@ -119,6 +119,7 @@ function showPanel(id) {
     'panel-support':    ['Support Tickets','System → Support'],
     'panel-security':   ['Security','System → Security'],
     'panel-settings':   ['Settings','System → Settings'],
+    'panel-credits':    ['Credits','System → Credits'],
   };
   const info = titles[id] || ['Dashboard',''];
   const titleEl = document.getElementById('topbar-title');
@@ -1137,3 +1138,230 @@ window.updateImgPreviewFromUrl = updateImgPreviewFromUrl;
 window.previewGallerySlot    = previewGallerySlot;
 window.addColorVariant       = addColorVariant;
 window.previewColorVariantImg = previewColorVariantImg;
+
+/* ═══════════════════════════════════════════════════════════
+   CREDITS MANAGEMENT — Team Members System
+   ═══════════════════════════════════════════════════════════ */
+const CREDITS_KEY = 'vireon_credits';
+
+function getCredits() {
+  try { return JSON.parse(localStorage.getItem(CREDITS_KEY)) || []; }
+  catch { return []; }
+}
+function saveCredits(list) { localStorage.setItem(CREDITS_KEY, JSON.stringify(list)); }
+function genCredId()       { return 'cred_' + Date.now().toString(36); }
+
+/* ── RENDER CREDITS GRID ─────────────────────────────────── */
+function renderCreditsGrid(filter = '') {
+  const grid = document.getElementById('credits-grid');
+  if (!grid) return;
+  let list = getCredits();
+  if (filter) list = list.filter(m => m.name.toLowerCase().includes(filter.toLowerCase()) || m.position.toLowerCase().includes(filter.toLowerCase()));
+
+  if (!list.length) {
+    grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:5rem;color:var(--gray)">
+      <i class="fas fa-users" style="font-size:3rem;color:var(--border);display:block;margin-bottom:1.5rem"></i>
+      <h3 style="font-size:1.5rem;color:var(--white);font-weight:300;margin-bottom:.8rem">No team members yet</h3>
+      <p>Click "ADD MEMBER" to add your first team member.</p>
+    </div>`;
+    updateCreditsStats();
+    return;
+  }
+
+  grid.innerHTML = list.map(m => {
+    const socials = [
+      m.instagram ? `<a href="${m.instagram}" target="_blank" style="color:#E1306C;font-size:1rem;transition:transform .3s" onmouseover="this.style.transform='scale(1.3)'" onmouseout="this.style.transform=''"><i class="fab fa-instagram"></i></a>` : '',
+      m.facebook  ? `<a href="${m.facebook}"  target="_blank" style="color:#1877F2;font-size:1rem;transition:transform .3s" onmouseover="this.style.transform='scale(1.3)'" onmouseout="this.style.transform=''"><i class="fab fa-facebook-f"></i></a>` : '',
+      m.whatsapp  ? `<a href="https://wa.me/${m.whatsapp.replace(/\D/g,'')}" target="_blank" style="color:#25D366;font-size:1rem;transition:transform .3s" onmouseover="this.style.transform='scale(1.3)'" onmouseout="this.style.transform=''"><i class="fab fa-whatsapp"></i></a>` : '',
+      m.twitter   ? `<a href="${m.twitter}"   target="_blank" style="color:#1DA1F2;font-size:1rem;transition:transform .3s" onmouseover="this.style.transform='scale(1.3)'" onmouseout="this.style.transform=''"><i class="fab fa-twitter"></i></a>` : '',
+    ].filter(Boolean).join('');
+
+    return `
+    <div style="background:var(--bg-2);border:1px solid var(--border);overflow:hidden;transition:all .3s;position:relative" onmouseover="this.style.borderColor='var(--gold)';this.style.transform='translateY(-4px)'" onmouseout="this.style.borderColor='var(--border)';this.style.transform=''">
+      ${!m.visible ? '<div style="position:absolute;top:.8rem;right:.8rem;background:rgba(107,114,128,.3);border:1px solid var(--border);color:var(--gray);font-size:.52rem;padding:.2rem .6rem;letter-spacing:.12em;text-transform:uppercase;z-index:2">HIDDEN</div>' : ''}
+      <!-- Photo -->
+      <div style="height:200px;overflow:hidden;background:var(--bg-3);position:relative">
+        ${m.photo
+          ? `<img src="${m.photo}" style="width:100%;height:100%;object-fit:cover;object-position:top" alt="${m.name}" onerror="this.style.display='none'">`
+          : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:var(--bg-3)"><i class="fas fa-user" style="font-size:4rem;color:var(--border)"></i></div>`
+        }
+      </div>
+      <!-- Info -->
+      <div style="padding:1.5rem;text-align:center">
+        <h4 style="font-family:var(--font-serif);font-size:1.2rem;color:var(--white);margin-bottom:.3rem">${m.name}</h4>
+        <p style="font-size:.6rem;letter-spacing:.22em;color:var(--gold);text-transform:uppercase;margin-bottom:.8rem">${m.position}</p>
+        <p style="font-size:.75rem;color:var(--text-2);line-height:1.7;margin-bottom:1rem">${m.bio.length > 100 ? m.bio.substring(0,100)+'...' : m.bio}</p>
+        ${socials ? `<div style="display:flex;gap:.8rem;justify-content:center;margin-bottom:1.2rem">${socials}</div>` : ''}
+        <div style="display:flex;gap:.5rem;justify-content:center">
+          <button class="tbl-action" onclick="editCredit('${m.id}')"><i class="fas fa-edit"></i> EDIT</button>
+          <button class="tbl-action" style="border-color:rgba(107,114,128,.3);color:var(--gray)" onclick="toggleCreditVisibility('${m.id}')"><i class="fas fa-${m.visible ? 'eye-slash' : 'eye'}"></i></button>
+          <button class="tbl-action-del tbl-action" onclick="deleteCredit('${m.id}')"><i class="fas fa-trash"></i></button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  updateCreditsStats();
+}
+
+/* ── STATS ───────────────────────────────────────────────── */
+function updateCreditsStats() {
+  const list = getCredits();
+  const vis  = list.filter(m => m.visible).length;
+  const set  = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+  set('cred-total',   list.length);
+  set('cred-visible', vis);
+  set('cred-hidden',  list.length - vis);
+}
+
+/* ── OPEN / CLOSE FORM ───────────────────────────────────── */
+function openCreditsForm(editId = null) {
+  const sec = document.getElementById('credits-form-section');
+  const form = document.getElementById('credits-form');
+  if (!sec || !form) return;
+  form.removeAttribute('data-edit-id');
+  form.reset();
+  document.getElementById('cred-img-preview').style.backgroundImage = '';
+  document.getElementById('cred-img-preview').innerHTML = '<i class="fas fa-camera" style="font-size:1.3rem;color:var(--gold)"></i><p style="font-size:.55rem;color:var(--gray);margin-top:.3rem;text-align:center">Upload</p>';
+  document.getElementById('cred-form-title').textContent = editId ? 'Edit Member' : 'Add Team Member';
+  document.getElementById('cred-submit-label').textContent = editId ? 'UPDATE MEMBER' : 'SAVE MEMBER';
+  document.getElementById('cred-visible-toggle').checked = true;
+  document.getElementById('cred-visible-label').textContent = 'Visible on site';
+
+  if (editId) {
+    const m = getCredits().find(x => x.id === editId);
+    if (!m) return;
+    form.dataset.editId = editId;
+    document.getElementById('cred-name').value     = m.name;
+    document.getElementById('cred-position').value = m.position;
+    document.getElementById('cred-bio').value       = m.bio;
+    document.getElementById('cred-instagram').value = m.instagram || '';
+    document.getElementById('cred-facebook').value  = m.facebook  || '';
+    document.getElementById('cred-whatsapp').value  = m.whatsapp  || '';
+    document.getElementById('cred-twitter').value   = m.twitter   || '';
+    document.getElementById('cred-img-url').value   = m.photo     || '';
+    document.getElementById('cred-visible-toggle').checked = m.visible !== false;
+    if (m.photo) {
+      const prev = document.getElementById('cred-img-preview');
+      prev.style.backgroundImage   = `url(${m.photo})`;
+      prev.style.backgroundSize    = 'cover';
+      prev.style.backgroundPosition = 'center';
+      prev.innerHTML = '';
+    }
+  }
+  sec.style.display = 'block';
+  sec.scrollIntoView({ behavior: 'smooth' });
+}
+
+function closeCreditsForm() {
+  const sec = document.getElementById('credits-form-section');
+  if (sec) sec.style.display = 'none';
+}
+
+/* ── FORM SUBMIT ─────────────────────────────────────────── */
+document.addEventListener('submit', function(e) {
+  if (e.target.id !== 'credits-form') return;
+  e.preventDefault();
+  const editId   = e.target.dataset.editId;
+  const name     = document.getElementById('cred-name')?.value.trim();
+  const position = document.getElementById('cred-position')?.value.trim();
+  const bio      = document.getElementById('cred-bio')?.value.trim();
+  if (!name || !position || !bio) { toast('Name, position and bio are required.', 'error'); return; }
+
+  const photo    = document.getElementById('cred-img-url')?.value.trim() || '';
+  const instagram= document.getElementById('cred-instagram')?.value.trim() || '';
+  const facebook = document.getElementById('cred-facebook')?.value.trim() || '';
+  const whatsapp = document.getElementById('cred-whatsapp')?.value.trim() || '';
+  const twitter  = document.getElementById('cred-twitter')?.value.trim() || '';
+  const visible  = document.getElementById('cred-visible-toggle')?.checked !== false;
+
+  const list = getCredits();
+  if (editId) {
+    const idx = list.findIndex(m => m.id === editId);
+    if (idx > -1) list[idx] = { ...list[idx], name, position, bio, photo, instagram, facebook, whatsapp, twitter, visible };
+    toast(`"${name}" updated`, 'success');
+  } else {
+    list.push({ id: genCredId(), name, position, bio, photo, instagram, facebook, whatsapp, twitter, visible, createdAt: new Date().toLocaleDateString() });
+    toast(`"${name}" added to team`, 'success');
+  }
+  saveCredits(list);
+  renderCreditsGrid();
+  closeCreditsForm();
+  updateAboutPageCredits();
+});
+
+/* ── EDIT / DELETE / TOGGLE ──────────────────────────────── */
+function editCredit(id)   { openCreditsForm(id); }
+function deleteCredit(id) {
+  const m = getCredits().find(x => x.id === id);
+  if (!m || !confirm(`Remove "${m.name}" from the team?`)) return;
+  saveCredits(getCredits().filter(x => x.id !== id));
+  renderCreditsGrid(); updateAboutPageCredits();
+  toast(`"${m.name}" removed`, 'error');
+}
+function toggleCreditVisibility(id) {
+  const list = getCredits(); const m = list.find(x => x.id === id); if (!m) return;
+  m.visible = !m.visible;
+  saveCredits(list); renderCreditsGrid(); updateAboutPageCredits();
+  toast(`"${m.name}" ${m.visible ? 'now visible' : 'hidden'}`, m.visible ? 'success' : '');
+}
+
+/* ── SYNC WITH ABOUT PAGE ────────────────────────────────── */
+function updateAboutPageCredits() {
+  const ABOUT_KEY = 'vireon_about_team';
+  localStorage.setItem(ABOUT_KEY, JSON.stringify(getCredits().filter(m => m.visible)));
+}
+
+/* ── CREDITS IMAGE UPLOAD ────────────────────────────────── */
+function previewCredImg(input) {
+  const file = input.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const prev = document.getElementById('cred-img-preview');
+    if (!prev) return;
+    prev.style.backgroundImage   = `url(${e.target.result})`;
+    prev.style.backgroundSize    = 'cover';
+    prev.style.backgroundPosition = 'center';
+    prev.innerHTML = '';
+    document.getElementById('cred-img-url').value = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+function updateCredImgFromUrl(input) {
+  const prev = document.getElementById('cred-img-preview');
+  if (!prev || !input.value) return;
+  prev.style.backgroundImage   = `url(${input.value})`;
+  prev.style.backgroundSize    = 'cover';
+  prev.style.backgroundPosition = 'center';
+  prev.innerHTML = '';
+}
+
+/* ── VISIBLE TOGGLE LABEL ────────────────────────────────── */
+document.addEventListener('change', function(e) {
+  if (e.target.id === 'cred-visible-toggle') {
+    const lbl = document.getElementById('cred-visible-label');
+    if (lbl) lbl.textContent = e.target.checked ? 'Visible on site' : 'Hidden from site';
+  }
+});
+
+/* ── SEARCH ──────────────────────────────────────────────── */
+document.addEventListener('input', function(e) {
+  if (e.target.id === 'cred-search') renderCreditsGrid(e.target.value);
+});
+
+/* ── INIT ────────────────────────────────────────────────── */
+function initCreditsPanel() { renderCreditsGrid(); updateAboutPageCredits(); }
+window.openCreditsForm   = openCreditsForm;
+window.closeCreditsForm  = closeCreditsForm;
+window.editCredit        = editCredit;
+window.deleteCredit      = deleteCredit;
+window.toggleCreditVisibility = toggleCreditVisibility;
+window.previewCredImg    = previewCredImg;
+window.updateCredImgFromUrl   = updateCredImgFromUrl;
+
+/* Extend showPanel for credits */
+const _origShowPanelFinal = window.showPanel;
+window.showPanel = function(id) {
+  if (_origShowPanelFinal) _origShowPanelFinal(id);
+  if (id === 'panel-credits') initCreditsPanel();
+};

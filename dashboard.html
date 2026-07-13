@@ -196,6 +196,7 @@ body{padding-top:0;overflow:hidden}
     <p class="admin-nav-group-label">SYSTEM</p>
     <button class="admin-link" data-panel="panel-support"><i class="fas fa-life-ring"></i>Support Tickets</button>
     <button class="admin-link" data-panel="panel-security"><i class="fas fa-shield-alt"></i>Security</button>
+    <button class="admin-link" data-panel="panel-credits"><i class="fas fa-id-card"></i>Credits</button>
     <button class="admin-link" data-panel="panel-settings" id="sidebar-settings-btn"><i class="fas fa-cog"></i>Settings</button>
 
     <div style="border-top:1px solid var(--border);margin-top:1rem;padding-top:.5rem">
@@ -1153,6 +1154,94 @@ body{padding-top:0;overflow:hidden}
   </div>
 </div>
 
+<!-- ════════════ PANEL: CREDITS ════════════ -->
+<div class="admin-panel" id="panel-credits">
+  <div class="panel-header">
+    <h2 class="panel-title">Team <em>Credits</em></h2>
+    <p class="panel-subtitle">Manage your team members, artisans and contributors shown on the About page.</p>
+  </div>
+  <!-- Stats -->
+  <div class="stat-row stat-row-3" style="margin-bottom:1.5rem">
+    <div class="stat-card"><div class="stat-card-icon"><i class="fas fa-users"></i></div><div class="stat-card-n" id="cred-total">0</div><div class="stat-card-label">Team Members</div></div>
+    <div class="stat-card"><div class="stat-card-icon" style="color:var(--success)"><i class="fas fa-eye"></i></div><div class="stat-card-n" id="cred-visible" style="color:var(--success)">0</div><div class="stat-card-label">Visible on Site</div></div>
+    <div class="stat-card"><div class="stat-card-icon" style="color:var(--gray)"><i class="fas fa-eye-slash"></i></div><div class="stat-card-n" id="cred-hidden" style="color:var(--gray)">0</div><div class="stat-card-label">Hidden</div></div>
+  </div>
+  <!-- Toolbar -->
+  <div class="panel-toolbar">
+    <div class="pt-left">
+      <div class="d-search-wrap"><i class="fas fa-search"></i><input type="text" class="d-search" id="cred-search" placeholder="Search team members..."></div>
+    </div>
+    <div class="pt-right">
+      <button class="d-btn" onclick="openCreditsForm()"><i class="fas fa-plus"></i> ADD MEMBER</button>
+    </div>
+  </div>
+  <!-- Members Grid -->
+  <div id="credits-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-bottom:2rem"></div>
+  <!-- Add/Edit Form -->
+  <div id="credits-form-section" style="display:none">
+    <div class="d-form-section">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem">
+        <p class="d-form-section-title" id="cred-form-title" style="margin-bottom:0">Add Team Member</p>
+        <button class="d-btn-ghost" onclick="closeCreditsForm()"><i class="fas fa-times"></i> CLOSE</button>
+      </div>
+      <form id="credits-form">
+        <!-- Profile Picture -->
+        <div class="d-form-group">
+          <label class="d-form-label">Profile Picture</label>
+          <div style="display:flex;align-items:center;gap:1.5rem">
+            <div id="cred-img-preview" style="width:90px;height:90px;border-radius:50%;background:var(--bg-3);border:2px dashed rgba(212,175,55,.35);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;flex-shrink:0" onclick="document.getElementById('cred-img-file').click()">
+              <i class="fas fa-camera" style="font-size:1.3rem;color:var(--gold)"></i>
+              <p style="font-size:.55rem;color:var(--gray);margin-top:.3rem;text-align:center">Upload</p>
+            </div>
+            <div style="flex:1">
+              <input type="file" id="cred-img-file" accept="image/*" style="display:none" onchange="previewCredImg(this)">
+              <label class="d-form-label">Or paste image URL</label>
+              <input type="url" class="d-form-input" id="cred-img-url" placeholder="https://example.com/photo.jpg" oninput="updateCredImgFromUrl(this)">
+            </div>
+          </div>
+        </div>
+        <!-- Basic Info -->
+        <div class="d-form-grid-2">
+          <div class="d-form-group"><label class="d-form-label">Full Name *</label><input type="text" class="d-form-input" id="cred-name" placeholder="e.g. Édouard Moreau" required></div>
+          <div class="d-form-group"><label class="d-form-label">Position / Title *</label><input type="text" class="d-form-input" id="cred-position" placeholder="e.g. Head Tailor" required></div>
+        </div>
+        <div class="d-form-group"><label class="d-form-label">Bio / Work Description *</label><textarea class="d-form-textarea" id="cred-bio" placeholder="Describe their work, expertise and contributions to VIREON..." required></textarea></div>
+        <!-- Social Media -->
+        <div class="d-form-section-title" style="margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--border)">Social Media Links</div>
+        <div class="d-form-grid-2">
+          <div class="d-form-group">
+            <label class="d-form-label"><i class="fab fa-instagram" style="color:#E1306C;margin-right:.4rem"></i>Instagram</label>
+            <input type="url" class="d-form-input" id="cred-instagram" placeholder="https://instagram.com/username">
+          </div>
+          <div class="d-form-group">
+            <label class="d-form-label"><i class="fab fa-facebook-f" style="color:#1877F2;margin-right:.4rem"></i>Facebook</label>
+            <input type="url" class="d-form-input" id="cred-facebook" placeholder="https://facebook.com/username">
+          </div>
+          <div class="d-form-group">
+            <label class="d-form-label"><i class="fab fa-whatsapp" style="color:#25D366;margin-right:.4rem"></i>WhatsApp</label>
+            <input type="tel" class="d-form-input" id="cred-whatsapp" placeholder="+39 000 000 0000">
+          </div>
+          <div class="d-form-group">
+            <label class="d-form-label"><i class="fab fa-twitter" style="color:#1DA1F2;margin-right:.4rem"></i>Twitter / X</label>
+            <input type="url" class="d-form-input" id="cred-twitter" placeholder="https://twitter.com/username">
+          </div>
+        </div>
+        <!-- Visibility -->
+        <div class="d-form-group">
+          <label class="d-form-label">Visibility on About Page</label>
+          <div style="display:flex;align-items:center;gap:.8rem;margin-top:.4rem">
+            <label class="d-toggle"><input type="checkbox" id="cred-visible-toggle" checked><span class="d-slider"></span></label>
+            <span style="font-size:.75rem;color:var(--text-2)" id="cred-visible-label">Visible on site</span>
+          </div>
+        </div>
+        <div style="display:flex;gap:.8rem">
+          <button type="submit" class="d-btn"><i class="fas fa-save"></i> <span id="cred-submit-label">SAVE MEMBER</span></button>
+          <button type="button" class="d-btn-ghost" onclick="closeCreditsForm()">CANCEL</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
   </div><!-- /admin-content-area -->
 </div><!-- /admin-main -->
 </div><!-- /admin-layout -->
