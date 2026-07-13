@@ -1063,6 +1063,9 @@ document.addEventListener('DOMContentLoaded',()=>{
     const c = document.getElementById('v-cursor');
     if(!c || window.matchMedia('(hover:none)').matches) return;
 
+    /* Activate custom cursor — hides browser cursor via CSS class */
+    document.documentElement.classList.add('custom-cursor-active');
+
     /* Set the cross symbol */
     c.innerHTML = '';
     c.textContent = '\u2671'; /* ♱ */

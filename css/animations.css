@@ -1,4 +1,4 @@
-/* ═══════════════════════════════════════════════════════════
+﻿/* ═══════════════════════════════════════════════════════════
    VIREON — ADVANCED ANIMATIONS & MICRO-INTERACTIONS v3.0
    ═══════════════════════════════════════════════════════════ */
 
@@ -399,16 +399,21 @@
   z-index: 9999; width: 0; transition: width .1s;
 }
 
-/* ── LUXURY ♱ CURSOR — symbol only, absolutely NO dot/circle/ring ── */
-#v-cursor       { background: none !important; border: none !important; border-radius: 0 !important; }
-#v-cursor-ring  { display: none !important; visibility: hidden !important; }
+/* ── LUXURY ♱ CURSOR ─────────────────────────────────────── */
+#v-cursor-ring { display:none !important; }
 
-/* Kill the browser default cursor on EVERYTHING */
-html, body, * { cursor: none !important; }
-*::before, *::after { cursor: none !important; }
+/* Only hide cursor when custom JS cursor is active (class set by JS) */
+html.custom-cursor-active *,
+html.custom-cursor-active *::before,
+html.custom-cursor-active *::after { cursor:none !important; }
 
-/* Restore on touch devices only */
-@media (hover: none) {
-  html, body, * { cursor: auto !important; }
-  #v-cursor { display: none !important; }
+@keyframes cursorGlow {
+  0%,100%{ color:#D4AF37; text-shadow:0 0 8px rgba(212,175,55,.65),0 0 16px rgba(212,175,55,.3); }
+  50%    { color:#F5D76E; text-shadow:0 0 20px rgba(212,175,55,1),0 0 40px rgba(212,175,55,.55),0 0 60px rgba(212,175,55,.2); }
+}
+
+/* Always restore on touch */
+@media(hover:none){
+  html,body,*{ cursor:auto !important; }
+  #v-cursor{ display:none !important; }
 }
