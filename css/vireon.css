@@ -1226,3 +1226,37 @@ html:not([data-touch]) *::after {
   0%,100%{ color:#D4AF37; text-shadow:0 0 8px rgba(212,175,55,.7),0 0 18px rgba(212,175,55,.3); }
   50%    { color:#F5D76E; text-shadow:0 0 20px rgba(212,175,55,1),0 0 40px rgba(212,175,55,.5); }
 }
+
+/* ── LUXURY COUTURE centered under VIREON ───────────────── */
+.nav-logo { text-align: center !important; }
+.nav-logo a { 
+  flex-direction: column !important; 
+  align-items: center !important;
+  text-align: center !important;
+}
+.vireon-logo--nav { 
+  flex-direction: column !important;
+  align-items: center !important;
+  text-align: center !important;
+}
+.vireon-logo--nav .vireon-logo-sub {
+  display: block !important;
+  text-align: center !important;
+  width: 100% !important;
+  margin-left: 0 !important;
+  padding-left: .42em !important; /* compensates letter-spacing optical alignment */
+  margin-top: .12em !important;
+  align-self: center !important;
+}
+.vireon-logo--footer {
+  flex-direction: column !important;
+  align-items: flex-start !important;
+}
+.vireon-logo--footer .vireon-logo-sub {
+  display: block !important;
+  text-align: center !important;
+  width: 100% !important;
+  margin-left: 0 !important;
+  padding-left: .4em !important;
+  margin-top: .13em !important;
+}
