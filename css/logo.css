@@ -1,4 +1,4 @@
-/* ═══════════════════════════════════════════════════════════
+﻿/* ═══════════════════════════════════════════════════════════
    VIREON LOGO — BULLETPROOF GRADIENT STRIP v5
    Works on all browsers including Vercel-served pages.
    ═══════════════════════════════════════════════════════════ */
@@ -157,7 +157,7 @@
 .vireon-logo--nav .vireon-logo-sub   { font-size: .37rem !important; margin-left:.55em !important; align-self:flex-end; padding-bottom:.12em; }
 
 /* FOOTER */
-.vireon-logo--footer .vireon-logo-word { font-size: 1.45rem !important; letter-spacing:.24em !important; }
+.vireon-logo--footer .vireon-logo-word { font-size: 1.45rem !important; letter-spacing: .25em !important; }
 .vireon-logo--footer .vireon-logo-sub  { font-size: .34rem !important; margin-left:.5em !important; align-self:flex-end; }
 
 /* LOADER */

@@ -1182,9 +1182,9 @@ details summary i { transition: transform .3s ease; display: inline-block; }
    ══════════════════════════════════════════════════════════ */
 
 /* ── LOGO LAYOUT HELPERS (sizes live in logo.css) ────────── */
-/* Force nav-logo to be a flex row */
+/* Allow nav-logo to be column — logo.css controls flex-direction */
 .nav-logo { display: flex; align-items: center; justify-content: center; }
-.nav-logo a { flex-direction: row !important; align-items: baseline !important; }
+.nav-logo a { flex-direction: column !important; align-items: center !important; }
 
 /* Suppress ALL old logo spans */
 .nav-v, .nav-ireon, .nav-sub,
@@ -1204,4 +1204,25 @@ input[type="submit"], input[type="button"] { cursor: none !important; }
 @media (hover: none) {
   *, *::before, *::after { cursor: auto !important; }
   #v-cursor { display: none !important; }
+}
+
+/* ═══ FINAL CURSOR KILL — removes ALL browser dots/circles ═══ */
+html:not([data-touch]) *,
+html:not([data-touch]) *::before,
+html:not([data-touch]) *::after {
+  cursor: none !important;
+}
+#v-cursor-ring { display:none !important; }
+#v-cursor {
+  background: none !important;
+  border: none !important;
+  border-radius: 0 !important;
+  outline: none !important;
+  box-shadow: none !important;
+  width: auto !important;
+  height: auto !important;
+}
+@keyframes cursorGlow {
+  0%,100%{ color:#D4AF37; text-shadow:0 0 8px rgba(212,175,55,.7),0 0 18px rgba(212,175,55,.3); }
+  50%    { color:#F5D76E; text-shadow:0 0 20px rgba(212,175,55,1),0 0 40px rgba(212,175,55,.5); }
 }
