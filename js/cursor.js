@@ -1,104 +1,94 @@
 /* ═══════════════════════════════════════════════════════════
-   VIREON — STANDALONE LUXURY ♱ CURSOR
-   Loads on every page independently of vireon.js
+   VIREON — STANDALONE LUXURY ♱ CURSOR v2
+   Works on every page, no dependencies.
    ═══════════════════════════════════════════════════════════ */
-(function() {
+(function () {
   'use strict';
-
-  // Don't run on touch devices
   if (window.matchMedia('(hover:none)').matches) return;
 
-  // Create cursor element if not already in DOM
-  function getOrCreate(id, tag) {
-    var el = document.getElementById(id);
-    if (!el) {
-      el = document.createElement(tag || 'div');
-      el.id = id;
-      document.body.appendChild(el);
+  function setup() {
+    // Inject keyframe + cursor:none CSS
+    if (!document.getElementById('vcursor-style')) {
+      var s = document.createElement('style');
+      s.id = 'vcursor-style';
+      s.textContent =
+        '@keyframes vcGlow{' +
+          '0%,100%{color:#D4AF37;text-shadow:0 0 8px rgba(212,175,55,.7),0 0 18px rgba(212,175,55,.3)}' +
+          '50%{color:#F5D76E;text-shadow:0 0 22px rgba(212,175,55,1),0 0 44px rgba(212,175,55,.55)}' +
+        '}' +
+        'html.cca *,html.cca *::before,html.cca *::after{cursor:none!important}' +
+        '@media(hover:none){html.cca *{cursor:auto!important}#vireon-cursor{display:none!important}}';
+      document.head.appendChild(s);
     }
-    return el;
-  }
 
-  document.addEventListener('DOMContentLoaded', function () {
-    var c = getOrCreate('v-cursor');
+    // Create cursor div
+    var c = document.getElementById('vireon-cursor');
+    if (!c) {
+      c = document.createElement('div');
+      c.id = 'vireon-cursor';
+      document.body.appendChild(c);
+    }
 
-    // Style the ♱ cursor
     c.textContent = '\u2671'; // ♱
-    c.style.cssText = [
+    c.setAttribute('style', [
       'position:fixed',
-      'top:0',
-      'left:0',
+      'top:-100px',
+      'left:-100px',
       'pointer-events:none',
-      'z-index:999999',
+      'z-index:2147483647',
       'transform:translate(-50%,-50%)',
       'font-size:1.45rem',
       'line-height:1',
       'color:#D4AF37',
       'text-shadow:0 0 8px rgba(212,175,55,.7),0 0 18px rgba(212,175,55,.3)',
-      'animation:cursorGlow 2.5s ease-in-out infinite',
+      'animation:vcGlow 2.5s ease-in-out infinite',
       'will-change:left,top',
       'user-select:none',
       '-webkit-user-select:none',
-      'transition:transform .12s ease,color .2s'
-    ].join(';');
+      'transition:transform .1s ease,color .15s,text-shadow .15s',
+      'font-family:serif'
+    ].join(';'));
 
-    // Inject keyframe if not already present
-    if (!document.getElementById('cursor-keyframes')) {
-      var style = document.createElement('style');
-      style.id = 'cursor-keyframes';
-      style.textContent = [
-        '@keyframes cursorGlow{',
-        '0%,100%{color:#D4AF37;text-shadow:0 0 8px rgba(212,175,55,.7),0 0 18px rgba(212,175,55,.3)}',
-        '50%{color:#F5D76E;text-shadow:0 0 20px rgba(212,175,55,1),0 0 40px rgba(212,175,55,.55)}',
-        '}',
-        'html.cca *,html.cca *::before,html.cca *::after{cursor:none!important}'
-      ].join('');
-      document.head.appendChild(style);
-    }
-
-    // Activate cursor:none via class
+    // Activate cursor:none globally
     document.documentElement.classList.add('cca');
 
-    var mx = 0, my = 0;
-
+    // Track mouse
     document.addEventListener('mousemove', function (e) {
-      mx = e.clientX;
-      my = e.clientY;
-      c.style.left = mx + 'px';
-      c.style.top  = my + 'px';
+      c.style.left = e.clientX + 'px';
+      c.style.top  = e.clientY + 'px';
     }, { passive: true });
 
-    // Hover effect on interactive elements
-    function onOver(e) {
-      var el = e.target.closest('a,button,input,select,textarea,label,.p-card,.cat-item,.btn,.vireon-logo,.ed-card,.tbl-action,.admin-link,.d-btn,.d-btn-ghost,.filter-chip,.sfb-chip,.nav-a,.admin-link');
-      if (el) {
-        c.style.transform = 'translate(-50%,-50%) scale(1.35) rotate(14deg)';
+    // Hover scale/rotate on interactive elements
+    var SEL = 'a,button,input,select,textarea,label,[role="button"],.p-card,.cat-item,.btn,.vireon-logo,.ed-card,.tbl-action,.admin-link,.d-btn,.d-btn-ghost,.filter-chip,.sfb-chip,.nav-a,.v-action-btn,.page-btn,.rev-btn,.r-btn,.si-dot,.acc-card,.btn-gold,.btn-ghost,.btn-outline';
+
+    document.addEventListener('mouseover', function (e) {
+      if (e.target.closest(SEL)) {
+        c.style.transform = 'translate(-50%,-50%) scale(1.4) rotate(15deg)';
         c.style.color = '#F5D76E';
-        c.style.textShadow = '0 0 25px rgba(212,175,55,1),0 0 50px rgba(212,175,55,.5)';
+        c.style.textShadow = '0 0 28px rgba(212,175,55,1),0 0 55px rgba(212,175,55,.5)';
       }
-    }
-    function onOut(e) {
-      var el = e.target.closest('a,button,input,select,textarea,label,.p-card,.cat-item,.btn,.vireon-logo,.ed-card,.tbl-action,.admin-link,.d-btn,.d-btn-ghost,.filter-chip,.sfb-chip,.nav-a,.admin-link');
-      if (el) {
+    });
+    document.addEventListener('mouseout', function (e) {
+      if (e.target.closest(SEL)) {
         c.style.transform = 'translate(-50%,-50%) scale(1) rotate(0deg)';
         c.style.color = '#D4AF37';
         c.style.textShadow = '0 0 8px rgba(212,175,55,.7),0 0 18px rgba(212,175,55,.3)';
       }
-    }
-
-    document.addEventListener('mouseover', onOver);
-    document.addEventListener('mouseout',  onOut);
-
-    // Click animation
+    });
     document.addEventListener('mousedown', function () {
-      c.style.transform = 'translate(-50%,-50%) scale(0.72)';
+      c.style.transform = 'translate(-50%,-50%) scale(0.7)';
     });
     document.addEventListener('mouseup', function () {
       c.style.transform = 'translate(-50%,-50%) scale(1) rotate(0deg)';
     });
-
-    // Hide when leaving window
     document.addEventListener('mouseleave', function () { c.style.opacity = '0'; });
     document.addEventListener('mouseenter', function () { c.style.opacity = '1'; });
-  });
+  }
+
+  // Run as soon as possible
+  if (document.body) {
+    setup();
+  } else {
+    document.addEventListener('DOMContentLoaded', setup);
+  }
 })();
