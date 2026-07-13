@@ -20,23 +20,41 @@
   --font-sans:'Montserrat',sans-serif;
 }
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-html,body{height:100%;font-family:var(--font-sans);font-weight:300}
-body{background:var(--bg);color:var(--white);overflow:hidden;display:grid;grid-template-columns:1fr 1fr}
-a{text-decoration:none;color:inherit}
-button{cursor:pointer;font-family:var(--font-sans);border:none;outline:none}
-input{font-family:var(--font-sans);outline:none}
-::-webkit-scrollbar{width:4px}
-::-webkit-scrollbar-thumb{background:var(--gold)}
-
-/* ── PARTICLES ── */
-#particles{position:fixed;inset:0;pointer-events:none;z-index:0}
+html{height:100%;font-family:var(--font-sans);font-weight:300}
+body{
+  background:var(--bg);color:var(--white);
+  min-height:100vh;height:100vh;
+  display:grid;grid-template-columns:1fr 1fr;
+  overflow:hidden;
+}
 
 /* ── LEFT PANEL ── */
 .left-panel{
   position:relative;overflow:hidden;
   background:linear-gradient(160deg,#0d0600 0%,#1a0c00 40%,#0B0B0B 100%);
-  display:flex;flex-direction:column;justify-content:flex-end;padding:5rem;z-index:1;
+  display:flex;flex-direction:column;justify-content:flex-end;
+  padding:4rem 5rem;z-index:1;
+  min-height:100vh;height:100vh;
 }
+
+/* ── RIGHT PANEL ── */
+.right-panel{
+  background:var(--bg-2);
+  display:flex;align-items:center;justify-content:center;
+  padding:2.5rem;
+  overflow-y:auto;
+  border-left:1px solid var(--border);
+  position:relative;z-index:1;
+  min-height:100vh;height:100vh;
+}
+a{text-decoration:none;color:inherit}
+button{cursor:none;font-family:var(--font-sans);border:none;outline:none}
+input{font-family:var(--font-sans);outline:none}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-thumb{background:var(--gold)}
+#particles{position:fixed;inset:0;pointer-events:none;z-index:0}
+#v-cursor{position:fixed;pointer-events:none;z-index:999999}
+.lock-screen{position:fixed!important;inset:0;z-index:9999}
 .left-bg-grid{position:absolute;inset:0;background-image:repeating-linear-gradient(0deg,transparent,transparent 59px,rgba(212,175,55,.04) 60px),repeating-linear-gradient(90deg,transparent,transparent 59px,rgba(212,175,55,.04) 60px);pointer-events:none}
 .orb{position:absolute;border-radius:50%;pointer-events:none}
 .orb-1{width:500px;height:500px;top:-150px;right:-150px;background:radial-gradient(circle,rgba(212,175,55,.06),transparent 70%);animation:orbFloat 10s ease-in-out infinite}
