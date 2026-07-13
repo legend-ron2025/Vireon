@@ -1066,7 +1066,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 
     /* Set the ⚜ symbol */
     c.innerHTML = '';
-    c.textContent = '\u269C';
+    c.textContent = '\u2671';
     c.style.cssText = [
       'position:fixed','pointer-events:none','z-index:999999',
       'transform:translate(-50%,-50%)','font-size:1.35rem','line-height:1',

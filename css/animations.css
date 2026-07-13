@@ -399,7 +399,7 @@
   z-index: 9999; width: 0; transition: width .1s;
 }
 
-/* ── LUXURY CURSOR ⚜ ──────────────────────────────────────── */
+/* ── LUXURY CURSOR ♱ ──────────────────────────────────────── */
 @keyframes cursorGlow {
   0%,100% {
     color: #D4AF37;

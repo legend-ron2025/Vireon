@@ -1,7 +1,6 @@
 /* ═══════════════════════════════════════════════════════════
-   VIREON — BRAND LOGO COMPONENT v4
-   Layout: [logo image above] + [VIREON wordmark] + [LUXURY COUTURE]
-   VIREON = single serif word with animated gradient strip
+   VIREON LOGO — BULLETPROOF GRADIENT STRIP v5
+   Works on all browsers including Vercel-served pages.
    ═══════════════════════════════════════════════════════════ */
 
 /* ── WRAPPER ─────────────────────────────────────────────── */
@@ -9,194 +8,178 @@
   display: inline-flex;
   flex-direction: column;
   align-items: center;
-  text-decoration: none;
-  gap: 0;
+  text-decoration: none !important;
   position: relative;
-  cursor: pointer;
+  line-height: 1;
+}
+.vireon-logo--nav,
+.vireon-logo--footer,
+.vireon-logo--admin {
+  flex-direction: row !important;
+  align-items: baseline !important;
 }
 
-/* ── LOGO IMAGE (above wordmark) ─────────────────────────── */
+/* ── LOGO IMAGE (loader / login only) ───────────────────── */
 .vireon-logo-img {
-  width: auto;
-  object-fit: contain;
   display: block;
-  margin-bottom: .35em;
-  transition: filter .4s ease, transform .4s ease;
-  filter: drop-shadow(0 0 10px rgba(212,175,55,.45));
+  object-fit: contain;
+  margin-bottom: .4em;
+  filter: drop-shadow(0 0 12px rgba(212,175,55,.55));
+  transition: filter .4s, transform .4s;
+  animation: logoImgPulse 2.8s ease-in-out infinite;
 }
+.vireon-logo--nav .vireon-logo-img,
+.vireon-logo--footer .vireon-logo-img,
+.vireon-logo--admin .vireon-logo-img { display: none !important; }
+
 .vireon-logo:hover .vireon-logo-img {
-  filter: drop-shadow(0 0 22px rgba(212,175,55,.9))
-          drop-shadow(0 0 45px rgba(212,175,55,.35));
+  filter: drop-shadow(0 0 28px rgba(212,175,55,1)) drop-shadow(0 0 55px rgba(212,175,55,.4));
   transform: scale(1.06);
 }
+@keyframes logoImgPulse {
+  0%,100%{ filter:drop-shadow(0 0 8px rgba(212,175,55,.35)); }
+  50%    { filter:drop-shadow(0 0 28px rgba(212,175,55,.95)) drop-shadow(0 0 50px rgba(212,175,55,.35)); }
+}
 
-/* ── VIREON WORDMARK ─────────────────────────────────────── */
+/* ── VIREON WORDMARK — gradient strip ───────────────────── */
 .vireon-logo-word {
-  font-family: 'Cormorant Garamond', Georgia, serif;
-  font-weight: 400;
-  letter-spacing: .22em;
-  text-transform: uppercase;
-  line-height: 1;
-  display: block;
-  position: relative;
+  font-family: 'Cormorant Garamond', Georgia, 'Times New Roman', serif !important;
+  font-weight: 400 !important;
+  font-style: normal !important;
+  text-transform: uppercase !important;
+  letter-spacing: .22em !important;
+  line-height: 1 !important;
+  display: inline-block !important;
+  position: relative !important;
 
-  /* Animated gradient strip: white → gold → black → white */
-  background: linear-gradient(
+  /* GRADIENT STRIP — Gold, White, Black flowing */
+  background-image: linear-gradient(
     90deg,
     #ffffff  0%,
-    #F5D76E  8%,
-    #D4AF37  16%,
-    #ffffff  26%,
-    #F5D76E  35%,
-    #D4AF37  44%,
-    #0a0a0a  54%,
-    #2A2A2A  60%,
-    #D4AF37  68%,
-    #F5D76E  76%,
-    #ffffff  84%,
-    #D4AF37  92%,
+    #F5D76E  9%,
+    #D4AF37  18%,
+    #ffffff  28%,
+    #F5D76E  37%,
+    #D4AF37  46%,
+    #050505  56%,
+    #1a1a1a  62%,
+    #D4AF37  70%,
+    #F5D76E  79%,
+    #ffffff  87%,
+    #D4AF37  94%,
     #ffffff  100%
-  );
-  background-size: 250% auto;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  animation: vireonStrip 4s linear infinite;
-}
-@keyframes vireonStrip {
-  0%   { background-position: 200% center; }
-  100% { background-position: -50% center; }
+  ) !important;
+  background-size: 250% 100% !important;
+  background-repeat: no-repeat !important;
+
+  /* The clip */
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  color: transparent !important;
+
+  /* Animation */
+  animation: vireonGradientScroll 4s linear infinite !important;
 }
 
-/* Sparkle sweep on top */
-.vireon-logo-word::after {
+@keyframes vireonGradientScroll {
+  0%   { background-position: 210% center; }
+  100% { background-position: -60% center; }
+}
+
+/* Sparkle highlight sweep */
+.vireon-logo-word::before {
   content: attr(data-text);
   position: absolute;
-  inset: 0;
-  background: linear-gradient(
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-image: linear-gradient(
     90deg,
     transparent 0%,
-    transparent 35%,
-    rgba(255,255,255,.65) 48%,
-    rgba(255,255,255,.25) 52%,
-    transparent 65%,
+    transparent 38%,
+    rgba(255,255,255,.7) 48%,
+    rgba(255,255,255,.15) 52%,
+    transparent 62%,
     transparent 100%
   );
-  background-size: 200% auto;
+  background-size: 200% 100%;
   -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
   background-clip: text;
-  animation: vireonSparkle 5s ease-in-out infinite;
+  -webkit-text-fill-color: transparent;
+  animation: vireonSparkle 5.5s ease-in-out infinite;
   pointer-events: none;
 }
 @keyframes vireonSparkle {
-  0%,30%  { background-position: -200% center; }
-  55%,100%{ background-position:  250% center; }
+  0%,25%   { background-position: -200% center; }
+  55%,100% { background-position:  250% center; }
 }
 
 .vireon-logo:hover .vireon-logo-word {
-  animation-duration: 2s;
+  animation-duration: 2s !important;
 }
 
-/* ── GOLD RULE LINE ──────────────────────────────────────── */
+/* ── GOLD RULE ───────────────────────────────────────────── */
 .vireon-logo-rule {
-  display: block;
+  display: block !important;
   width: 100%;
   height: 1px;
-  background: linear-gradient(90deg, transparent, #D4AF37, #F5D76E, #D4AF37, transparent);
-  margin: .35em 0 .3em;
-  opacity: .8;
-  animation: ruleGlow 3s ease-in-out infinite;
+  background: linear-gradient(90deg, transparent 0%, #D4AF37 25%, #F5D76E 50%, #D4AF37 75%, transparent 100%);
+  margin: .32em 0 .28em;
+  animation: ruleShimmer 3s ease-in-out infinite;
 }
-@keyframes ruleGlow {
-  0%,100%{ opacity:.5; box-shadow:none; }
-  50%    { opacity:1;  box-shadow:0 0 8px rgba(212,175,55,.6); }
+.vireon-logo--nav .vireon-logo-rule,
+.vireon-logo--footer .vireon-logo-rule,
+.vireon-logo--admin .vireon-logo-rule { display: none !important; }
+
+@keyframes ruleShimmer {
+  0%,100%{ opacity:.5; }
+  50%    { opacity:1; box-shadow: 0 0 6px rgba(212,175,55,.5); }
 }
 
 /* ── SUBTITLE ────────────────────────────────────────────── */
 .vireon-logo-sub {
-  font-family: 'Montserrat', sans-serif;
-  font-weight: 400;
-  letter-spacing: .45em;
-  text-transform: uppercase;
-  color: rgba(212,175,55,.72);
-  display: block;
-  line-height: 1;
-  -webkit-text-fill-color: rgba(212,175,55,.72);
+  font-family: 'Montserrat', Arial, sans-serif !important;
+  font-weight: 400 !important;
+  letter-spacing: .45em !important;
+  text-transform: uppercase !important;
+  color: rgba(212,175,55,.68) !important;
+  -webkit-text-fill-color: rgba(212,175,55,.68) !important;
+  display: block !important;
+  line-height: 1 !important;
+  background: none !important;
+  -webkit-background-clip: unset !important;
+  background-clip: unset !important;
 }
 
-/* ══ SIZE VARIANTS ══════════════════════════════════════════ */
+/* ─────────── SIZE VARIANTS ─────────────────────────────── */
 
-/* NAVBAR — compact horizontal, no image, no subtitle */
-.vireon-logo--nav {
-  flex-direction: row;
-  align-items: baseline;
-  gap: 0;
-}
-.vireon-logo--nav .vireon-logo-img { display: none; }
-.vireon-logo--nav .vireon-logo-rule { display: none; }
-.vireon-logo--nav .vireon-logo-sub {
-  font-size: .38rem;
-  margin-left: .6em;
-  align-self: flex-end;
-  padding-bottom: .15em;
-}
-.vireon-logo--nav .vireon-logo-word { font-size: 1.75rem; letter-spacing: .25em; }
+/* NAVBAR */
+.vireon-logo--nav .vireon-logo-word  { font-size: 1.75rem !important; letter-spacing:.25em !important; }
+.vireon-logo--nav .vireon-logo-sub   { font-size: .37rem !important; margin-left:.55em !important; align-self:flex-end; padding-bottom:.12em; }
 
-/* FOOTER — same as nav but slightly smaller */
-.vireon-logo--footer {
-  flex-direction: row;
-  align-items: baseline;
-  gap: 0;
-}
-.vireon-logo--footer .vireon-logo-img  { display: none; }
-.vireon-logo--footer .vireon-logo-rule { display: none; }
-.vireon-logo--footer .vireon-logo-sub {
-  font-size: .35rem;
-  margin-left: .5em;
-  align-self: flex-end;
-  padding-bottom: .1em;
-}
-.vireon-logo--footer .vireon-logo-word { font-size: 1.45rem; letter-spacing: .25em; }
+/* FOOTER */
+.vireon-logo--footer .vireon-logo-word { font-size: 1.45rem !important; letter-spacing:.24em !important; }
+.vireon-logo--footer .vireon-logo-sub  { font-size: .34rem !important; margin-left:.5em !important; align-self:flex-end; }
 
-/* HERO / LOADING — full stack with image */
-.vireon-logo--hero,
-.vireon-logo--loader {
-  align-items: center;
-}
-.vireon-logo--hero   .vireon-logo-img { height: 72px; }
-.vireon-logo--loader .vireon-logo-img { height: 64px; animation: logoImgPulse 2.5s ease-in-out infinite; }
-@keyframes logoImgPulse {
-  0%,100%{ filter:drop-shadow(0 0 10px rgba(212,175,55,.4)); }
-  50%    { filter:drop-shadow(0 0 35px rgba(212,175,55,.95)) drop-shadow(0 0 60px rgba(212,175,55,.35)); }
-}
-.vireon-logo--hero   .vireon-logo-word { font-size: 3.5rem; }
-.vireon-logo--loader .vireon-logo-word { font-size: 2.8rem; letter-spacing: .3em; }
-.vireon-logo--hero   .vireon-logo-sub  { font-size: .6rem; }
-.vireon-logo--loader .vireon-logo-sub  { font-size: .52rem; }
+/* LOADER */
+.vireon-logo--loader { gap: .3rem; }
+.vireon-logo--loader .vireon-logo-img  { height: 62px !important; }
+.vireon-logo--loader .vireon-logo-word { font-size: 2.8rem !important; letter-spacing:.3em !important; }
+.vireon-logo--loader .vireon-logo-sub  { font-size: .5rem !important; letter-spacing:.42em !important; }
 
 /* ADMIN SIDEBAR */
-.vireon-logo--admin {
-  flex-direction: row;
-  align-items: baseline;
-  gap: 0;
-}
-.vireon-logo--admin .vireon-logo-img  { display: none; }
-.vireon-logo--admin .vireon-logo-rule { display: none; }
-.vireon-logo--admin .vireon-logo-sub  { display: none; }
-.vireon-logo--admin .vireon-logo-word { font-size: 1.25rem; letter-spacing: .22em; }
+.vireon-logo--admin .vireon-logo-word { font-size: 1.15rem !important; letter-spacing:.22em !important; }
+.vireon-logo--admin .vireon-logo-sub  { font-size: .32rem !important; margin-left:.4em !important; align-self:flex-end; }
 
 /* ADMIN LOGIN LEFT PANEL */
-.vireon-logo--login {
-  align-items: flex-start;
-}
-.vireon-logo--login .vireon-logo-img { height: 56px; margin-bottom: .5em; }
-.vireon-logo--login .vireon-logo-word { font-size: 2.6rem; letter-spacing: .28em; }
-.vireon-logo--login .vireon-logo-sub  { font-size: .52rem; letter-spacing: .42em; }
+.vireon-logo--login { align-items: flex-start !important; gap: .3rem !important; }
+.vireon-logo--login .vireon-logo-img  { height: 58px !important; }
+.vireon-logo--login .vireon-logo-word { font-size: 2.6rem !important; letter-spacing:.28em !important; }
+.vireon-logo--login .vireon-logo-sub  { font-size: .5rem !important; letter-spacing:.42em !important; }
 
-/* ── HIDE ALL OLD LEGACY LOGO SPANS ─────────────────────── */
+/* ── HIDE ALL LEGACY SPANS ───────────────────────────────── */
 .nav-v, .nav-ireon, .nav-sub,
 .loader-logo-v, .loader-logo-text,
 .v-logo-v, .v-logo-ireon,
+.left-v, .left-ireon,
 .footer-brand-logo .nav-v,
 .footer-brand-logo .nav-ireon { display: none !important; }
