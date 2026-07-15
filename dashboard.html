@@ -11,9 +11,10 @@
 <link rel="stylesheet" href="css/vireon.css">
 <link rel="stylesheet" href="css/animations.css"><link rel="stylesheet" href="css/mobile.css"><link rel="stylesheet" href="css/logo.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-<!-- Route guard -->
+<!-- Route guard (disabled for public demo) -->
 <script src="js/admin-auth.js"></script>
-<script>(function(){if(!AdminAuth.requireAuth())throw new Error('auth');})();</script>
+<!-- Demo note: auth redirect disabled so dashboard can be previewed without login -->
+<script>console.info('Auth guard disabled for demo preview');</script>
 <style>
 /* ── DASHBOARD-SPECIFIC STYLES ─────────────────── */
 body{padding-top:0;overflow:hidden}
