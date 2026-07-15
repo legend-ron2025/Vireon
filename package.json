@@ -5,9 +5,17 @@
   "private": true,
   "scripts": {
     "build": "echo 'Static site - no build needed'",
+    "start": "node server.js",
     "dev": "npx serve ."
   },
-  "keywords": ["luxury", "fashion", "ecommerce"],
+  "keywords": [
+    "luxury",
+    "fashion",
+    "ecommerce"
+  ],
   "author": "VIREON",
-  "license": "UNLICENSED"
+  "license": "UNLICENSED",
+  "dependencies": {
+    "ws": "^8.21.1"
+  }
 }

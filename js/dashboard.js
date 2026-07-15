@@ -89,6 +89,172 @@ const ACTIVITIES = [
   {dot:'var(--gold)',text:'Coupon VIREON20 used 3 times today',time:'5h ago'},
 ];
 
+const NOTIFICATIONS_DATA = [
+  { id: 'notif_001', type: 'ticket', title: 'New support ticket from James Whitmore', unread: true, timestamp: 'Just now' },
+  { id: 'notif_002', type: 'order', title: 'Order VP-2026-047 has shipped', unread: true, timestamp: '5 min ago' },
+  { id: 'notif_003', type: 'stock', title: 'Low stock alert: Evening Gown', unread: false, timestamp: '30 min ago' },
+];
+
+const REALTIME = {
+  socket: null,
+  connected: false,
+  clientId: Math.random().toString(36).slice(2),
+};
+
+function updateNotificationCounts() {
+  const countEl = document.getElementById('topbar-notif-count');
+  if (!countEl) return;
+  const unread = NOTIFICATIONS_DATA.filter(n => n.unread).length;
+  countEl.textContent = unread;
+  countEl.style.display = unread ? 'inline-flex' : 'none';
+}
+
+function addActivityEntry(entry) {
+  ACTIVITIES.unshift(entry);
+  if (ACTIVITIES.length > 20) ACTIVITIES.pop();
+  const af = document.getElementById('dash-activity');
+  if (!af) return;
+  af.innerHTML = ACTIVITIES.map(a => `
+      <div style="display:flex;gap:.8rem;align-items:flex-start;padding:.65rem 0;border-bottom:1px solid var(--border)">
+        <div style="width:8px;height:8px;border-radius:50%;background:${a.dot};flex-shrink:0;margin-top:.4rem"></div>
+        <div><p style="font-size:.74rem;color:var(--text-2);line-height:1.5">${a.text}</p><p style="font-size:.62rem;color:var(--gray);margin-top:.15rem">${a.time}</p></div>
+      </div>`).join('');
+}
+
+function addAuditEntry(entry) {
+  AUDIT_LOG.unshift(entry);
+  if (AUDIT_LOG.length > 50) AUDIT_LOG.pop();
+  renderAuditLog();
+}
+
+function addNotificationEntry(entry) {
+  NOTIFICATIONS_DATA.unshift(entry);
+  if (NOTIFICATIONS_DATA.length > 20) NOTIFICATIONS_DATA.pop();
+  if (entry.type === 'ticket') {
+    const ticketId = 'TKT-' + Date.now().toString().slice(-3);
+    TICKET_DATA[ticketId] = {
+      customer: entry.title.split(' from ')[1] || 'Customer',
+      subject: entry.title,
+      status: 'Open',
+      priority: 'HIGH',
+      priorityColor: 'var(--error)',
+      messages: [{ from: 'System', time: entry.timestamp || 'Just now', text: entry.title }],
+    };
+  }
+  updateNotificationCounts();
+  updateSupportPanel();
+}
+
+function handleServerMessage(msg) {
+  if (!msg || !msg.type) return;
+  if (msg.type === 'init') {
+    if (msg.payload?.activity) {
+      ACTIVITIES.length = 0;
+      ACTIVITIES.push(...msg.payload.activity.slice(0, 20));
+      initDashboardPanel();
+    }
+    if (msg.payload?.audit) {
+      AUDIT_LOG.length = 0;
+      AUDIT_LOG.push(...msg.payload.audit.slice(0, 50));
+      renderAuditLog();
+    }
+    if (msg.payload?.notifications) {
+      NOTIFICATIONS_DATA.length = 0;
+      NOTIFICATIONS_DATA.push(...msg.payload.notifications.slice(0, 20));
+      updateNotificationCounts();
+    }
+    return;
+  }
+  if (msg.type === 'event') {
+    if (msg.origin && msg.origin === REALTIME.clientId) return;
+    if (msg.payload?.activity) addActivityEntry(msg.payload.activity);
+    if (msg.payload?.audit) addAuditEntry(msg.payload.audit);
+    if (msg.payload?.notification) addNotificationEntry(msg.payload.notification);
+  }
+}
+
+function initRealtimeConnection() {
+  try {
+    const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const wsUrl = `${wsProtocol}//${window.location.host}/ws`;
+    REALTIME.socket = new WebSocket(wsUrl);
+    REALTIME.socket.addEventListener('open', () => {
+      REALTIME.connected = true;
+      console.log('Realtime websocket connected');
+    });
+    REALTIME.socket.addEventListener('message', event => {
+      try { handleServerMessage(JSON.parse(event.data)); } catch (err) { console.error('Realtime message parse error', err); }
+    });
+    REALTIME.socket.addEventListener('close', () => { REALTIME.connected = false; console.log('Realtime websocket disconnected'); });
+    REALTIME.socket.addEventListener('error', () => { REALTIME.connected = false; console.warn('Realtime websocket error'); });
+  } catch (err) {
+    console.warn('Realtime init failed', err);
+  }
+}
+
+function publishRealtimeEvent(payload) {
+  const admin = AdminAuth.getSession()?.displayName || 'Admin';
+  const time = new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+  const activity = payload.activity ? { ...payload.activity, time: 'Just now' } : null;
+  const audit = payload.audit ? { ...payload.audit, admin, time } : null;
+  const notification = payload.notification ? { ...payload.notification, id: 'notif_' + Date.now(), unread: true, timestamp: 'Just now' } : null;
+
+  if (activity) addActivityEntry(activity);
+  if (audit) addAuditEntry(audit);
+  if (notification) addNotificationEntry(notification);
+
+  if (REALTIME.socket && REALTIME.socket.readyState === WebSocket.OPEN) {
+    REALTIME.socket.send(JSON.stringify({ type: 'event', origin: REALTIME.clientId, payload: { activity, audit, notification } }));
+  }
+}
+
+function publishAuditAction(action, details) {
+  publishRealtimeEvent({
+    audit: { action: `${action}: ${details}`, ip: '127.0.0.1', status: 'ok' },
+    activity: { dot: 'var(--gold)', text: `${action} — ${details}` },
+    notification: { type: 'system', title: `${action}: ${details}` },
+  });
+}
+
+function updateSupportPanel() {
+  const openCount = document.getElementById('support-open-count');
+  const progressCount = document.getElementById('support-progress-count');
+  const resolvedCount = document.getElementById('support-resolved-count');
+  const avgResponse = document.getElementById('support-avg-response');
+  const ticketCount = Object.values(TICKET_DATA).length;
+  const openTickets = Object.values(TICKET_DATA).filter(t => t.status === 'Open').length;
+  const inProgress = Object.values(TICKET_DATA).filter(t => t.status === 'In Progress').length;
+  const resolved = Object.values(TICKET_DATA).filter(t => t.status === 'Resolved').length;
+  if (openCount) openCount.textContent = openTickets.toString();
+  if (progressCount) progressCount.textContent = inProgress.toString();
+  if (resolvedCount) resolvedCount.textContent = resolved.toString();
+  if (avgResponse) avgResponse.textContent = ticketCount ? '1.8h' : '0h';
+}
+
+function addLiveNotification(notification) {
+  NOTIFICATIONS_DATA.unshift(notification);
+  if (NOTIFICATIONS_DATA.length > 12) NOTIFICATIONS_DATA.pop();
+  updateNotificationCounts();
+  updateSupportPanel();
+  toast(notification.title, 'success');
+}
+
+function simulateLiveNotifications() {
+  const events = [
+    { type: 'ticket', title: 'New support ticket from Elara Voss', timestamp: 'Just now' },
+    { type: 'order', title: 'Order VP-2026-048 received', timestamp: 'Just now' },
+    { type: 'stock', title: 'Low stock alert: Caviar Handbag', timestamp: 'Just now' },
+  ];
+  setInterval(() => {
+    const event = events[Math.floor(Math.random() * events.length)];
+    publishRealtimeEvent({
+      activity: { dot: 'var(--gold)', text: event.title },
+      notification: { type: event.type, title: event.title },
+      audit: { action: `System update: ${event.title}`, ip: '127.0.0.1', status: 'ok' },
+    });
+  }, 25000);
+}
+
 /* ────── PANEL NAVIGATION ─────────────────────────────────── */
 function showPanel(id) {
   document.querySelectorAll('.admin-panel').forEach(p => p.classList.remove('on'));
@@ -689,6 +855,10 @@ document.addEventListener('DOMContentLoaded', () => {
   bindSidebar();
   initScrollProgress();
   initDashboardPanel();
+  updateNotificationCounts();
+  updateSupportPanel();
+  initRealtimeConnection();
+  simulateLiveNotifications();
   initDashboardCharts();
   showPanel('panel-dashboard');
 });
