@@ -95,18 +95,86 @@ const NOTIFICATIONS_DATA = [
   { id: 'notif_003', type: 'stock', title: 'Low stock alert: Evening Gown', unread: false, timestamp: '30 min ago' },
 ];
 
+const NOTIFICATIONS_STORE_KEY = 'vireon_admin_notifications';
+const TICKETS_STORE_KEY = 'vireon_admin_tickets';
+let notificationChannel = null;
+
 const REALTIME = {
   socket: null,
   connected: false,
   clientId: Math.random().toString(36).slice(2),
 };
 
+function readStoredList(key) {
+  try {
+    const value = JSON.parse(localStorage.getItem(key) || 'null');
+    return Array.isArray(value) ? value : null;
+  } catch {
+    return null;
+  }
+}
+
+function persistNotifications() {
+  try { localStorage.setItem(NOTIFICATIONS_STORE_KEY, JSON.stringify(NOTIFICATIONS_DATA.slice(0, 50))); } catch {}
+}
+
+function persistTickets() {
+  try { localStorage.setItem(TICKETS_STORE_KEY, JSON.stringify(TICKET_DATA)); } catch {}
+}
+
+function loadNotifications() {
+  const stored = readStoredList(NOTIFICATIONS_STORE_KEY);
+  if (!stored) {
+    persistNotifications();
+    return;
+  }
+  NOTIFICATIONS_DATA.length = 0;
+  NOTIFICATIONS_DATA.push(...stored.slice(0, 50));
+}
+
+function loadSupportTickets() {
+  try {
+    const stored = JSON.parse(localStorage.getItem(TICKETS_STORE_KEY) || 'null');
+    if (stored && typeof stored === 'object' && !Array.isArray(stored)) Object.assign(TICKET_DATA, stored);
+    else persistTickets();
+  } catch {
+    persistTickets();
+  }
+}
+
+function iconForNotification(type) {
+  return type === 'ticket' ? 'fa-inbox'
+    : type === 'order' ? 'fa-shopping-bag'
+    : type === 'stock' ? 'fa-boxes-stacked'
+    : type === 'security' ? 'fa-shield-alt'
+    : 'fa-bell';
+}
+
+function renderNotificationInbox() {
+  const list = document.getElementById('admin-notif-list');
+  if (!list) return;
+  if (!NOTIFICATIONS_DATA.length) {
+    list.innerHTML = '<div class="notif-empty">No notifications yet.</div>';
+    return;
+  }
+  list.innerHTML = NOTIFICATIONS_DATA.slice(0, 30).map(n => `
+    <div class="notif-item ${n.unread ? 'unread' : ''}" onclick="openNotification('${n.id}')">
+      <div class="notif-icon"><i class="fas ${iconForNotification(n.type)}"></i></div>
+      <div>
+        <p class="notif-item-title">${n.title}</p>
+        <p class="notif-item-meta">${n.timestamp || 'Just now'}${n.unread ? ' - New' : ''}</p>
+      </div>
+    </div>`).join('');
+}
+
 function updateNotificationCounts() {
   const countEl = document.getElementById('topbar-notif-count');
-  if (!countEl) return;
   const unread = NOTIFICATIONS_DATA.filter(n => n.unread).length;
-  countEl.textContent = unread;
-  countEl.style.display = unread ? 'inline-flex' : 'none';
+  if (countEl) {
+    countEl.textContent = unread;
+    countEl.style.display = unread ? 'inline-flex' : 'none';
+  }
+  renderNotificationInbox();
 }
 
 function addActivityEntry(entry) {
@@ -127,22 +195,50 @@ function addAuditEntry(entry) {
   renderAuditLog();
 }
 
+function renderAuditLog() {
+  const logEl = document.getElementById('audit-log-body');
+  if (!logEl) return;
+  logEl.innerHTML = AUDIT_LOG.map(l => `
+    <tr>
+      <td style="font-size:.7rem;color:var(--gray);white-space:nowrap">${l.time}</td>
+      <td style="color:var(--gold);font-weight:600">${l.admin}</td>
+      <td>${l.action}</td>
+      <td style="font-size:.7rem;color:var(--text-2);font-family:monospace">${l.ip}</td>
+      <td><span class="badge ${l.status === 'ok' ? 'badge-active' : 'badge-cancelled'}">${l.status === 'ok' ? 'SUCCESS' : 'BLOCKED'}</span></td>
+    </tr>`).join('');
+}
+
 function addNotificationEntry(entry) {
-  NOTIFICATIONS_DATA.unshift(entry);
-  if (NOTIFICATIONS_DATA.length > 20) NOTIFICATIONS_DATA.pop();
-  if (entry.type === 'ticket') {
-    const ticketId = 'TKT-' + Date.now().toString().slice(-3);
-    TICKET_DATA[ticketId] = {
-      customer: entry.title.split(' from ')[1] || 'Customer',
-      subject: entry.title,
-      status: 'Open',
-      priority: 'HIGH',
-      priorityColor: 'var(--error)',
-      messages: [{ from: 'System', time: entry.timestamp || 'Just now', text: entry.title }],
-    };
+  const notification = {
+    id: entry.id || 'notif_' + Date.now(),
+    type: entry.type || 'system',
+    title: entry.title || 'Dashboard update',
+    unread: entry.unread !== false,
+    timestamp: entry.timestamp || 'Just now',
+  };
+  NOTIFICATIONS_DATA.unshift(notification);
+  if (NOTIFICATIONS_DATA.length > 50) NOTIFICATIONS_DATA.pop();
+  if (notification.type === 'ticket') {
+    const ticketId = entry.ticketId || 'TKT-' + Date.now().toString().slice(-3);
+    if (!TICKET_DATA[ticketId]) {
+      TICKET_DATA[ticketId] = {
+        customer: entry.title.split(' from ')[1] || 'Customer',
+        subject: entry.title,
+        status: 'Open',
+        priority: 'HIGH',
+        priorityColor: 'var(--error)',
+        type: 'Customer Message',
+        assigned: 'Unassigned',
+        created: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
+        messages: [{ from: 'Customer', time: notification.timestamp, text: notification.title }],
+      };
+      persistTickets();
+    }
   }
+  persistNotifications();
   updateNotificationCounts();
   updateSupportPanel();
+  renderSupportTable();
 }
 
 function handleServerMessage(msg) {
@@ -161,6 +257,7 @@ function handleServerMessage(msg) {
     if (msg.payload?.notifications) {
       NOTIFICATIONS_DATA.length = 0;
       NOTIFICATIONS_DATA.push(...msg.payload.notifications.slice(0, 20));
+      persistNotifications();
       updateNotificationCounts();
     }
     return;
@@ -175,8 +272,9 @@ function handleServerMessage(msg) {
 
 function initRealtimeConnection() {
   try {
-    const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const wsUrl = `${wsProtocol}//${window.location.host}/ws`;
+    const configuredUrl = window.VIREON_WS_URL || '';
+    if (!configuredUrl) return;
+    const wsUrl = configuredUrl;
     REALTIME.socket = new WebSocket(wsUrl);
     REALTIME.socket.addEventListener('open', () => {
       REALTIME.connected = true;
@@ -186,7 +284,7 @@ function initRealtimeConnection() {
       try { handleServerMessage(JSON.parse(event.data)); } catch (err) { console.error('Realtime message parse error', err); }
     });
     REALTIME.socket.addEventListener('close', () => { REALTIME.connected = false; console.log('Realtime websocket disconnected'); });
-    REALTIME.socket.addEventListener('error', () => { REALTIME.connected = false; console.warn('Realtime websocket error'); });
+    REALTIME.socket.addEventListener('error', () => { REALTIME.connected = false; });
   } catch (err) {
     console.warn('Realtime init failed', err);
   }
@@ -206,7 +304,89 @@ function publishRealtimeEvent(payload) {
   if (REALTIME.socket && REALTIME.socket.readyState === WebSocket.OPEN) {
     REALTIME.socket.send(JSON.stringify({ type: 'event', origin: REALTIME.clientId, payload: { activity, audit, notification } }));
   }
+  if (notificationChannel) {
+    notificationChannel.postMessage({ type: 'event', origin: REALTIME.clientId, payload: { activity, audit, notification } });
+  }
 }
+
+function initNotificationInbox() {
+  loadNotifications();
+  try {
+    notificationChannel = new BroadcastChannel('vireon_admin_realtime');
+    notificationChannel.addEventListener('message', event => handleServerMessage(event.data));
+  } catch {
+    notificationChannel = null;
+  }
+  window.addEventListener('storage', event => {
+    if (event.key === NOTIFICATIONS_STORE_KEY) {
+      loadNotifications();
+      updateNotificationCounts();
+    }
+    if (event.key === TICKETS_STORE_KEY) {
+      loadSupportTickets();
+      updateSupportPanel();
+      renderSupportTable();
+    }
+  });
+  document.addEventListener('click', event => {
+    const popover = document.getElementById('admin-notif-popover');
+    const button = document.getElementById('admin-notif-btn');
+    if (!popover?.classList.contains('on')) return;
+    if (popover.contains(event.target) || button?.contains(event.target)) return;
+    closeNotificationInbox();
+  });
+  updateNotificationCounts();
+}
+
+function toggleNotificationInbox(event) {
+  event?.stopPropagation();
+  const popover = document.getElementById('admin-notif-popover');
+  const button = document.getElementById('admin-notif-btn');
+  if (!popover) return;
+  const open = !popover.classList.contains('on');
+  popover.classList.toggle('on', open);
+  button?.setAttribute('aria-expanded', open ? 'true' : 'false');
+  renderNotificationInbox();
+}
+
+function closeNotificationInbox() {
+  document.getElementById('admin-notif-popover')?.classList.remove('on');
+  document.getElementById('admin-notif-btn')?.setAttribute('aria-expanded', 'false');
+}
+
+function openNotification(id) {
+  const item = NOTIFICATIONS_DATA.find(n => n.id === id);
+  if (!item) return;
+  item.unread = false;
+  persistNotifications();
+  updateNotificationCounts();
+  if (item.type === 'ticket') showPanel('panel-support');
+  else if (item.type === 'order') showPanel('panel-orders');
+  else if (item.type === 'stock') showPanel('panel-inventory');
+  else showPanel('panel-dashboard');
+  closeNotificationInbox();
+}
+
+function markAllNotificationsRead(event) {
+  event?.stopPropagation();
+  NOTIFICATIONS_DATA.forEach(n => { n.unread = false; });
+  persistNotifications();
+  updateNotificationCounts();
+}
+
+function clearReadNotifications(event) {
+  event?.stopPropagation();
+  for (let i = NOTIFICATIONS_DATA.length - 1; i >= 0; i--) {
+    if (!NOTIFICATIONS_DATA[i].unread) NOTIFICATIONS_DATA.splice(i, 1);
+  }
+  persistNotifications();
+  updateNotificationCounts();
+}
+window.toggleNotificationInbox = toggleNotificationInbox;
+window.closeNotificationInbox = closeNotificationInbox;
+window.openNotification = openNotification;
+window.markAllNotificationsRead = markAllNotificationsRead;
+window.clearReadNotifications = clearReadNotifications;
 
 function publishAuditAction(action, details) {
   publishRealtimeEvent({
@@ -229,6 +409,7 @@ function updateSupportPanel() {
   if (progressCount) progressCount.textContent = inProgress.toString();
   if (resolvedCount) resolvedCount.textContent = resolved.toString();
   if (avgResponse) avgResponse.textContent = ticketCount ? '1.8h' : '0h';
+  renderSupportTable();
 }
 
 function addLiveNotification(notification) {
@@ -257,10 +438,11 @@ function simulateLiveNotifications() {
 
 /* ────── PANEL NAVIGATION ─────────────────────────────────── */
 function showPanel(id) {
+  const panel = document.getElementById(id) || document.getElementById('panel-dashboard');
+  const targetId = panel?.id || 'panel-dashboard';
   document.querySelectorAll('.admin-panel').forEach(p => p.classList.remove('on'));
   document.querySelectorAll('.admin-link').forEach(l => l.classList.remove('on'));
 
-  const panel = document.getElementById(id);
   const link  = document.querySelector(`[data-panel="${id}"]`);
   if (panel) panel.classList.add('on');
   if (link)  link.classList.add('on');
@@ -287,7 +469,7 @@ function showPanel(id) {
     'panel-settings':   ['Settings','System → Settings'],
     'panel-credits':    ['Credits','System → Credits'],
   };
-  const info = titles[id] || ['Dashboard',''];
+  const info = titles[targetId] || ['Dashboard',''];
   const titleEl = document.getElementById('topbar-title');
   const breadEl = document.getElementById('topbar-breadcrumb');
   if (titleEl) titleEl.textContent = info[0];
@@ -298,15 +480,24 @@ function showPanel(id) {
   if (area) area.scrollTop = 0;
 
   // Lazy init for panels that need it
-  if (id === 'panel-dashboard') initDashboardCharts();
-  if (id === 'panel-analytics')  initAnalyticsCharts();
-  if (id === 'panel-security')   renderSecurityPanel();
-  if (id === 'panel-settings')   renderSettingsPanel();
-  if (id === 'panel-orders')     renderOrdersTable(ORDERS_DATA);
-  if (id === 'panel-products')   renderProductsTable(PRODUCTS_DATA);
-  if (id === 'panel-customers')  renderCustomersTable(CUSTOMERS_DATA);
-  if (id === 'panel-inventory')  renderInventoryTable(INVENTORY_DATA);
+  try {
+    if (targetId === 'panel-dashboard')  initDashboardCharts();
+    if (targetId === 'panel-analytics')  initAnalyticsCharts();
+    if (targetId === 'panel-security')   renderSecurityPanel();
+    if (targetId === 'panel-settings')   renderSettingsPanel();
+    if (targetId === 'panel-orders')     renderOrdersTable(ORDERS_DATA);
+    if (targetId === 'panel-products')   renderProductsTable(PRODUCTS_DATA);
+    if (targetId === 'panel-customers')  renderCustomersTable(CUSTOMERS_DATA);
+    if (targetId === 'panel-inventory')  renderInventoryTable(INVENTORY_DATA);
+    if (targetId === 'panel-categories') initCategoriesPanel();
+    if (targetId === 'panel-credits')    initCreditsPanel();
+    if (targetId === 'panel-support')    updateSupportPanel();
+  } catch (err) {
+    console.error('Panel init failed:', targetId, err);
+    toast('This panel opened, but one widget could not load.', 'error');
+  }
 }
+window.showPanel = showPanel;
 
 /* ────── SIDEBAR CLICK BINDING ───────────────────────────── */
 function bindSidebar() {
@@ -337,6 +528,7 @@ const STATUS_BADGE = {
 };
 
 /* ────── DASHBOARD PANEL ──────────────────────────────────── */
+let liveCountTimer = null;
 function initDashboardPanel() {
   // Recent orders (short)
   const tbody = document.querySelector('#dash-orders-table tbody');
@@ -386,8 +578,9 @@ function initDashboardPanel() {
   }
 
   // Animate live count
+  if (liveCountTimer) return;
   let liveN = 142;
-  setInterval(() => {
+  liveCountTimer = setInterval(() => {
     liveN += Math.floor(Math.random() * 7) - 3;
     liveN = Math.max(80, Math.min(200, liveN));
     const el = document.getElementById('live-count');
@@ -397,44 +590,56 @@ function initDashboardPanel() {
 
 let chartsInit = false;
 function initDashboardCharts() {
-  if (chartsInit) return; chartsInit = true;
+  if (chartsInit) return;
   if (!window.Chart) return;
+  chartsInit = true;
   const g = s => 'rgba(212,175,55,' + s + ')';
   const def = { responsive: true, plugins: { legend: { display: false } } };
   const gridOpts = { x: { grid: { color: g('.06') }, ticks: { color: '#6B6B6B' } }, y: { grid: { color: g('.06') }, ticks: { color: '#6B6B6B' } } };
 
-  const rc = document.getElementById('ch-revenue');
-  if (rc) new Chart(rc, { type: 'line', data: { labels: ['Jan','Feb','Mar','Apr','May','Jun','Jul'], datasets: [{ data: [42000,58000,51000,72000,68000,89000,84250], borderColor: '#D4AF37', backgroundColor: g('.07'), tension: .4, pointBackgroundColor: '#D4AF37', pointRadius: 5, fill: true }] }, options: { ...def, scales: { ...gridOpts, y: { ...gridOpts.y, ticks: { ...gridOpts.y.ticks, callback: v => '$' + v.toLocaleString() } } } } });
+  try {
+    const rc = document.getElementById('ch-revenue');
+    if (rc) new Chart(rc, { type: 'line', data: { labels: ['Jan','Feb','Mar','Apr','May','Jun','Jul'], datasets: [{ data: [42000,58000,51000,72000,68000,89000,84250], borderColor: '#D4AF37', backgroundColor: g('.07'), tension: .4, pointBackgroundColor: '#D4AF37', pointRadius: 5, fill: true }] }, options: { ...def, scales: { ...gridOpts, y: { ...gridOpts.y, ticks: { ...gridOpts.y.ticks, callback: v => '$' + v.toLocaleString() } } } } });
 
-  const cc = document.getElementById('ch-cat');
-  if (cc) new Chart(cc, { type: 'doughnut', data: { labels: ['Coats','Dresses','Suits','Bags','Accessories','Other'], datasets: [{ data: [28,22,15,18,12,5], backgroundColor: ['#D4AF37','#B8962E','#F5D76E','#8b6914','#5c4a0a','#2A2A2A'], borderColor: '#1B1B1B', borderWidth: 3 }] }, options: { responsive: true, plugins: { legend: { labels: { color: '#888', font: { size: 11 } } } } } });
+    const cc = document.getElementById('ch-cat');
+    if (cc) new Chart(cc, { type: 'doughnut', data: { labels: ['Coats','Dresses','Suits','Bags','Accessories','Other'], datasets: [{ data: [28,22,15,18,12,5], backgroundColor: ['#D4AF37','#B8962E','#F5D76E','#8b6914','#5c4a0a','#2A2A2A'], borderColor: '#1B1B1B', borderWidth: 3 }] }, options: { responsive: true, plugins: { legend: { labels: { color: '#888', font: { size: 11 } } } } } });
 
-  const tc = document.getElementById('ch-traffic');
-  if (tc) new Chart(tc, { type: 'bar', data: { labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'], datasets: [{ data: [1200,1850,1420,2100,1780,2400,1900], backgroundColor: g('.55'), borderColor: '#D4AF37', borderWidth: 1 }] }, options: { ...def, scales: gridOpts } });
+    const tc = document.getElementById('ch-traffic');
+    if (tc) new Chart(tc, { type: 'bar', data: { labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'], datasets: [{ data: [1200,1850,1420,2100,1780,2400,1900], backgroundColor: g('.55'), borderColor: '#D4AF37', borderWidth: 1 }] }, options: { ...def, scales: gridOpts } });
+  } catch (err) {
+    chartsInit = false;
+    console.warn('Dashboard charts skipped', err);
+  }
 }
 
 /* ────── ANALYTICS CHARTS ─────────────────────────────────── */
 let analyticsInit = false;
 function initAnalyticsCharts() {
-  if (analyticsInit) return; analyticsInit = true;
+  if (analyticsInit) return;
   if (!window.Chart) return;
+  analyticsInit = true;
   const g = s => 'rgba(212,175,55,' + s + ')';
   const gridOpts = { x: { grid: { color: g('.06') }, ticks: { color: '#6B6B6B' } }, y: { grid: { color: g('.06') }, ticks: { color: '#6B6B6B' } } };
 
-  const rm = document.getElementById('ch-rev-monthly');
-  if (rm) new Chart(rm, { type: 'line', data: { labels: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'], datasets: [{ label: '2026', data: [42000,58000,51000,72000,68000,89000,84250,null,null,null,null,null], borderColor: '#D4AF37', backgroundColor: g('.07'), tension: .4, pointBackgroundColor: '#D4AF37', fill: true }, { label: '2025', data: [31000,45000,42000,55000,52000,71000,66000,58000,74000,80000,68000,92000], borderColor: '#555', backgroundColor: 'transparent', tension: .4, borderDash: [4,4] }] }, options: { responsive: true, plugins: { legend: { labels: { color: '#888' } } }, scales: { ...gridOpts, y: { ...gridOpts.y, ticks: { ...gridOpts.y.ticks, callback: v => '$' + (v/1000).toFixed(0) + 'k' } } } } });
+  try {
+    const rm = document.getElementById('ch-rev-monthly');
+    if (rm) new Chart(rm, { type: 'line', data: { labels: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'], datasets: [{ label: '2026', data: [42000,58000,51000,72000,68000,89000,84250,null,null,null,null,null], borderColor: '#D4AF37', backgroundColor: g('.07'), tension: .4, pointBackgroundColor: '#D4AF37', fill: true }, { label: '2025', data: [31000,45000,42000,55000,52000,71000,66000,58000,74000,80000,68000,92000], borderColor: '#555', backgroundColor: 'transparent', tension: .4, borderDash: [4,4] }] }, options: { responsive: true, plugins: { legend: { labels: { color: '#888' } } }, scales: { ...gridOpts, y: { ...gridOpts.y, ticks: { ...gridOpts.y.ticks, callback: v => '$' + (v/1000).toFixed(0) + 'k' } } } } });
 
-  const ts = document.getElementById('ch-traffic-sources');
-  if (ts) new Chart(ts, { type: 'doughnut', data: { labels: ['Direct','Social','Search','Email','Referral'], datasets: [{ data: [35,28,22,10,5], backgroundColor: ['#D4AF37','#B8962E','#F5D76E','#5c4a0a','#2A2A2A'], borderColor: '#1B1B1B', borderWidth: 3 }] }, options: { responsive: true, plugins: { legend: { labels: { color: '#888', font: { size: 11 } } } } } });
+    const ts = document.getElementById('ch-traffic-sources');
+    if (ts) new Chart(ts, { type: 'doughnut', data: { labels: ['Direct','Social','Search','Email','Referral'], datasets: [{ data: [35,28,22,10,5], backgroundColor: ['#D4AF37','#B8962E','#F5D76E','#5c4a0a','#2A2A2A'], borderColor: '#1B1B1B', borderWidth: 3 }] }, options: { responsive: true, plugins: { legend: { labels: { color: '#888', font: { size: 11 } } } } } });
 
-  const od = document.getElementById('ch-orders-day');
-  if (od) new Chart(od, { type: 'bar', data: { labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'], datasets: [{ data: [12,18,9,22,17,31,24], backgroundColor: g('.55'), borderColor: '#D4AF37', borderWidth: 1 }] }, options: { responsive: true, plugins: { legend: { display: false } }, scales: { x: { grid: { color: g('.06') }, ticks: { color: '#6B6B6B' } }, y: { grid: { color: g('.06') }, ticks: { color: '#6B6B6B' } } } } });
+    const od = document.getElementById('ch-orders-day');
+    if (od) new Chart(od, { type: 'bar', data: { labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'], datasets: [{ data: [12,18,9,22,17,31,24], backgroundColor: g('.55'), borderColor: '#D4AF37', borderWidth: 1 }] }, options: { responsive: true, plugins: { legend: { display: false } }, scales: { x: { grid: { color: g('.06') }, ticks: { color: '#6B6B6B' } }, y: { grid: { color: g('.06') }, ticks: { color: '#6B6B6B' } } } } });
 
-  const dv = document.getElementById('ch-devices');
-  if (dv) new Chart(dv, { type: 'pie', data: { labels: ['Desktop','Mobile','Tablet'], datasets: [{ data: [52,38,10], backgroundColor: ['#D4AF37','#B8962E','#5c4a0a'], borderColor: '#1B1B1B', borderWidth: 3 }] }, options: { responsive: true, plugins: { legend: { labels: { color: '#888', font: { size: 11 } } } } } });
+    const dv = document.getElementById('ch-devices');
+    if (dv) new Chart(dv, { type: 'pie', data: { labels: ['Desktop','Mobile','Tablet'], datasets: [{ data: [52,38,10], backgroundColor: ['#D4AF37','#B8962E','#5c4a0a'], borderColor: '#1B1B1B', borderWidth: 3 }] }, options: { responsive: true, plugins: { legend: { labels: { color: '#888', font: { size: 11 } } } } } });
 
-  const rg = document.getElementById('ch-regions');
-  if (rg) new Chart(rg, { type: 'doughnut', data: { labels: ['UK','USA','UAE','FR','SG','Other'], datasets: [{ data: [38,24,18,10,6,4], backgroundColor: ['#D4AF37','#B8962E','#F5D76E','#8b6914','#5c4a0a','#2A2A2A'], borderColor: '#1B1B1B', borderWidth: 3 }] }, options: { responsive: true, plugins: { legend: { labels: { color: '#888', font: { size: 11 } } } } } });
+    const rg = document.getElementById('ch-regions');
+    if (rg) new Chart(rg, { type: 'doughnut', data: { labels: ['UK','USA','UAE','FR','SG','Other'], datasets: [{ data: [38,24,18,10,6,4], backgroundColor: ['#D4AF37','#B8962E','#F5D76E','#8b6914','#5c4a0a','#2A2A2A'], borderColor: '#1B1B1B', borderWidth: 3 }] }, options: { responsive: true, plugins: { legend: { labels: { color: '#888', font: { size: 11 } } } } } });
+  } catch (err) {
+    analyticsInit = false;
+    console.warn('Analytics charts skipped', err);
+  }
 }
 
 /* ────── ORDERS TABLE ─────────────────────────────────────── */
@@ -745,9 +950,43 @@ const TICKET_DATA = {
   'TKT-089': { customer: 'Hugo Laurent', subject: 'Monogram request for Imperial Suit', status: 'In Progress', priority: 'LOW', priorityColor: 'var(--success)', messages: [{ from: 'Hugo Laurent', time: 'Jul 8, 11:00', text: 'I\'d like to add my initials "H.L." to the inside breast pocket of the Imperial Suit I ordered.' }] },
   'TKT-088': { customer: 'Elara Voss', subject: 'Payment declined — card error', status: 'Open', priority: 'HIGH', priorityColor: 'var(--error)', messages: [{ from: 'Elara Voss', time: 'Jul 8, 18:22', text: 'I\'m trying to checkout but keep getting a payment declined error even though my card details are correct.' }] },
 };
+let currentTicketId = null;
+
+function ticketPriorityMeta(ticket) {
+  const priority = (ticket.priority || 'MEDIUM').toUpperCase();
+  const color = ticket.priorityColor || (priority === 'HIGH' ? 'var(--error)' : priority === 'LOW' ? 'var(--success)' : 'var(--warning)');
+  const label = priority === 'MEDIUM' ? 'MED' : priority;
+  return { priority, color, label };
+}
+
+function ticketStatusBadge(status) {
+  return status === 'Resolved' ? 'badge-delivered'
+    : status === 'In Progress' ? 'badge-processing'
+    : 'badge-pending';
+}
+
+function renderSupportTable() {
+  const tbody = document.getElementById('support-table');
+  if (!tbody) return;
+  tbody.innerHTML = Object.entries(TICKET_DATA).map(([id, ticket]) => {
+    const priority = ticketPriorityMeta(ticket);
+    return `
+      <tr>
+        <td style="color:var(--gold)">#${id}</td>
+        <td>${ticket.customer || 'Customer'}</td>
+        <td>${ticket.subject || 'Customer message'}</td>
+        <td><span class="d-tag">${ticket.type || 'Order Issue'}</span></td>
+        <td><span style="color:${priority.color};font-size:.68rem;font-weight:700">● ${priority.label}</span></td>
+        <td>${ticket.assigned || 'Rockstar'}</td>
+        <td><span class="badge ${ticketStatusBadge(ticket.status)}">${ticket.status || 'Open'}</span></td>
+        <td><button class="tbl-action" onclick="openTicket('${id}')">${ticket.status === 'Resolved' ? 'VIEW' : 'OPEN'}</button></td>
+      </tr>`;
+  }).join('');
+}
 
 function openTicket(id) {
   const data = TICKET_DATA[id]; if (!data) return;
+  currentTicketId = id;
   const modal = document.getElementById('ticket-modal');
   if (!modal) return;
   modal.style.display = 'block';
@@ -757,6 +996,8 @@ function openTicket(id) {
   document.getElementById('tkt-priority').textContent = data.priority;
   document.getElementById('tkt-priority').style.color = data.priorityColor;
   document.getElementById('tkt-customer').textContent = data.customer;
+  const dateEl = document.getElementById('tkt-date');
+  if (dateEl) dateEl.textContent = data.created || 'Jul 10, 2026';
   const msgs = document.getElementById('ticket-messages');
   if (msgs) {
     msgs.innerHTML = data.messages.map(m => `
@@ -777,10 +1018,19 @@ function sendTicketReply() {
   if (!input?.value.trim()) { toast('Please type a reply first.', 'error'); return; }
   const msgs = document.getElementById('ticket-messages');
   const s = AdminAuth.getSession();
+  const text = input.value.trim();
+  const ticket = currentTicketId ? TICKET_DATA[currentTicketId] : null;
+  if (ticket) {
+    ticket.status = 'In Progress';
+    ticket.messages.push({ from: `${s?.displayName || 'Admin'} (Admin)`, time: 'Just now', text });
+    persistTickets();
+    updateSupportPanel();
+    renderSupportTable();
+  }
   if (msgs) {
     const div = document.createElement('div');
     div.style.cssText = 'background:rgba(212,175,55,.07);border:1px solid var(--border);padding:1rem;margin-top:.5rem';
-    div.innerHTML = `<div style="display:flex;justify-content:space-between;margin-bottom:.5rem"><span style="font-size:.7rem;font-weight:700;color:var(--gold)">${s?.displayName||'Admin'} (Admin)</span><span style="font-size:.62rem;color:var(--gray)">Just now</span></div><p style="font-size:.8rem;color:var(--text-2);line-height:1.7">${input.value}</p>`;
+    div.innerHTML = `<div style="display:flex;justify-content:space-between;margin-bottom:.5rem"><span style="font-size:.7rem;font-weight:700;color:var(--gold)">${s?.displayName||'Admin'} (Admin)</span><span style="font-size:.62rem;color:var(--gray)">Just now</span></div><p style="font-size:.8rem;color:var(--text-2);line-height:1.7">${text}</p>`;
     msgs.appendChild(div);
     msgs.scrollTop = msgs.scrollHeight;
   }
@@ -789,13 +1039,45 @@ function sendTicketReply() {
 }
 
 function closeTicket() {
+  if (currentTicketId && TICKET_DATA[currentTicketId]) {
+    TICKET_DATA[currentTicketId].status = 'Resolved';
+    persistTickets();
+    updateSupportPanel();
+    renderSupportTable();
+  }
   document.getElementById('ticket-modal').style.display = 'none';
   toast('Ticket marked as resolved.', 'success');
 }
 
 function createTicket() {
+  const form = document.getElementById('new-ticket-form');
+  const inputs = form?.querySelectorAll('input, textarea, select') || [];
+  const [customerInput, emailInput, typeInput, priorityInput, subjectInput, descriptionInput, assignedInput] = inputs;
+  const customer = customerInput?.value.trim() || 'Customer';
+  const subject = subjectInput?.value.trim() || 'New support ticket';
+  const priority = (priorityInput?.value || 'Medium').toUpperCase();
+  const id = 'TKT-' + Date.now().toString().slice(-3);
+  TICKET_DATA[id] = {
+    customer,
+    subject,
+    status: 'Open',
+    priority,
+    priorityColor: priority === 'HIGH' ? 'var(--error)' : priority === 'LOW' ? 'var(--success)' : 'var(--warning)',
+    type: typeInput?.value || 'Other',
+    assigned: assignedInput?.value?.replace(/\s*\(.+\)/, '') || 'Rockstar',
+    created: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
+    messages: [{ from: customer, time: 'Just now', text: descriptionInput?.value.trim() || subject }],
+    email: emailInput?.value.trim() || '',
+  };
+  persistTickets();
+  renderSupportTable();
+  updateSupportPanel();
+  addNotificationEntry({ id: 'notif_' + id, type: 'ticket', title: `New support ticket from ${customer}`, unread: true, timestamp: 'Just now', ticketId: id });
   toast('Support ticket created and assigned.', 'success');
-  document.getElementById('new-ticket-form').style.display = 'none';
+  if (form) {
+    form.style.display = 'none';
+    form.querySelectorAll('input, textarea').forEach(el => { el.value = ''; });
+  }
 }
 
 /* ────── MARKETING HELPERS ────────────────────────────────── */
@@ -850,17 +1132,21 @@ function initTopbar() {
 
 /* ────── MASTER INIT ──────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', () => {
-  initLoader();
-  initTopbar();
-  bindSidebar();
-  initScrollProgress();
-  initDashboardPanel();
-  updateNotificationCounts();
-  updateSupportPanel();
-  initRealtimeConnection();
-  simulateLiveNotifications();
-  initDashboardCharts();
-  showPanel('panel-dashboard');
+  const step = (name, fn) => {
+    try { fn(); } catch (err) { console.error(`${name} failed`, err); }
+  };
+  step('Loader', initLoader);
+  step('Topbar', initTopbar);
+  step('Sidebar', bindSidebar);
+  step('Scroll progress', initScrollProgress);
+  step('Stored tickets', loadSupportTickets);
+  step('Notification inbox', initNotificationInbox);
+  step('Dashboard panel', initDashboardPanel);
+  step('Support panel', updateSupportPanel);
+  step('Realtime connection', initRealtimeConnection);
+  step('Live notifications', simulateLiveNotifications);
+  step('Dashboard charts', initDashboardCharts);
+  step('Initial panel', () => showPanel('panel-dashboard'));
 });
 
 /* ────────────────────────────────────────────────────────────
@@ -1271,7 +1557,9 @@ function addCategoryImageUpload() {
     <input type="file" id="cat-img-file" accept="image/*" style="display:none" onchange="previewCategoryImage(this)">
     <label class="d-form-label" style="margin-top:.5rem">Or paste image URL</label>
     <input type="url" class="d-form-input" id="cat-img-url" placeholder="https://example.com/category.jpg" oninput="updateCatImgFromUrl(this)">`;
-  formSection.insertBefore(group, formSection.querySelector('.d-form-group:last-of-type'));
+  const submitRow = formSection.querySelector('button[type="submit"]')?.parentElement;
+  if (submitRow && submitRow.parentElement === formSection) formSection.insertBefore(group, submitRow);
+  else formSection.appendChild(group);
 }
 
 function previewCategoryImage(input) {

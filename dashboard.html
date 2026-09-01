@@ -60,6 +60,20 @@ body{padding-top:0;overflow:hidden}
 .d-btn-ghost:hover{border-color:var(--gold);color:var(--gold)}
 .d-btn-danger{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:#EF4444;font-size:.6rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;padding:.65rem 1.3rem;cursor:pointer;font-family:var(--font-sans);transition:all .3s}
 .d-btn-danger:hover{background:rgba(239,68,68,.2)}
+.notif-wrap{position:relative}
+.notif-popover{display:none;position:absolute;right:0;top:calc(100% + .7rem);width:min(380px,calc(100vw - 2rem));background:var(--bg-2);border:1px solid var(--border);box-shadow:0 18px 45px rgba(0,0,0,.45);z-index:40}
+.notif-popover.on{display:block}
+.notif-head{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1rem 1.1rem;border-bottom:1px solid var(--border)}
+.notif-title{font-size:.62rem;font-weight:700;letter-spacing:.2em;color:var(--white);text-transform:uppercase}
+.notif-list{max-height:360px;overflow-y:auto}
+.notif-item{display:grid;grid-template-columns:30px 1fr;gap:.8rem;padding:1rem 1.1rem;border-bottom:1px solid var(--border);cursor:pointer;transition:background .25s}
+.notif-item:hover{background:rgba(212,175,55,.05)}
+.notif-item.unread{background:rgba(212,175,55,.08)}
+.notif-icon{width:30px;height:30px;border:1px solid rgba(212,175,55,.3);display:flex;align-items:center;justify-content:center;color:var(--gold);background:rgba(212,175,55,.06)}
+.notif-item-title{font-size:.76rem;color:var(--white);line-height:1.45;margin-bottom:.2rem}
+.notif-item-meta{font-size:.6rem;color:var(--gray);letter-spacing:.08em;text-transform:uppercase}
+.notif-empty{padding:2rem;text-align:center;color:var(--gray);font-size:.75rem}
+.notif-foot{display:flex;justify-content:space-between;gap:.7rem;padding:.9rem 1.1rem;border-top:1px solid var(--border)}
 
 /* Data table */
 .d-table-wrap{background:var(--bg-2);border:1px solid var(--border);overflow:hidden}
@@ -217,7 +231,20 @@ body{padding-top:0;overflow:hidden}
       <span style="font-size:.62rem;color:var(--gray)" id="topbar-breadcrumb">Overview → Dashboard</span>
     </div>
     <div style="display:flex;align-items:center;gap:.8rem">
-      <button class="d-btn-ghost" style="padding:.45rem .9rem;font-size:.58rem" onclick="showPanel('panel-support')"><i class="fas fa-bell"></i> <span id="topbar-notif-count" style="background:var(--error);color:#fff;border-radius:50%;width:16px;height:16px;display:inline-flex;align-items:center;justify-content:center;font-size:.55rem">3</span></button>
+      <div class="notif-wrap">
+        <button class="d-btn-ghost" id="admin-notif-btn" style="padding:.45rem .9rem;font-size:.58rem" onclick="toggleNotificationInbox(event)" aria-haspopup="true" aria-expanded="false"><i class="fas fa-bell"></i> <span id="topbar-notif-count" style="background:var(--error);color:#fff;border-radius:50%;width:16px;height:16px;display:inline-flex;align-items:center;justify-content:center;font-size:.55rem">3</span></button>
+        <div class="notif-popover" id="admin-notif-popover">
+          <div class="notif-head">
+            <p class="notif-title">Inbox</p>
+            <button class="tbl-action" onclick="markAllNotificationsRead(event)">MARK READ</button>
+          </div>
+          <div class="notif-list" id="admin-notif-list"></div>
+          <div class="notif-foot">
+            <button class="tbl-action" onclick="showPanel('panel-support');closeNotificationInbox()">SUPPORT</button>
+            <button class="tbl-action" onclick="clearReadNotifications(event)">CLEAR READ</button>
+          </div>
+        </div>
+      </div>
       <span style="font-size:.62rem;color:var(--gold);letter-spacing:.12em;text-transform:uppercase" id="admin-topbar-role">Role</span>
       <div id="admin-topbar-avatar" class="admin-avatar" style="cursor:pointer" onclick="showPanel('panel-settings')">A</div>
       <button class="d-btn-ghost" style="padding:.45rem .9rem;font-size:.58rem" onclick="adminLogout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
@@ -436,7 +463,6 @@ body{padding-top:0;overflow:hidden}
         <div id="color-variants-list" style="display:flex;flex-direction:column;gap:.8rem"></div>
         <button type="button" class="d-btn-ghost" style="margin-top:.8rem;font-size:.58rem" onclick="addColorVariant()"><i class="fas fa-plus"></i> ADD COLOR VARIANT</button>
       </div>
-    <div style="display:none">
     </div>
     <div class="d-form-section">
       <p class="d-form-section-title">Variants & Inventory</p>
@@ -1268,8 +1294,6 @@ body{padding-top:0;overflow:hidden}
 @media(max-width:900px){.admin-layout{grid-template-columns:1fr}.admin-sidebar{display:none}.d-form-grid-2,.d-form-grid-3{grid-template-columns:1fr}}
 </style>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-<script src="js/admin-auth.js"></script>
 <script src="js/vireon.js"></script>
 <script src="js/dashboard.js"></script>
 <script src="js/cursor.js"></script></body>
