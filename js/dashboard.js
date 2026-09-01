@@ -757,8 +757,8 @@ function renderCustomersTable(data) {
       <td style="color:var(--gold)">${c.points.toLocaleString()} pts</td>
       <td style="font-size:.72rem;color:var(--text-2)">${c.joined}</td>
       <td>
-        <button class="tbl-action">VIEW</button>
-        <button class="tbl-action">EMAIL</button>
+        <button class="tbl-action" onclick="viewCustomer('${c.name}')">VIEW</button>
+        <button class="tbl-action" onclick="emailCustomer('${c.name}')">EMAIL</button>
       </td>
     </tr>`).join('');
 }
@@ -787,7 +787,7 @@ function renderInventoryTable(data) {
       <td><span class="badge ${STATUS_BADGE[item.status]||''}">${item.status}</span></td>
       <td style="font-size:.72rem;color:var(--text-2)">${item.warehouse}</td>
       <td>
-        ${item.stock <= item.threshold ? `<button class="d-btn" style="padding:.28rem .65rem;font-size:.56rem" onclick="toast('Restock order placed for ${item.name}.','success')"><i class="fas fa-plus"></i> RESTOCK</button>` : '<button class="tbl-action">ADJUST</button>'}
+        ${item.stock <= item.threshold ? `<button class="d-btn" style="padding:.28rem .65rem;font-size:.56rem" onclick="restockItem('${item.sku}')"><i class="fas fa-plus"></i> RESTOCK</button>` : `<button class="tbl-action" onclick="adjustStock('${item.sku}')">ADJUST</button>`}
       </td>
     </tr>`;
   }).join('');
@@ -965,10 +965,14 @@ function ticketStatusBadge(status) {
     : 'badge-pending';
 }
 
-function renderSupportTable() {
+function renderSupportTable(q='', typeFilter='', priFilter='') {
   const tbody = document.getElementById('support-table');
   if (!tbody) return;
-  tbody.innerHTML = Object.entries(TICKET_DATA).map(([id, ticket]) => {
+  let entries = Object.entries(TICKET_DATA);
+  if (q) entries = entries.filter(([,t]) => (t.customer||'').toLowerCase().includes(q) || (t.subject||'').toLowerCase().includes(q) || t.id?.toLowerCase().includes(q));
+  if (typeFilter) entries = entries.filter(([,t]) => (t.type||'') === typeFilter);
+  if (priFilter)  entries = entries.filter(([,t]) => (t.priority||'') === priFilter);
+  tbody.innerHTML = entries.map(([id, ticket]) => {
     const priority = ticketPriorityMeta(ticket);
     return `
       <tr>
@@ -981,7 +985,7 @@ function renderSupportTable() {
         <td><span class="badge ${ticketStatusBadge(ticket.status)}">${ticket.status || 'Open'}</span></td>
         <td><button class="tbl-action" onclick="openTicket('${id}')">${ticket.status === 'Resolved' ? 'VIEW' : 'OPEN'}</button></td>
       </tr>`;
-  }).join('');
+  }).join('') || `<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--gray)">No tickets found</td></tr>`;
 }
 
 function openTicket(id) {
@@ -1823,3 +1827,758 @@ window.showPanel = function(id) {
   if (_origShowPanelFinal) _origShowPanelFinal(id);
   if (id === 'panel-credits') initCreditsPanel();
 };
+
+/* ═══════════════════════════════════════════════════════════
+   VIREON — FULL BUTTON IMPLEMENTATION MODULE
+   Collections · Inventory · Orders · Customers · Returns
+   Coupons · Reviews · Flash Sales · Analytics · Reports · Support Filters
+   ═══════════════════════════════════════════════════════════ */
+
+/* ────────────────────────────────────────────────────────────
+   SHARED MODAL HELPERS
+   ──────────────────────────────────────────────────────────── */
+function openModal(id) {
+  const m = document.getElementById(id);
+  if (m) { m.style.display = 'flex'; document.body.style.overflow = 'hidden'; }
+}
+function closeModal(id) {
+  const m = document.getElementById(id);
+  if (m) { m.style.display = 'none'; document.body.style.overflow = ''; }
+}
+window.openModal  = openModal;
+window.closeModal = closeModal;
+
+/* ═══════════════════════════════════════════════════════════
+   1. COLLECTIONS
+   ═══════════════════════════════════════════════════════════ */
+const COLLECTIONS_KEY = 'vireon_collections';
+const DEFAULT_COLLECTIONS = [
+  { id:'col_001', name:'Signature Series', products:12, status:'Active',  gradient:'linear-gradient(135deg,#1a0700,#2d1000)', badge:'ACTIVE'   },
+  { id:'col_002', name:'Limited Drops',    products:4,  status:'Active',  gradient:'linear-gradient(135deg,#050510,#0d0d20)', badge:'LIMITED'  },
+  { id:'col_003', name:'Night Luxe',       products:6,  status:'Active',  gradient:'linear-gradient(135deg,#0a0a00,#1a1900)', badge:'ACTIVE'   },
+];
+
+function getCollections() {
+  try { const s=JSON.parse(localStorage.getItem(COLLECTIONS_KEY)); return s && s.length ? s : DEFAULT_COLLECTIONS; } catch { return DEFAULT_COLLECTIONS; }
+}
+function saveCollections(c) { localStorage.setItem(COLLECTIONS_KEY, JSON.stringify(c)); }
+function genColId() { return 'col_'+Date.now().toString(36); }
+
+function renderCollectionsGrid(filter='') {
+  const grid = document.getElementById('collections-grid');
+  if (!grid) return;
+  let cols = getCollections();
+  if (filter) cols = cols.filter(c => c.name.toLowerCase().includes(filter.toLowerCase()));
+
+  const badgeClass = s => s==='Active'?'badge-active':s==='LIMITED'?'badge-limited':'badge-inactive';
+  grid.innerHTML = cols.map(c => `
+    <div class="d-form-section" style="transition:all .3s;padding:0;overflow:hidden" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--border)'">
+      <div style="height:120px;background:${c.gradient};border-bottom:1px solid var(--border)"></div>
+      <div style="padding:1.5rem">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.8rem">
+          <div>
+            <h3 style="font-size:1rem;color:var(--white);margin-bottom:.3rem">${c.name}</h3>
+            <p style="font-size:.7rem;color:var(--text-2)">${c.products} products · ${c.status}</p>
+          </div>
+          <span class="badge ${badgeClass(c.badge||c.status)}">${c.badge||c.status.toUpperCase()}</span>
+        </div>
+        <div style="display:flex;gap:.5rem">
+          <button class="tbl-action" onclick="editCollection('${c.id}')"><i class="fas fa-edit"></i> EDIT</button>
+          <button class="tbl-action-del tbl-action" onclick="deleteCollection('${c.id}')"><i class="fas fa-trash"></i></button>
+        </div>
+      </div>
+    </div>`).join('') +
+  `<div class="d-form-section" style="border:2px dashed var(--border);background:transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:220px;cursor:pointer;transition:all .3s" onclick="openCollectionForm()" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--border)'">
+    <i class="fas fa-plus" style="font-size:2rem;color:var(--gray);margin-bottom:.8rem"></i>
+    <p style="font-size:.72rem;color:var(--gray)">Create New Collection</p>
+  </div>`;
+}
+
+function openCollectionForm(editId=null) {
+  const modal = document.getElementById('collection-modal');
+  if (!modal) return;
+  const title = document.getElementById('col-modal-title');
+  const form  = document.getElementById('col-form');
+  form.reset();
+  delete form.dataset.editId;
+  if (title) title.textContent = editId ? 'Edit Collection' : 'New Collection';
+
+  if (editId) {
+    const c = getCollections().find(x=>x.id===editId);
+    if (!c) return;
+    form.dataset.editId = editId;
+    document.getElementById('col-name').value     = c.name;
+    document.getElementById('col-status').value   = c.status;
+    document.getElementById('col-gradient').value = c.gradient;
+    document.getElementById('col-badge').value    = c.badge||'';
+    document.getElementById('col-products').value = c.products;
+  }
+  openModal('collection-modal');
+}
+function editCollection(id) { openCollectionForm(id); }
+function deleteCollection(id) {
+  const cols = getCollections();
+  const c = cols.find(x=>x.id===id);
+  if (!c || !confirm(`Delete "${c.name}"?`)) return;
+  saveCollections(cols.filter(x=>x.id!==id));
+  renderCollectionsGrid();
+  toast(`"${c.name}" deleted`, 'error');
+}
+
+document.addEventListener('submit', function(e) {
+  if (e.target.id !== 'col-form') return;
+  e.preventDefault();
+  const name   = document.getElementById('col-name')?.value.trim();
+  if (!name) { toast('Collection name is required','error'); return; }
+  const status   = document.getElementById('col-status')?.value || 'Active';
+  const gradient = document.getElementById('col-gradient')?.value || 'linear-gradient(135deg,#1a0f05,#2d1a08)';
+  const badge    = document.getElementById('col-badge')?.value || '';
+  const products = parseInt(document.getElementById('col-products')?.value)||0;
+  const cols     = getCollections();
+  const editId   = e.target.dataset.editId;
+  if (editId) {
+    const c = cols.find(x=>x.id===editId);
+    if (c) { c.name=name; c.status=status; c.gradient=gradient; c.badge=badge; c.products=products; }
+    toast(`"${name}" updated`,'success');
+  } else {
+    cols.push({ id:genColId(), name, status, gradient, badge:badge||status, products });
+    toast(`"${name}" created`,'success');
+  }
+  saveCollections(cols);
+  renderCollectionsGrid();
+  closeModal('collection-modal');
+  publishAuditAction('Collection saved', name);
+});
+
+function initCollectionsPanel() {
+  renderCollectionsGrid();
+  document.getElementById('col-search')?.addEventListener('input', function() { renderCollectionsGrid(this.value); });
+}
+window.renderCollectionsGrid = renderCollectionsGrid;
+window.openCollectionForm    = openCollectionForm;
+window.editCollection        = editCollection;
+window.deleteCollection      = deleteCollection;
+window.initCollectionsPanel  = initCollectionsPanel;
+
+/* ═══════════════════════════════════════════════════════════
+   2. INVENTORY — ADJUST modal + real RESTOCK
+   ═══════════════════════════════════════════════════════════ */
+function adjustStock(sku) {
+  const item = INVENTORY_DATA.find(i=>i.sku===sku);
+  if (!item) return;
+  document.getElementById('adj-sku').textContent   = item.sku;
+  document.getElementById('adj-name').textContent  = item.name;
+  document.getElementById('adj-current').textContent = item.stock;
+  document.getElementById('adj-new-qty').value     = item.stock;
+  openModal('inventory-adjust-modal');
+  document.getElementById('adj-confirm').onclick = function() {
+    const qty = parseInt(document.getElementById('adj-new-qty').value);
+    if (isNaN(qty) || qty < 0) { toast('Enter a valid quantity','error'); return; }
+    item.stock = qty;
+    item.status = qty === 0 ? 'Out of Stock' : qty <= item.threshold ? 'Low Stock' : 'In Stock';
+    renderInventoryTable(INVENTORY_DATA);
+    closeModal('inventory-adjust-modal');
+    toast(`Stock for ${item.name} updated to ${qty}`,'success');
+    publishAuditAction('Stock adjusted', `${item.name}: ${qty} units`);
+  };
+}
+
+function restockItem(sku) {
+  const item = INVENTORY_DATA.find(i=>i.sku===sku);
+  if (!item) return;
+  document.getElementById('rst-sku').textContent   = item.sku;
+  document.getElementById('rst-name').textContent  = item.name;
+  document.getElementById('rst-current').textContent = item.stock;
+  document.getElementById('rst-qty').value         = 20;
+  openModal('inventory-restock-modal');
+  document.getElementById('rst-confirm').onclick = function() {
+    const qty = parseInt(document.getElementById('rst-qty').value);
+    if (isNaN(qty) || qty <= 0) { toast('Enter a valid restock quantity','error'); return; }
+    item.stock += qty;
+    item.status = item.stock <= item.threshold ? 'Low Stock' : 'In Stock';
+    renderInventoryTable(INVENTORY_DATA);
+    closeModal('inventory-restock-modal');
+    toast(`Restocked ${item.name} +${qty} units (now ${item.stock})`,'success');
+    publishAuditAction('Restock placed', `${item.name}: +${qty} units`);
+  };
+}
+window.adjustStock  = adjustStock;
+window.restockItem  = restockItem;
+
+/* ═══════════════════════════════════════════════════════════
+   3. ORDERS — Detail modal + status update + Export CSV
+   ═══════════════════════════════════════════════════════════ */
+function viewOrderDetail(id) {
+  const o = ORDERS_DATA.find(x=>x.id===id);
+  if (!o) return;
+
+  document.getElementById('od-id').textContent       = o.id;
+  document.getElementById('od-customer').textContent = o.customer;
+  document.getElementById('od-product').textContent  = o.product;
+  document.getElementById('od-amount').textContent   = '$'+o.amount.toLocaleString();
+  document.getElementById('od-date').textContent     = o.date;
+  document.getElementById('od-delivery').textContent = o.delivery;
+  const badge = document.getElementById('od-status-badge');
+  badge.textContent = o.status;
+  badge.className   = 'badge '+(STATUS_BADGE[o.status]||'');
+
+  const sel = document.getElementById('od-status-select');
+  sel.value = o.status;
+  sel.onchange = function() {
+    o.status = this.value;
+    badge.textContent = o.status;
+    badge.className   = 'badge '+(STATUS_BADGE[o.status]||'');
+    renderOrdersTable(ORDERS_DATA);
+    toast(`Order ${o.id} → ${o.status}`, 'success');
+    publishAuditAction('Order status updated', `${o.id}: ${o.status}`);
+  };
+
+  document.getElementById('od-track-btn').onclick = function() {
+    window.open('tracking.html?order='+o.id,'_blank');
+  };
+  openModal('order-detail-modal');
+}
+
+function exportOrdersCSV() {
+  const headers = ['Order ID','Customer','Product','Amount','Date','Delivery','Status'];
+  const rows = ORDERS_DATA.map(o => [o.id,o.customer,o.product,'$'+o.amount,o.date,o.delivery,o.status].map(v=>`"${v}"`).join(','));
+  const csv = [headers.join(','), ...rows].join('\n');
+  downloadCSV(csv, 'vireon-orders.csv');
+}
+
+function createManualOrder() {
+  openModal('manual-order-modal');
+}
+document.addEventListener('submit', function(e) {
+  if (e.target.id !== 'manual-order-form') return;
+  e.preventDefault();
+  const customer = document.getElementById('mo-customer')?.value.trim();
+  const product  = document.getElementById('mo-product')?.value.trim();
+  const amount   = parseFloat(document.getElementById('mo-amount')?.value)||0;
+  const delivery = document.getElementById('mo-delivery')?.value||'Standard';
+  if (!customer||!product) { toast('Customer and product are required','error'); return; }
+  const newId = 'VP-2026-'+(Math.floor(Math.random()*900)+100);
+  ORDERS_DATA.unshift({ id:newId, customer, product, amount, date:'Today', delivery, status:'Pending' });
+  renderOrdersTable(ORDERS_DATA);
+  closeModal('manual-order-modal');
+  toast(`Manual order ${newId} created`,'success');
+  publishAuditAction('Manual order created', `${newId} for ${customer}`);
+});
+window.viewOrderDetail  = viewOrderDetail;
+window.exportOrdersCSV  = exportOrdersCSV;
+window.createManualOrder = createManualOrder;
+
+/* ═══════════════════════════════════════════════════════════
+   4. CUSTOMERS — filter + VIEW modal + EMAIL modal
+   ═══════════════════════════════════════════════════════════ */
+function filterCustomers() {
+  const q    = (document.getElementById('cust-search')?.value||'').toLowerCase();
+  const tier = document.getElementById('cust-tier-filter')?.value||'';
+  const list = CUSTOMERS_DATA.filter(c => {
+    const matchQ   = !q || c.name.toLowerCase().includes(q) || c.email.toLowerCase().includes(q);
+    const matchTier = !tier || c.tier === tier;
+    return matchQ && matchTier;
+  });
+  renderCustomersTable(list);
+}
+
+function viewCustomer(name) {
+  const c = CUSTOMERS_DATA.find(x=>x.name===name);
+  if (!c) return;
+  document.getElementById('cv-name').textContent    = c.name;
+  document.getElementById('cv-email').textContent   = c.email;
+  document.getElementById('cv-tier').textContent    = c.tier;
+  document.getElementById('cv-orders').textContent  = c.orders;
+  document.getElementById('cv-spent').textContent   = '$'+c.spent.toLocaleString();
+  document.getElementById('cv-points').textContent  = c.points.toLocaleString()+' pts';
+  document.getElementById('cv-joined').textContent  = c.joined;
+  document.getElementById('cv-avatar').textContent  = c.name.charAt(0);
+  document.getElementById('cv-email-btn').onclick   = function() { closeModal('customer-modal'); emailCustomer(c.name); };
+  openModal('customer-modal');
+}
+
+function emailCustomer(name) {
+  const c = CUSTOMERS_DATA.find(x=>x.name===name);
+  document.getElementById('em-to').textContent = c ? `${c.name} <${c.email}>` : name;
+  document.getElementById('em-form').reset();
+  openModal('email-customer-modal');
+}
+document.addEventListener('submit', function(e) {
+  if (e.target.id !== 'em-form') return;
+  e.preventDefault();
+  const subj = document.getElementById('em-subject')?.value.trim();
+  const body = document.getElementById('em-body')?.value.trim();
+  if (!subj||!body) { toast('Subject and body are required','error'); return; }
+  closeModal('email-customer-modal');
+  toast('Email sent successfully','success');
+  publishAuditAction('Customer email sent', subj);
+});
+window.filterCustomers = filterCustomers;
+window.viewCustomer    = viewCustomer;
+window.emailCustomer   = emailCustomer;
+
+/* ═══════════════════════════════════════════════════════════
+   5. RETURNS
+   ═══════════════════════════════════════════════════════════ */
+const RETURNS_KEY = 'vireon_returns';
+const DEFAULT_RETURNS = [
+  { id:'RET-047', order:'VP-2026-031', customer:'Isabella Cross', product:'Evening Gown',  reason:'Size issue',    type:'Exchange', status:'Pending'    },
+  { id:'RET-046', order:'VP-2026-028', customer:'Thomas Reed',    product:'Imperial Suit', reason:'Changed mind',  type:'Refund',   status:'Processing' },
+  { id:'RET-045', order:'VP-2026-022', customer:'Leon Müller',    product:'Sovereign Coat',reason:'Damaged item',  type:'Refund',   status:'Resolved'   },
+];
+
+function getReturns() {
+  try { const s=JSON.parse(localStorage.getItem(RETURNS_KEY)); return s && s.length ? s : DEFAULT_RETURNS; } catch { return DEFAULT_RETURNS; }
+}
+function saveReturns(r) { localStorage.setItem(RETURNS_KEY, JSON.stringify(r)); }
+
+function renderReturnsTable() {
+  const tbody = document.getElementById('returns-table-body');
+  if (!tbody) return;
+  const ret = getReturns();
+  const pendingEl   = document.getElementById('ret-pending-count');
+  const progressEl  = document.getElementById('ret-progress-count');
+  const resolvedEl  = document.getElementById('ret-resolved-count');
+  if (pendingEl)  pendingEl.textContent  = ret.filter(r=>r.status==='Pending').length;
+  if (progressEl) progressEl.textContent = ret.filter(r=>r.status==='Processing').length;
+  if (resolvedEl) resolvedEl.textContent = ret.filter(r=>r.status==='Resolved').length;
+
+  tbody.innerHTML = ret.map(r => `
+    <tr>
+      <td style="color:var(--gold)">#${r.id}</td>
+      <td style="color:var(--gold)">${r.order}</td>
+      <td>${r.customer}</td>
+      <td>${r.product}</td>
+      <td>${r.reason}</td>
+      <td><span class="badge ${r.type==='Exchange'?'badge-shipped':'badge-processing'}">${r.type}</span></td>
+      <td><span class="badge ${STATUS_BADGE[r.status]||'badge-pending'}">${r.status}</span></td>
+      <td><button class="tbl-action" onclick="reviewReturn('${r.id}')">REVIEW</button></td>
+    </tr>`).join('') || `<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--gray)">No returns found</td></tr>`;
+}
+
+function reviewReturn(id) {
+  const r = getReturns().find(x=>x.id===id);
+  if (!r) return;
+  document.getElementById('ret-id').textContent       = '#'+r.id;
+  document.getElementById('ret-customer').textContent = r.customer;
+  document.getElementById('ret-product').textContent  = r.product;
+  document.getElementById('ret-reason').textContent   = r.reason;
+  document.getElementById('ret-type').textContent     = r.type;
+  const badge = document.getElementById('ret-status-badge');
+  badge.textContent = r.status;
+  badge.className = 'badge '+(STATUS_BADGE[r.status]||'badge-pending');
+  const sel = document.getElementById('ret-status-select');
+  sel.value = r.status;
+  sel.onchange = function() {
+    const rets = getReturns();
+    const item = rets.find(x=>x.id===id);
+    if (item) { item.status=this.value; saveReturns(rets); renderReturnsTable(); badge.textContent=item.status; badge.className='badge '+(STATUS_BADGE[item.status]||'badge-pending'); toast(`Return ${r.id} → ${item.status}`,'success'); }
+  };
+  openModal('return-review-modal');
+}
+function initReturnsPanel() { renderReturnsTable(); }
+window.renderReturnsTable = renderReturnsTable;
+window.reviewReturn       = reviewReturn;
+window.initReturnsPanel   = initReturnsPanel;
+
+/* ═══════════════════════════════════════════════════════════
+   6. COUPONS
+   ═══════════════════════════════════════════════════════════ */
+const COUPONS_KEY = 'vireon_coupons';
+const DEFAULT_COUPONS = [
+  { id:'coup_001', code:'VIREON20', type:'Percentage', value:'20',  used:47,  limit:'500',       expires:'2026-12-31', minOrder:0,  status:'Active'  },
+  { id:'coup_002', code:'ELITE',    type:'Free Shipping', value:'', used:124, limit:'',          expires:'',          minOrder:0,  status:'Active'  },
+  { id:'coup_003', code:'WELCOME10',type:'Percentage', value:'10',  used:238, limit:'1000',      expires:'2026-06-30', minOrder:0, status:'Expired' },
+];
+
+function getCoupons()    { try { const s=JSON.parse(localStorage.getItem(COUPONS_KEY)); return s&&s.length?s:DEFAULT_COUPONS; } catch { return DEFAULT_COUPONS; } }
+function saveCoupons(c)  { localStorage.setItem(COUPONS_KEY, JSON.stringify(c)); }
+function genCoupId()     { return 'coup_'+Date.now().toString(36); }
+
+function renderCouponsTable(filter='') {
+  const tbody = document.getElementById('coupons-table-body');
+  if (!tbody) return;
+  let list = getCoupons();
+  if (filter) list = list.filter(c => c.code.toLowerCase().includes(filter.toLowerCase()));
+  tbody.innerHTML = list.map(c => {
+    const expired = c.expires && new Date(c.expires) < new Date();
+    const status  = expired ? 'Expired' : c.status;
+    const badgeCls = status==='Active'?'badge-active':'badge-inactive';
+    const actions = status==='Expired'
+      ? `<button class="tbl-action" onclick="renewCoupon('${c.id}')">RENEW</button> <button class="tbl-action-del tbl-action" onclick="deleteCoupon('${c.id}')">DELETE</button>`
+      : `<button class="tbl-action" onclick="editCoupon('${c.id}')">EDIT</button> <button class="tbl-action-del tbl-action" onclick="deleteCoupon('${c.id}')">DELETE</button>`;
+    const val = c.type==='Free Shipping' ? 'Free Express' : c.type==='Percentage' ? c.value+'% off' : '$'+c.value+' off';
+    return `<tr>
+      <td style="color:var(--gold);font-weight:600;letter-spacing:.1em">${c.code}</td>
+      <td>${c.type}</td>
+      <td>${val}</td>
+      <td>${c.used}</td>
+      <td>${c.limit||'Unlimited'}</td>
+      <td>${c.expires ? new Date(c.expires).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}) : 'Never'}</td>
+      <td><span class="badge ${badgeCls}">${status}</span></td>
+      <td>${actions}</td>
+    </tr>`;
+  }).join('') || `<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--gray)">No coupons found</td></tr>`;
+}
+
+function saveCoupon() {
+  const code    = document.getElementById('coup-code')?.value.trim().toUpperCase();
+  const type    = document.getElementById('coup-type')?.value;
+  const value   = document.getElementById('coup-value')?.value||'';
+  const limit   = document.getElementById('coup-limit')?.value||'';
+  const expires = document.getElementById('coup-expires')?.value||'';
+  const minOrder= parseFloat(document.getElementById('coup-minorder')?.value)||0;
+  if (!code) { toast('Coupon code is required','error'); return; }
+  const editId  = document.getElementById('coupon-form-section').dataset.editId;
+  const list    = getCoupons();
+  if (editId) {
+    const c = list.find(x=>x.id===editId);
+    if (c) { c.code=code; c.type=type; c.value=value; c.limit=limit; c.expires=expires; c.minOrder=minOrder; c.status='Active'; }
+    toast(`Coupon "${code}" updated`,'success');
+  } else {
+    if (list.find(c=>c.code===code)) { toast(`Code "${code}" already exists`,'error'); return; }
+    list.push({ id:genCoupId(), code, type, value, used:0, limit, expires, minOrder, status:'Active' });
+    toast(`Coupon "${code}" created`,'success');
+  }
+  saveCoupons(list);
+  renderCouponsTable();
+  document.getElementById('coupon-form-section').style.display='none';
+  delete document.getElementById('coupon-form-section').dataset.editId;
+  document.getElementById('coup-form')?.reset();
+  publishAuditAction('Coupon saved', code);
+}
+
+function editCoupon(id) {
+  const c = getCoupons().find(x=>x.id===id);
+  if (!c) return;
+  document.getElementById('coup-code').value    = c.code;
+  document.getElementById('coup-type').value    = c.type;
+  document.getElementById('coup-value').value   = c.value;
+  document.getElementById('coup-limit').value   = c.limit;
+  document.getElementById('coup-expires').value = c.expires;
+  document.getElementById('coup-minorder').value = c.minOrder||0;
+  const sec = document.getElementById('coupon-form-section');
+  sec.dataset.editId = id;
+  sec.style.display='block';
+  sec.scrollIntoView({behavior:'smooth'});
+}
+function deleteCoupon(id) {
+  const c = getCoupons().find(x=>x.id===id);
+  if (!c||!confirm(`Delete coupon "${c.code}"?`)) return;
+  saveCoupons(getCoupons().filter(x=>x.id!==id));
+  renderCouponsTable();
+  toast(`"${c.code}" deleted`,'error');
+}
+function renewCoupon(id) {
+  const list = getCoupons(); const c = list.find(x=>x.id===id);
+  if (!c) return;
+  const oneYear = new Date(); oneYear.setFullYear(oneYear.getFullYear()+1);
+  c.expires = oneYear.toISOString().split('T')[0];
+  c.status  = 'Active';
+  saveCoupons(list); renderCouponsTable();
+  toast(`"${c.code}" renewed until ${oneYear.toLocaleDateString()}`,'success');
+}
+function initCouponsPanel() {
+  renderCouponsTable();
+  document.getElementById('coup-search')?.addEventListener('input', function(){ renderCouponsTable(this.value); });
+}
+window.saveCoupon    = saveCoupon;
+window.editCoupon    = editCoupon;
+window.deleteCoupon  = deleteCoupon;
+window.renewCoupon   = renewCoupon;
+window.initCouponsPanel = initCouponsPanel;
+
+/* ═══════════════════════════════════════════════════════════
+   7. REVIEWS
+   ═══════════════════════════════════════════════════════════ */
+const REVIEWS_KEY = 'vireon_reviews';
+const DEFAULT_REVIEWS = [
+  { id:'rev_001', customer:'Alexandra R.', product:'Sovereign Coat', rating:5, text:'"Absolutely exceptional quality. Every detail speaks to the level of craftsmanship."', date:'Jul 9', status:'Published' },
+  { id:'rev_002', customer:'Marcus B.',    product:'Imperial Suit',  rating:5, text:'"Commands presence the moment you put it on. Worth every penny."',                      date:'Jul 8', status:'Published' },
+  { id:'rev_003', customer:'Sofia V.',     product:'Evening Gown',   rating:4, text:'"Beautiful but delivery took longer than expected."',                                    date:'Jul 7', status:'Pending'   },
+  { id:'rev_004', customer:'Unknown',      product:'Noir Velvet Dress',rating:1,text:'"Spam review content — fake purchase."',                                               date:'Jul 6', status:'Flagged'   },
+];
+
+function getReviews()   { try { const s=JSON.parse(localStorage.getItem(REVIEWS_KEY)); return s&&s.length?s:DEFAULT_REVIEWS; } catch { return DEFAULT_REVIEWS; } }
+function saveReviews(r) { localStorage.setItem(REVIEWS_KEY, JSON.stringify(r)); }
+
+function renderReviewsTable() {
+  const tbody = document.getElementById('reviews-table-body');
+  if (!tbody) return;
+  const reviews = getReviews();
+  const updateStat = (id,v) => { const el=document.getElementById(id); if(el) el.textContent=v; };
+  updateStat('rev-total',    reviews.length);
+  updateStat('rev-pending',  reviews.filter(r=>r.status==='Pending').length);
+  updateStat('rev-flagged',  reviews.filter(r=>r.status==='Flagged').length);
+  const avg = reviews.filter(r=>r.status==='Published').length
+    ? (reviews.filter(r=>r.status==='Published').reduce((a,r)=>a+r.rating,0)/reviews.filter(r=>r.status==='Published').length).toFixed(2)
+    : '—';
+  updateStat('rev-avg', avg);
+
+  tbody.innerHTML = reviews.map(r => {
+    const stars = '★'.repeat(r.rating)+'☆'.repeat(5-r.rating);
+    const starColor = r.rating>=4?'var(--gold)':r.rating>=3?'var(--warning)':'var(--error)';
+    const badgeCls  = r.status==='Published'?'badge-active':r.status==='Pending'?'badge-pending':'badge-cancelled';
+    const actions   = r.status==='Published'
+      ? `<button class="tbl-action" onclick="viewReview('${r.id}')">VIEW</button> <button class="tbl-action-del tbl-action" onclick="removeReview('${r.id}')">REMOVE</button>`
+      : r.status==='Pending'
+      ? `<button class="d-btn" style="padding:.28rem .65rem;font-size:.56rem" onclick="approveReview('${r.id}')">APPROVE</button> <button class="tbl-action-del tbl-action" onclick="rejectReview('${r.id}')">REJECT</button>`
+      : `<button class="tbl-action-del tbl-action" onclick="removeReview('${r.id}')">REMOVE</button>`;
+    return `<tr>
+      <td>${r.customer}</td>
+      <td>${r.product}</td>
+      <td style="color:${starColor}">${stars}</td>
+      <td style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.text}</td>
+      <td>${r.date}</td>
+      <td><span class="badge ${badgeCls}">${r.status}</span></td>
+      <td>${actions}</td>
+    </tr>`;
+  }).join('');
+}
+
+function viewReview(id) {
+  const r = getReviews().find(x=>x.id===id); if (!r) return;
+  document.getElementById('rv-customer').textContent = r.customer;
+  document.getElementById('rv-product').textContent  = r.product;
+  document.getElementById('rv-date').textContent     = r.date;
+  document.getElementById('rv-text').textContent     = r.text;
+  document.getElementById('rv-stars').textContent    = '★'.repeat(r.rating)+'☆'.repeat(5-r.rating);
+  openModal('review-modal');
+}
+function approveReview(id) {
+  const list=getReviews(); const r=list.find(x=>x.id===id); if(!r) return;
+  r.status='Published'; saveReviews(list); renderReviewsTable();
+  toast(`Review by ${r.customer} approved`,'success');
+}
+function rejectReview(id) {
+  const list=getReviews(); const r=list.find(x=>x.id===id); if(!r) return;
+  if(!confirm('Reject and remove this review?')) return;
+  saveReviews(list.filter(x=>x.id!==id)); renderReviewsTable();
+  toast('Review rejected','error');
+}
+function removeReview(id) {
+  const list=getReviews(); const r=list.find(x=>x.id===id); if(!r) return;
+  if(!confirm('Permanently remove this review?')) return;
+  saveReviews(list.filter(x=>x.id!==id)); renderReviewsTable();
+  toast('Review removed','error');
+}
+function initReviewsPanel() { renderReviewsTable(); }
+window.renderReviewsTable = renderReviewsTable;
+window.viewReview    = viewReview;
+window.approveReview = approveReview;
+window.rejectReview  = rejectReview;
+window.removeReview  = removeReview;
+window.initReviewsPanel = initReviewsPanel;
+
+/* ═══════════════════════════════════════════════════════════
+   8. FLASH SALES
+   ═══════════════════════════════════════════════════════════ */
+const FLASH_KEY = 'vireon_flash_sales';
+const DEFAULT_FLASH = [
+  { id:'fs_001', name:'Night Luxe Flash',  discount:25, products:6,  start:'Jul 8, 9:00am',  end:'Jul 11, 11:59pm', orders:31, status:'Live', startDT:'2026-07-08T09:00', endDT:'2026-07-11T23:59', cats:['Night Luxe'] },
+  { id:'fs_002', name:'Summer Clearance',  discount:30, products:12, start:'Jun 20',         end:'Jun 30',          orders:89, status:'Ended',startDT:'2026-06-20T00:00', endDT:'2026-06-30T23:59', cats:['Coats','Dresses'] },
+];
+
+function getFlashSales()  { try { const s=JSON.parse(localStorage.getItem(FLASH_KEY)); return s&&s.length?s:DEFAULT_FLASH; } catch { return DEFAULT_FLASH; } }
+function saveFlashSales(f){ localStorage.setItem(FLASH_KEY, JSON.stringify(f)); }
+function genFsId()         { return 'fs_'+Date.now().toString(36); }
+
+function renderFlashSalesTable() {
+  const tbody = document.getElementById('flash-table-body');
+  if (!tbody) return;
+  tbody.innerHTML = getFlashSales().map(f => {
+    const badgeCls = f.status==='Live'?'badge-active':'badge-inactive';
+    const badge    = f.status==='Live'?'Live ⚡':'Ended';
+    const actions  = f.status==='Live'
+      ? `<button class="tbl-action" onclick="editFlashSale('${f.id}')">EDIT</button> <button class="tbl-action-del tbl-action" onclick="endFlashSale('${f.id}')">END</button>`
+      : `<button class="tbl-action" onclick="cloneFlashSale('${f.id}')">CLONE</button>`;
+    return `<tr>
+      <td>${f.name}</td>
+      <td style="color:var(--gold)">${f.discount}% OFF</td>
+      <td>${f.products}</td>
+      <td>${f.start}</td>
+      <td>${f.end}</td>
+      <td>${f.orders}</td>
+      <td><span class="badge ${badgeCls}">${badge}</span></td>
+      <td>${actions}</td>
+    </tr>`;
+  }).join('');
+}
+
+function launchFlashSale() {
+  const name     = document.getElementById('fs-name')?.value.trim();
+  const discount = document.getElementById('fs-discount')?.value;
+  const startDT  = document.getElementById('fs-start')?.value;
+  const endDT    = document.getElementById('fs-end')?.value;
+  if (!name||!discount||!startDT||!endDT) { toast('Please fill all required fields','error'); return; }
+  const cats = [...document.querySelectorAll('#flash-form input[type="checkbox"]:checked')].map(c=>c.nextSibling?.textContent?.trim()||'');
+  const list = getFlashSales();
+  const editId = document.getElementById('flash-form').dataset.editId;
+  const fmt = dt => { const d=new Date(dt); return d.toLocaleDateString('en-GB',{day:'numeric',month:'short'})+', '+d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}); };
+  if (editId) {
+    const fs = list.find(x=>x.id===editId);
+    if (fs) { fs.name=name; fs.discount=parseInt(discount); fs.startDT=startDT; fs.endDT=endDT; fs.start=fmt(startDT); fs.end=fmt(endDT); fs.cats=cats; }
+    toast(`"${name}" updated`,'success');
+  } else {
+    list.push({ id:genFsId(), name, discount:parseInt(discount), products:0, start:fmt(startDT), end:fmt(endDT), orders:0, status:'Live', startDT, endDT, cats });
+    toast(`Flash sale "${name}" launched!`,'success');
+  }
+  saveFlashSales(list); renderFlashSalesTable();
+  document.getElementById('flash-form').style.display='none';
+  delete document.getElementById('flash-form').dataset.editId;
+  document.getElementById('fs-name').value=''; document.getElementById('fs-discount').value='';
+  publishAuditAction('Flash sale launched', name);
+}
+
+function editFlashSale(id) {
+  const f = getFlashSales().find(x=>x.id===id); if (!f) return;
+  document.getElementById('fs-name').value     = f.name;
+  document.getElementById('fs-discount').value = f.discount;
+  document.getElementById('fs-start').value    = f.startDT||'';
+  document.getElementById('fs-end').value      = f.endDT||'';
+  const form = document.getElementById('flash-form');
+  form.dataset.editId = id;
+  form.style.display='block';
+  form.scrollIntoView({behavior:'smooth'});
+}
+function endFlashSale(id) {
+  const list=getFlashSales(); const f=list.find(x=>x.id===id); if(!f) return;
+  if(!confirm(`End flash sale "${f.name}"?`)) return;
+  f.status='Ended'; saveFlashSales(list); renderFlashSalesTable();
+  toast(`"${f.name}" ended`,'');
+}
+function cloneFlashSale(id) {
+  const list=getFlashSales(); const f=list.find(x=>x.id===id); if(!f) return;
+  const clone={...f, id:genFsId(), name:f.name+' (Copy)', status:'Live', orders:0};
+  list.push(clone); saveFlashSales(list); renderFlashSalesTable();
+  toast(`"${f.name}" cloned`,'success');
+}
+function initFlashSalesPanel() { renderFlashSalesTable(); }
+window.launchFlashSale   = launchFlashSale;
+window.editFlashSale     = editFlashSale;
+window.endFlashSale      = endFlashSale;
+window.cloneFlashSale    = cloneFlashSale;
+window.initFlashSalesPanel = initFlashSalesPanel;
+
+/* ═══════════════════════════════════════════════════════════
+   9. ANALYTICS — date range filter + EXPORT
+   ═══════════════════════════════════════════════════════════ */
+const ANALYTICS_DATASETS = {
+  '7d': { revenue:[12400,9800,14200,11600,18700,15300,14250], labels:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'], orders:[8,6,12,9,17,22,18] },
+  '30d':{ revenue:[42000,38000,51000,44000,63000,55000,72000,68000,58000,74000,81000,66000,89000,84250], labels:['W1','W2','W3','W4','W5','W6','W7','W8','W9','W10','W11','W12','W13','W14'], orders:[31,28,44,37,52,48,61,57,44,68,72,56,81,74] },
+  '90d':{ revenue:[42000,58000,51000,72000,68000,89000,84250], labels:['Jan','Feb','Mar','Apr','May','Jun','Jul'], orders:[124,158,142,201,188,234,218] },
+  'year':{ revenue:[42000,58000,51000,72000,68000,89000,84250,null,null,null,null,null], labels:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'], orders:[124,158,142,201,188,234,218,null,null,null,null,null] },
+};
+let currentAnalyticsRange = '7d';
+
+function setAnalyticsRange(range) {
+  currentAnalyticsRange = range;
+  document.querySelectorAll('[data-analytics-range]').forEach(btn => {
+    btn.className = btn.dataset.analyticsRange===range ? 'd-btn' : 'd-btn-ghost';
+  });
+  const d = ANALYTICS_DATASETS[range];
+  if (!d || !window.Chart) return;
+  // Update monthly revenue chart (ch-rev-monthly)
+  const revChart = Chart.getChart('ch-rev-monthly');
+  if (revChart) {
+    revChart.data.labels = d.labels;
+    revChart.data.datasets[0].data = d.revenue;
+    revChart.update();
+  }
+  // Update orders-by-day chart (ch-orders-day)
+  const ordChart = Chart.getChart('ch-orders-day');
+  if (ordChart) {
+    ordChart.data.labels = d.labels;
+    ordChart.data.datasets[0].data = d.orders.filter(v=>v!==null);
+    ordChart.update();
+  }
+  toast(`Analytics updated — ${range==='7d'?'Last 7 days':range==='30d'?'Last 30 days':range==='90d'?'Last 90 days':'This year'}`,'');
+}
+window.setAnalyticsRange = setAnalyticsRange;
+
+function exportAnalyticsCSV() {
+  const d = ANALYTICS_DATASETS[currentAnalyticsRange];
+  const rows = d.labels.map((l,i)=>[l, d.revenue[i]||'', d.orders[i]||''].map(v=>`"${v}"`).join(','));
+  downloadCSV(['Period,Revenue,Orders'].concat(rows).join('\n'), 'vireon-analytics.csv');
+}
+window.exportAnalyticsCSV = exportAnalyticsCSV;
+
+/* ═══════════════════════════════════════════════════════════
+   10. REPORTS — real CSV download
+   ═══════════════════════════════════════════════════════════ */
+function downloadCSV(content, filename) {
+  const blob = new Blob([content], {type:'text/csv;charset=utf-8;'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.download = filename; a.style.display='none';
+  document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(url); document.body.removeChild(a); },500);
+}
+window.downloadCSV = downloadCSV;
+
+function generateReport(type) {
+  let csv = '', filename = 'vireon-'+type+'-report.csv';
+  switch(type) {
+    case 'sales':
+      csv = 'Order ID,Customer,Product,Amount,Date,Delivery,Status\n' +
+        ORDERS_DATA.map(o=>[o.id,o.customer,o.product,'$'+o.amount,o.date,o.delivery,o.status].map(v=>`"${v}"`).join(',')).join('\n');
+      break;
+    case 'customers':
+      csv = 'Name,Email,Tier,Orders,Total Spent,Points,Joined\n' +
+        CUSTOMERS_DATA.map(c=>[c.name,c.email,c.tier,c.orders,'$'+c.spent,c.points,c.joined].map(v=>`"${v}"`).join(',')).join('\n');
+      break;
+    case 'products':
+      csv = 'Name,SKU,Category,Price,Stock,Sales,Badge\n' +
+        PRODUCTS_DATA.map(p=>[p.name,p.sku,p.cat,'$'+p.price,p.stock,p.sales,p.badge||''].map(v=>`"${v}"`).join(',')).join('\n');
+      break;
+    case 'tax':
+      csv = 'Order ID,Amount,Tax (20%),Net,Date\n' +
+        ORDERS_DATA.map(o=>[o.id,'$'+o.amount,'$'+Math.round(o.amount*0.2),'$'+Math.round(o.amount*0.8),o.date].map(v=>`"${v}"`).join(',')).join('\n');
+      break;
+    case 'marketing':
+      csv = 'Campaign,Type,Sent To,Opens,Clicks,Status\n'+
+        '"Summer Collection Launch","Promotional","2341","71.2%","28.4%","Sent"\n'+
+        '"Elite Members Exclusive Drop","Segmented","486","84.6%","41.2%","Sent"\n'+
+        '"Limited Edition Countdown","Automated","2341","65.8%","22.1%","Sent"';
+      break;
+    case 'returns':
+      csv = 'Return ID,Order,Customer,Product,Reason,Type,Status\n' +
+        getReturns().map(r=>[r.id,r.order,r.customer,r.product,r.reason,r.type,r.status].map(v=>`"${v}"`).join(',')).join('\n');
+      break;
+  }
+  downloadCSV(csv, filename);
+  toast(`${type.charAt(0).toUpperCase()+type.slice(1)} report downloaded`,'success');
+}
+window.generateReport = generateReport;
+
+/* ═══════════════════════════════════════════════════════════
+   11. SUPPORT — filter tickets
+   ═══════════════════════════════════════════════════════════ */
+function filterTickets() {
+  const q        = (document.getElementById('ticket-search')?.value||'').toLowerCase();
+  const typeFilter = document.getElementById('ticket-type-filter')?.value||'';
+  const priFilter  = document.getElementById('ticket-pri-filter')?.value||'';
+  renderSupportTable(q, typeFilter, priFilter);
+}
+window.filterTickets = filterTickets;
+
+/* ═══════════════════════════════════════════════════════════
+   EXTEND showPanel FOR ALL NEW PANELS
+   ═══════════════════════════════════════════════════════════ */
+const _origSPFinal2 = window.showPanel;
+window.showPanel = function(id) {
+  if (_origSPFinal2) _origSPFinal2(id);
+  if (id==='panel-collections') initCollectionsPanel();
+  if (id==='panel-returns')     initReturnsPanel();
+  if (id==='panel-coupons')     initCouponsPanel();
+  if (id==='panel-reviews')     initReviewsPanel();
+  if (id==='panel-flashsale')   initFlashSalesPanel();
+};
+
+/* ── Customer Export CSV ──────────────────────────────────── */
+function exportCustomersCSV() {
+  const csv = 'Name,Email,Tier,Orders,Total Spent,Points,Joined\n' +
+    CUSTOMERS_DATA.map(c=>[c.name,c.email,c.tier,c.orders,'$'+c.spent,c.points,c.joined].map(v=>`"${v}"`).join(',')).join('\n');
+  downloadCSV(csv,'vireon-customers.csv');
+}
+window.exportCustomersCSV = exportCustomersCSV;

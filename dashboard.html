@@ -312,11 +312,11 @@ body{padding-top:0;overflow:hidden}
 <div class="admin-panel" id="panel-analytics">
   <div class="panel-header"><h2 class="panel-title">Analytics <em>& Insights</em></h2><p class="panel-subtitle">Deep performance metrics and trend analysis.</p></div>
   <div style="display:flex;gap:.8rem;margin-bottom:2rem;flex-wrap:wrap">
-    <button class="d-btn">LAST 7 DAYS</button>
-    <button class="d-btn-ghost">30 DAYS</button>
-    <button class="d-btn-ghost">90 DAYS</button>
-    <button class="d-btn-ghost">THIS YEAR</button>
-    <button class="d-btn-ghost" style="margin-left:auto"><i class="fas fa-download"></i> EXPORT</button>
+    <button class="d-btn" data-analytics-range="7d" onclick="setAnalyticsRange('7d')">LAST 7 DAYS</button>
+    <button class="d-btn-ghost" data-analytics-range="30d" onclick="setAnalyticsRange('30d')">30 DAYS</button>
+    <button class="d-btn-ghost" data-analytics-range="90d" onclick="setAnalyticsRange('90d')">90 DAYS</button>
+    <button class="d-btn-ghost" data-analytics-range="year" onclick="setAnalyticsRange('year')">THIS YEAR</button>
+    <button class="d-btn-ghost" style="margin-left:auto" onclick="exportAnalyticsCSV()"><i class="fas fa-download"></i> EXPORT</button>
   </div>
   <div class="stat-row stat-row-3" style="margin-bottom:1.5rem">
     <div class="stat-card"><div class="stat-card-icon"><i class="fas fa-funnel-dollar"></i></div><div class="stat-card-n">$612,840</div><div class="stat-card-label">Total Revenue (YTD)</div><div class="stat-card-trend trend-up"><i class="fas fa-arrow-up"></i> +34% vs last year</div></div>
@@ -491,39 +491,10 @@ body{padding-top:0;overflow:hidden}
 <div class="admin-panel" id="panel-collections">
   <div class="panel-header"><h2 class="panel-title">Collections <em>Editor</em></h2><p class="panel-subtitle">Manage curated product collections and editorial drops.</p></div>
   <div class="panel-toolbar">
-    <div class="pt-left"><div class="d-search-wrap"><i class="fas fa-search"></i><input type="text" class="d-search" placeholder="Search collections..."></div></div>
-    <div class="pt-right"><button class="d-btn"><i class="fas fa-plus"></i> NEW COLLECTION</button></div>
+    <div class="pt-left"><div class="d-search-wrap"><i class="fas fa-search"></i><input type="text" class="d-search" id="col-search" placeholder="Search collections..."></div></div>
+    <div class="pt-right"><button class="d-btn" onclick="openCollectionForm()"><i class="fas fa-plus"></i> NEW COLLECTION</button></div>
   </div>
-  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem">
-    <div class="d-form-section" style="transition:all .3s" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--border)'">
-      <div style="height:120px;background:linear-gradient(135deg,#1a0700,#2d1000);margin:-2rem -2rem 1.5rem;border-bottom:1px solid var(--border)"></div>
-      <div style="display:flex;justify-content:space-between;align-items:flex-start">
-        <div><h3 style="font-size:1rem;color:var(--white);margin-bottom:.3rem">Signature Series</h3><p style="font-size:.7rem;color:var(--text-2)">12 products · Active</p></div>
-        <span class="badge badge-active">ACTIVE</span>
-      </div>
-      <div style="display:flex;gap:.5rem;margin-top:1rem"><button class="tbl-action"><i class="fas fa-edit"></i> EDIT</button><button class="tbl-action-del tbl-action"><i class="fas fa-trash"></i></button></div>
-    </div>
-    <div class="d-form-section" style="transition:all .3s" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--border)'">
-      <div style="height:120px;background:linear-gradient(135deg,#050510,#0d0d20);margin:-2rem -2rem 1.5rem;border-bottom:1px solid var(--border)"></div>
-      <div style="display:flex;justify-content:space-between;align-items:flex-start">
-        <div><h3 style="font-size:1rem;color:var(--white);margin-bottom:.3rem">Limited Drops</h3><p style="font-size:.7rem;color:var(--text-2)">4 products · Active</p></div>
-        <span class="badge badge-limited">LIMITED</span>
-      </div>
-      <div style="display:flex;gap:.5rem;margin-top:1rem"><button class="tbl-action"><i class="fas fa-edit"></i> EDIT</button><button class="tbl-action-del tbl-action"><i class="fas fa-trash"></i></button></div>
-    </div>
-    <div class="d-form-section" style="transition:all .3s" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--border)'">
-      <div style="height:120px;background:linear-gradient(135deg,#0a0a00,#1a1900);margin:-2rem -2rem 1.5rem;border-bottom:1px solid var(--border)"></div>
-      <div style="display:flex;justify-content:space-between;align-items:flex-start">
-        <div><h3 style="font-size:1rem;color:var(--white);margin-bottom:.3rem">Night Luxe</h3><p style="font-size:.7rem;color:var(--text-2)">6 products · Active</p></div>
-        <span class="badge badge-active">ACTIVE</span>
-      </div>
-      <div style="display:flex;gap:.5rem;margin-top:1rem"><button class="tbl-action"><i class="fas fa-edit"></i> EDIT</button><button class="tbl-action-del tbl-action"><i class="fas fa-trash"></i></button></div>
-    </div>
-    <div class="d-form-section" style="border:2px dashed var(--border);background:transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:180px;cursor:pointer;transition:all .3s" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--border)'">
-      <i class="fas fa-plus" style="font-size:2rem;color:var(--gray);margin-bottom:.8rem"></i>
-      <p style="font-size:.72rem;color:var(--gray)">Create New Collection</p>
-    </div>
-  </div>
+  <div id="collections-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem"></div>
 </div>
 
 <!-- ════════════ PANEL: CATEGORIES ════════════ -->
@@ -660,7 +631,7 @@ body{padding-top:0;overflow:hidden}
       <select class="d-select" id="order-status-filter" onchange="filterOrders()"><option value="">All Status</option><option>Pending</option><option>Processing</option><option>Shipped</option><option>Delivered</option><option>Cancelled</option><option>Returned</option></select>
     </div>
     <div class="pt-right">
-      <button class="d-btn-ghost"><i class="fas fa-file-export"></i> EXPORT</button>
+      <button class="d-btn-ghost" onclick="exportOrdersCSV()"><i class="fas fa-file-export"></i> EXPORT</button>
       <button class="d-btn" onclick="createManualOrder()"><i class="fas fa-plus"></i> MANUAL ORDER</button>
     </div>
   </div>
@@ -678,10 +649,10 @@ body{padding-top:0;overflow:hidden}
   <div class="panel-header"><h2 class="panel-title">Customer <em>Profiles</em></h2><p class="panel-subtitle">Manage customer accounts, loyalty points and membership tiers.</p></div>
   <div class="panel-toolbar">
     <div class="pt-left">
-      <div class="d-search-wrap"><i class="fas fa-search"></i><input type="text" class="d-search" placeholder="Search by name, email..."></div>
-      <select class="d-select"><option value="">All Tiers</option><option>VIREON Elite</option><option>Premium</option><option>Standard</option></select>
+      <div class="d-search-wrap"><i class="fas fa-search"></i><input type="text" class="d-search" id="cust-search" placeholder="Search by name, email..." oninput="filterCustomers()"></div>
+      <select class="d-select" id="cust-tier-filter" onchange="filterCustomers()"><option value="">All Tiers</option><option>VIREON Elite</option><option>Premium</option><option>Standard</option></select>
     </div>
-    <div class="pt-right"><button class="d-btn-ghost"><i class="fas fa-file-export"></i> EXPORT</button></div>
+    <div class="pt-right"><button class="d-btn-ghost" onclick="exportCustomersCSV()"><i class="fas fa-file-export"></i> EXPORT</button></div>
   </div>
   <div class="d-table-wrap">
     <table class="d-table">
@@ -696,17 +667,14 @@ body{padding-top:0;overflow:hidden}
 <div class="admin-panel" id="panel-returns">
   <div class="panel-header"><h2 class="panel-title">Returns <em>& Refunds</em></h2><p class="panel-subtitle">Process return requests, exchanges and issue refunds.</p></div>
   <div class="stat-row stat-row-3" style="margin-bottom:1.5rem">
-    <div class="stat-card"><div class="stat-card-icon" style="color:var(--warning)"><i class="fas fa-inbox"></i></div><div class="stat-card-n" style="color:var(--warning)">2</div><div class="stat-card-label">Pending Review</div></div>
-    <div class="stat-card"><div class="stat-card-icon" style="color:var(--info)"><i class="fas fa-exchange-alt"></i></div><div class="stat-card-n" style="color:var(--info)">1</div><div class="stat-card-label">In Progress</div></div>
-    <div class="stat-card"><div class="stat-card-icon" style="color:var(--success)"><i class="fas fa-check-double"></i></div><div class="stat-card-n" style="color:var(--success)">18</div><div class="stat-card-label">Resolved This Month</div></div>
+    <div class="stat-card"><div class="stat-card-icon" style="color:var(--warning)"><i class="fas fa-inbox"></i></div><div class="stat-card-n" style="color:var(--warning)" id="ret-pending-count">2</div><div class="stat-card-label">Pending Review</div></div>
+    <div class="stat-card"><div class="stat-card-icon" style="color:var(--info)"><i class="fas fa-exchange-alt"></i></div><div class="stat-card-n" style="color:var(--info)" id="ret-progress-count">1</div><div class="stat-card-label">In Progress</div></div>
+    <div class="stat-card"><div class="stat-card-icon" style="color:var(--success)"><i class="fas fa-check-double"></i></div><div class="stat-card-n" style="color:var(--success)" id="ret-resolved-count">18</div><div class="stat-card-label">Resolved This Month</div></div>
   </div>
   <div class="d-table-wrap">
     <table class="d-table">
       <thead><tr><th>Return ID</th><th>Order</th><th>Customer</th><th>Product</th><th>Reason</th><th>Type</th><th>Status</th><th>Actions</th></tr></thead>
-      <tbody>
-        <tr><td style="color:var(--gold)">#RET-047</td><td style="color:var(--gold)">VP-2026-031</td><td>Isabella Cross</td><td>Evening Gown</td><td>Size issue</td><td><span class="badge badge-shipped">Exchange</span></td><td><span class="badge badge-pending">Pending</span></td><td><button class="tbl-action">REVIEW</button></td></tr>
-        <tr><td style="color:var(--gold)">#RET-046</td><td style="color:var(--gold)">VP-2026-028</td><td>Thomas Reed</td><td>Imperial Suit</td><td>Changed mind</td><td><span class="badge badge-processing">Refund</span></td><td><span class="badge badge-processing">Processing</span></td><td><button class="tbl-action">REVIEW</button></td></tr>
-      </tbody>
+      <tbody id="returns-table-body"></tbody>
     </table>
   </div>
 </div>
@@ -715,36 +683,34 @@ body{padding-top:0;overflow:hidden}
 <div class="admin-panel" id="panel-coupons">
   <div class="panel-header"><h2 class="panel-title">Coupons <em>& Discounts</em></h2><p class="panel-subtitle">Create and manage promotional codes and discount campaigns.</p></div>
   <div class="panel-toolbar">
-    <div class="pt-left"><div class="d-search-wrap"><i class="fas fa-search"></i><input type="text" class="d-search" placeholder="Search coupon codes..."></div></div>
+    <div class="pt-left"><div class="d-search-wrap"><i class="fas fa-search"></i><input type="text" class="d-search" id="coup-search" placeholder="Search coupon codes..."></div></div>
     <div class="pt-right"><button class="d-btn" onclick="document.getElementById('coupon-form-section').style.display='block'"><i class="fas fa-plus"></i> CREATE COUPON</button></div>
   </div>
   <div class="d-table-wrap" style="margin-bottom:1.5rem">
     <table class="d-table">
       <thead><tr><th>Code</th><th>Type</th><th>Value</th><th>Used</th><th>Limit</th><th>Expires</th><th>Status</th><th>Actions</th></tr></thead>
-      <tbody>
-        <tr><td style="color:var(--gold);font-weight:600;letter-spacing:.1em">VIREON20</td><td>Percentage</td><td>20% off</td><td>47</td><td>500</td><td>Dec 31, 2026</td><td><span class="badge badge-active">Active</span></td><td><button class="tbl-action">EDIT</button> <button class="tbl-action-del tbl-action">DELETE</button></td></tr>
-        <tr><td style="color:var(--gold);font-weight:600;letter-spacing:.1em">ELITE</td><td>Free Shipping</td><td>Free Express</td><td>124</td><td>Unlimited</td><td>Never</td><td><span class="badge badge-active">Active</span></td><td><button class="tbl-action">EDIT</button> <button class="tbl-action-del tbl-action">DELETE</button></td></tr>
-        <tr><td style="color:var(--gold);font-weight:600;letter-spacing:.1em">WELCOME10</td><td>Percentage</td><td>10% off</td><td>238</td><td>1000</td><td>Jun 30, 2026</td><td><span class="badge badge-inactive">Expired</span></td><td><button class="tbl-action">RENEW</button> <button class="tbl-action-del tbl-action">DELETE</button></td></tr>
-      </tbody>
+      <tbody id="coupons-table-body"></tbody>
     </table>
   </div>
   <div id="coupon-form-section" style="display:none">
     <div class="d-form-section">
-      <p class="d-form-section-title">Create New Coupon</p>
-      <div class="d-form-grid-2">
-        <div class="d-form-group"><label class="d-form-label">Coupon Code *</label><input type="text" class="d-form-input" placeholder="e.g. SUMMER25" style="text-transform:uppercase"></div>
-        <div class="d-form-group"><label class="d-form-label">Discount Type *</label><select class="d-form-select"><option>Percentage (%)</option><option>Fixed Amount ($)</option><option>Free Shipping</option></select></div>
-      </div>
-      <div class="d-form-grid-3">
-        <div class="d-form-group"><label class="d-form-label">Value *</label><input type="number" class="d-form-input" placeholder="25"></div>
-        <div class="d-form-group"><label class="d-form-label">Usage Limit</label><input type="number" class="d-form-input" placeholder="100"></div>
-        <div class="d-form-group"><label class="d-form-label">Expiry Date</label><input type="date" class="d-form-input"></div>
-      </div>
-      <div class="d-form-group"><label class="d-form-label">Minimum Order Value ($)</label><input type="number" class="d-form-input" placeholder="0 = no minimum"></div>
-      <div style="display:flex;gap:.8rem">
-        <button class="d-btn" onclick="saveCoupon()"><i class="fas fa-save"></i> SAVE COUPON</button>
-        <button class="d-btn-ghost" onclick="document.getElementById('coupon-form-section').style.display='none'">CANCEL</button>
-      </div>
+      <p class="d-form-section-title">Create / Edit Coupon</p>
+      <form id="coup-form">
+        <div class="d-form-grid-2">
+          <div class="d-form-group"><label class="d-form-label">Coupon Code *</label><input type="text" class="d-form-input" id="coup-code" placeholder="e.g. SUMMER25" style="text-transform:uppercase"></div>
+          <div class="d-form-group"><label class="d-form-label">Discount Type *</label><select class="d-form-select" id="coup-type"><option>Percentage (%)</option><option>Fixed Amount ($)</option><option>Free Shipping</option></select></div>
+        </div>
+        <div class="d-form-grid-3">
+          <div class="d-form-group"><label class="d-form-label">Value *</label><input type="number" class="d-form-input" id="coup-value" placeholder="25"></div>
+          <div class="d-form-group"><label class="d-form-label">Usage Limit</label><input type="number" class="d-form-input" id="coup-limit" placeholder="100"></div>
+          <div class="d-form-group"><label class="d-form-label">Expiry Date</label><input type="date" class="d-form-input" id="coup-expires"></div>
+        </div>
+        <div class="d-form-group"><label class="d-form-label">Minimum Order Value ($)</label><input type="number" class="d-form-input" id="coup-minorder" placeholder="0 = no minimum"></div>
+        <div style="display:flex;gap:.8rem">
+          <button type="button" class="d-btn" onclick="saveCoupon()"><i class="fas fa-save"></i> SAVE COUPON</button>
+          <button type="button" class="d-btn-ghost" onclick="document.getElementById('coupon-form-section').style.display='none'">CANCEL</button>
+        </div>
+      </form>
     </div>
   </div>
 </div>
@@ -842,20 +808,15 @@ body{padding-top:0;overflow:hidden}
 <div class="admin-panel" id="panel-reviews">
   <div class="panel-header"><h2 class="panel-title">Customer <em>Reviews</em></h2><p class="panel-subtitle">Moderate and respond to customer reviews and ratings.</p></div>
   <div class="stat-row stat-row-4" style="margin-bottom:1.5rem">
-    <div class="stat-card"><div class="stat-card-icon"><i class="fas fa-star"></i></div><div class="stat-card-n">4.94</div><div class="stat-card-label">Avg Rating</div></div>
-    <div class="stat-card"><div class="stat-card-icon"><i class="fas fa-comment-dots"></i></div><div class="stat-card-n">287</div><div class="stat-card-label">Total Reviews</div></div>
-    <div class="stat-card"><div class="stat-card-icon" style="color:var(--warning)"><i class="fas fa-clock"></i></div><div class="stat-card-n" style="color:var(--warning)">3</div><div class="stat-card-label">Pending Approval</div></div>
-    <div class="stat-card"><div class="stat-card-icon" style="color:var(--error)"><i class="fas fa-flag"></i></div><div class="stat-card-n" style="color:var(--error)">1</div><div class="stat-card-label">Flagged</div></div>
+    <div class="stat-card"><div class="stat-card-icon"><i class="fas fa-star"></i></div><div class="stat-card-n" id="rev-avg">4.94</div><div class="stat-card-label">Avg Rating</div></div>
+    <div class="stat-card"><div class="stat-card-icon"><i class="fas fa-comment-dots"></i></div><div class="stat-card-n" id="rev-total">287</div><div class="stat-card-label">Total Reviews</div></div>
+    <div class="stat-card"><div class="stat-card-icon" style="color:var(--warning)"><i class="fas fa-clock"></i></div><div class="stat-card-n" style="color:var(--warning)" id="rev-pending">3</div><div class="stat-card-label">Pending Approval</div></div>
+    <div class="stat-card"><div class="stat-card-icon" style="color:var(--error)"><i class="fas fa-flag"></i></div><div class="stat-card-n" style="color:var(--error)" id="rev-flagged">1</div><div class="stat-card-label">Flagged</div></div>
   </div>
   <div class="d-table-wrap">
     <table class="d-table">
       <thead><tr><th>Customer</th><th>Product</th><th>Rating</th><th>Review</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
-      <tbody>
-        <tr><td>Alexandra R.</td><td>Sovereign Coat</td><td style="color:var(--gold)">★★★★★</td><td style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">"Absolutely exceptional quality..."</td><td>Jul 9</td><td><span class="badge badge-active">Published</span></td><td><button class="tbl-action">VIEW</button> <button class="tbl-action-del tbl-action">REMOVE</button></td></tr>
-        <tr><td>Marcus B.</td><td>Imperial Suit</td><td style="color:var(--gold)">★★★★★</td><td style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">"Commands presence the moment..."</td><td>Jul 8</td><td><span class="badge badge-active">Published</span></td><td><button class="tbl-action">VIEW</button> <button class="tbl-action-del tbl-action">REMOVE</button></td></tr>
-        <tr><td>Sofia V.</td><td>Evening Gown</td><td style="color:var(--gold)">★★★★☆</td><td style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">"Beautiful but delivery took..."</td><td>Jul 7</td><td><span class="badge badge-pending">Pending</span></td><td><button class="d-btn" style="padding:.28rem .65rem;font-size:.56rem">APPROVE</button> <button class="tbl-action-del tbl-action">REJECT</button></td></tr>
-        <tr><td>Unknown</td><td>Noir Velvet Dress</td><td style="color:var(--error)">★☆☆☆☆</td><td style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">"Spam review content..."</td><td>Jul 6</td><td><span class="badge badge-cancelled">Flagged</span></td><td><button class="tbl-action-del tbl-action">REMOVE</button></td></tr>
-      </tbody>
+      <tbody id="reviews-table-body"></tbody>
     </table>
   </div>
 </div>
@@ -871,25 +832,22 @@ body{padding-top:0;overflow:hidden}
   <div class="d-table-wrap" style="margin-bottom:1.5rem">
     <table class="d-table">
       <thead><tr><th>Sale Name</th><th>Discount</th><th>Products</th><th>Start</th><th>End</th><th>Orders</th><th>Status</th><th>Actions</th></tr></thead>
-      <tbody>
-        <tr><td>Night Luxe Flash</td><td style="color:var(--gold)">25% OFF</td><td>6</td><td>Jul 8, 9:00am</td><td>Jul 11, 11:59pm</td><td>31</td><td><span class="badge badge-active">Live ⚡</span></td><td><button class="tbl-action">EDIT</button> <button class="tbl-action-del tbl-action">END</button></td></tr>
-        <tr><td>Summer Clearance</td><td style="color:var(--gold)">30% OFF</td><td>12</td><td>Jun 20</td><td>Jun 30</td><td>89</td><td><span class="badge badge-inactive">Ended</span></td><td><button class="tbl-action">CLONE</button></td></tr>
-      </tbody>
+      <tbody id="flash-table-body"></tbody>
     </table>
   </div>
   <div id="flash-form" style="display:none">
     <div class="d-form-section">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem">
         <p class="d-form-section-title" style="margin-bottom:0">New Flash Sale</p>
-        <button class="d-btn-ghost" onclick="document.getElementById('flash-form').style.display='none'"><i class="fas fa-times"></i> CLOSE</button>
+        <button class="d-btn-ghost" onclick="document.getElementById('flash-form').style.display='none';delete document.getElementById('flash-form').dataset.editId"><i class="fas fa-times"></i> CLOSE</button>
       </div>
       <div class="d-form-grid-2">
-        <div class="d-form-group"><label class="d-form-label">Sale Name *</label><input type="text" class="d-form-input" placeholder="e.g. Weekend Flash Sale"></div>
-        <div class="d-form-group"><label class="d-form-label">Discount *</label><input type="number" class="d-form-input" placeholder="e.g. 20 (for 20%)"></div>
+        <div class="d-form-group"><label class="d-form-label">Sale Name *</label><input type="text" class="d-form-input" id="fs-name" placeholder="e.g. Weekend Flash Sale"></div>
+        <div class="d-form-group"><label class="d-form-label">Discount % *</label><input type="number" class="d-form-input" id="fs-discount" placeholder="e.g. 20 (for 20%)"></div>
       </div>
       <div class="d-form-grid-2">
-        <div class="d-form-group"><label class="d-form-label">Start Date & Time *</label><input type="datetime-local" class="d-form-input"></div>
-        <div class="d-form-group"><label class="d-form-label">End Date & Time *</label><input type="datetime-local" class="d-form-input"></div>
+        <div class="d-form-group"><label class="d-form-label">Start Date & Time *</label><input type="datetime-local" class="d-form-input" id="fs-start"></div>
+        <div class="d-form-group"><label class="d-form-label">End Date & Time *</label><input type="datetime-local" class="d-form-input" id="fs-end"></div>
       </div>
       <div class="d-form-group"><label class="d-form-label">Apply to Categories</label>
         <div style="display:flex;gap:.8rem;flex-wrap:wrap;margin-top:.5rem">
@@ -900,7 +858,7 @@ body{padding-top:0;overflow:hidden}
           <label style="display:flex;align-items:center;gap:.4rem;font-size:.75rem;color:var(--text-2);cursor:pointer"><input type="checkbox" style="accent-color:var(--gold)"> All Products</label>
         </div>
       </div>
-      <button class="d-btn" onclick="toast('Flash sale created!','success');document.getElementById('flash-form').style.display='none'"><i class="fas fa-bolt"></i> LAUNCH SALE</button>
+      <button class="d-btn" onclick="launchFlashSale()"><i class="fas fa-bolt"></i> LAUNCH SALE</button>
     </div>
   </div>
 </div>
@@ -916,9 +874,9 @@ body{padding-top:0;overflow:hidden}
   </div>
   <div class="panel-toolbar">
     <div class="pt-left">
-      <div class="d-search-wrap"><i class="fas fa-search"></i><input type="text" class="d-search" placeholder="Search tickets..."></div>
-      <select class="d-select"><option value="">All Types</option><option>Order Issue</option><option>Return Request</option><option>Product Query</option><option>Payment Issue</option><option>Other</option></select>
-      <select class="d-select"><option value="">All Priority</option><option>High</option><option>Medium</option><option>Low</option></select>
+      <div class="d-search-wrap"><i class="fas fa-search"></i><input type="text" class="d-search" id="ticket-search" placeholder="Search tickets..." oninput="filterTickets()"></div>
+      <select class="d-select" id="ticket-type-filter" onchange="filterTickets()"><option value="">All Types</option><option>Order Issue</option><option>Return Request</option><option>Product Query</option><option>Payment Issue</option><option>Other</option></select>
+      <select class="d-select" id="ticket-pri-filter" onchange="filterTickets()"><option value="">All Priority</option><option>High</option><option>Medium</option><option>Low</option></select>
     </div>
     <div class="pt-right"><button class="d-btn" onclick="document.getElementById('new-ticket-form').style.display='block'"><i class="fas fa-plus"></i> NEW TICKET</button></div>
   </div>
@@ -1296,5 +1254,239 @@ body{padding-top:0;overflow:hidden}
 
 <script src="js/vireon.js"></script>
 <script src="js/dashboard.js"></script>
-<script src="js/cursor.js"></script></body>
+<script src="js/cursor.js"></script>
+
+<!-- ══════════════ MODAL OVERLAY STYLES ══════════════ -->
+<style>
+.v-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(4px);z-index:1000;display:none;align-items:center;justify-content:center;padding:1rem}
+.v-modal-overlay.open{display:flex}
+.v-modal{background:var(--bg-2);border:1px solid var(--border);max-width:640px;width:100%;max-height:90vh;overflow-y:auto;position:relative}
+.v-modal-lg{max-width:800px}
+.v-modal-head{display:flex;align-items:center;justify-content:space-between;padding:1.5rem 2rem;border-bottom:1px solid var(--border)}
+.v-modal-title{font-family:var(--font-serif);font-size:1.4rem;font-weight:300;color:var(--white)}
+.v-modal-title em{color:var(--gold);font-style:italic}
+.v-modal-body{padding:2rem}
+.v-modal-foot{padding:1rem 2rem;border-top:1px solid var(--border);display:flex;gap:.8rem;justify-content:flex-end}
+</style>
+
+<!-- ══ COLLECTION MODAL ══ -->
+<div class="v-modal-overlay" id="collection-modal" onclick="if(event.target===this)closeModal('collection-modal')">
+  <div class="v-modal">
+    <div class="v-modal-head">
+      <p class="v-modal-title" id="col-modal-title">New <em>Collection</em></p>
+      <button class="d-btn-ghost" onclick="closeModal('collection-modal')"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="v-modal-body">
+      <form id="col-form">
+        <div class="d-form-group"><label class="d-form-label">Collection Name *</label><input type="text" class="d-form-input" id="col-name" placeholder="e.g. Winter Noir" required></div>
+        <div class="d-form-grid-2">
+          <div class="d-form-group"><label class="d-form-label">Status</label>
+            <select class="d-form-select" id="col-status"><option>Active</option><option>Inactive</option></select>
+          </div>
+          <div class="d-form-group"><label class="d-form-label">Badge</label>
+            <select class="d-form-select" id="col-badge"><option value="">None</option><option value="ACTIVE">ACTIVE</option><option value="LIMITED">LIMITED</option><option value="NEW">NEW</option></select>
+          </div>
+        </div>
+        <div class="d-form-grid-2">
+          <div class="d-form-group"><label class="d-form-label">Cover Gradient (CSS)</label><input type="text" class="d-form-input" id="col-gradient" placeholder="linear-gradient(135deg,#1a0700,#2d1000)"></div>
+          <div class="d-form-group"><label class="d-form-label">Products Count</label><input type="number" class="d-form-input" id="col-products" placeholder="0"></div>
+        </div>
+        <div class="v-modal-foot" style="padding:0;border:none;margin-top:1.5rem">
+          <button type="button" class="d-btn-ghost" onclick="closeModal('collection-modal')">CANCEL</button>
+          <button type="submit" class="d-btn"><i class="fas fa-save"></i> SAVE COLLECTION</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ══ INVENTORY ADJUST MODAL ══ -->
+<div class="v-modal-overlay" id="inventory-adjust-modal" onclick="if(event.target===this)closeModal('inventory-adjust-modal')">
+  <div class="v-modal" style="max-width:420px">
+    <div class="v-modal-head">
+      <p class="v-modal-title">Adjust <em>Stock</em></p>
+      <button class="d-btn-ghost" onclick="closeModal('inventory-adjust-modal')"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="v-modal-body">
+      <p style="font-size:.82rem;color:var(--white);margin-bottom:.3rem" id="adj-name"></p>
+      <p style="font-size:.68rem;color:var(--gray);margin-bottom:1.5rem">SKU: <span id="adj-sku"></span> · Current: <strong id="adj-current" style="color:var(--gold)"></strong></p>
+      <div class="d-form-group"><label class="d-form-label">New Quantity *</label><input type="number" class="d-form-input" id="adj-new-qty" min="0"></div>
+    </div>
+    <div class="v-modal-foot">
+      <button class="d-btn-ghost" onclick="closeModal('inventory-adjust-modal')">CANCEL</button>
+      <button class="d-btn" id="adj-confirm"><i class="fas fa-check"></i> UPDATE STOCK</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ INVENTORY RESTOCK MODAL ══ -->
+<div class="v-modal-overlay" id="inventory-restock-modal" onclick="if(event.target===this)closeModal('inventory-restock-modal')">
+  <div class="v-modal" style="max-width:420px">
+    <div class="v-modal-head">
+      <p class="v-modal-title">Restock <em>Order</em></p>
+      <button class="d-btn-ghost" onclick="closeModal('inventory-restock-modal')"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="v-modal-body">
+      <p style="font-size:.82rem;color:var(--white);margin-bottom:.3rem" id="rst-name"></p>
+      <p style="font-size:.68rem;color:var(--gray);margin-bottom:1.5rem">SKU: <span id="rst-sku"></span> · Current stock: <strong id="rst-current" style="color:var(--warning)"></strong></p>
+      <div class="d-form-group"><label class="d-form-label">Restock Quantity *</label><input type="number" class="d-form-input" id="rst-qty" min="1" value="20"></div>
+    </div>
+    <div class="v-modal-foot">
+      <button class="d-btn-ghost" onclick="closeModal('inventory-restock-modal')">CANCEL</button>
+      <button class="d-btn" id="rst-confirm"><i class="fas fa-plus"></i> PLACE RESTOCK</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ ORDER DETAIL MODAL ══ -->
+<div class="v-modal-overlay" id="order-detail-modal" onclick="if(event.target===this)closeModal('order-detail-modal')">
+  <div class="v-modal v-modal-lg">
+    <div class="v-modal-head">
+      <p class="v-modal-title">Order <em id="od-id"></em></p>
+      <button class="d-btn-ghost" onclick="closeModal('order-detail-modal')"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="v-modal-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem">
+        <div><p style="font-size:.56rem;letter-spacing:.2em;color:var(--gold);text-transform:uppercase;margin-bottom:.3rem">Customer</p><p style="font-size:.9rem;color:var(--white)" id="od-customer"></p></div>
+        <div><p style="font-size:.56rem;letter-spacing:.2em;color:var(--gold);text-transform:uppercase;margin-bottom:.3rem">Product</p><p style="font-size:.9rem;color:var(--white)" id="od-product"></p></div>
+        <div><p style="font-size:.56rem;letter-spacing:.2em;color:var(--gold);text-transform:uppercase;margin-bottom:.3rem">Amount</p><p style="font-family:var(--font-serif);font-size:1.3rem;color:var(--gold)" id="od-amount"></p></div>
+        <div><p style="font-size:.56rem;letter-spacing:.2em;color:var(--gold);text-transform:uppercase;margin-bottom:.3rem">Date</p><p style="font-size:.9rem;color:var(--white)" id="od-date"></p></div>
+        <div><p style="font-size:.56rem;letter-spacing:.2em;color:var(--gold);text-transform:uppercase;margin-bottom:.3rem">Delivery</p><p style="font-size:.9rem;color:var(--white)" id="od-delivery"></p></div>
+        <div><p style="font-size:.56rem;letter-spacing:.2em;color:var(--gold);text-transform:uppercase;margin-bottom:.3rem">Status</p><span class="badge" id="od-status-badge"></span></div>
+      </div>
+      <div class="d-form-group"><label class="d-form-label">Update Status</label>
+        <select class="d-form-select" id="od-status-select"><option>Pending</option><option>Processing</option><option>Shipped</option><option>Delivered</option><option>Cancelled</option><option>Returned</option></select>
+      </div>
+    </div>
+    <div class="v-modal-foot">
+      <button class="d-btn-ghost" id="od-track-btn"><i class="fas fa-map-marker-alt"></i> TRACK ORDER</button>
+      <button class="d-btn-ghost" onclick="closeModal('order-detail-modal')">CLOSE</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MANUAL ORDER MODAL ══ -->
+<div class="v-modal-overlay" id="manual-order-modal" onclick="if(event.target===this)closeModal('manual-order-modal')">
+  <div class="v-modal" style="max-width:520px">
+    <div class="v-modal-head">
+      <p class="v-modal-title">Manual <em>Order</em></p>
+      <button class="d-btn-ghost" onclick="closeModal('manual-order-modal')"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="v-modal-body">
+      <form id="manual-order-form">
+        <div class="d-form-group"><label class="d-form-label">Customer Name *</label><input type="text" class="d-form-input" id="mo-customer" placeholder="e.g. James Whitmore" required></div>
+        <div class="d-form-group"><label class="d-form-label">Product *</label><input type="text" class="d-form-input" id="mo-product" placeholder="e.g. Sovereign Coat" required></div>
+        <div class="d-form-grid-2">
+          <div class="d-form-group"><label class="d-form-label">Amount ($)</label><input type="number" class="d-form-input" id="mo-amount" placeholder="1850"></div>
+          <div class="d-form-group"><label class="d-form-label">Delivery</label><select class="d-form-select" id="mo-delivery"><option>Standard</option><option>Express</option></select></div>
+        </div>
+        <div class="v-modal-foot" style="padding:0;border:none;margin-top:1.5rem">
+          <button type="button" class="d-btn-ghost" onclick="closeModal('manual-order-modal')">CANCEL</button>
+          <button type="submit" class="d-btn"><i class="fas fa-plus"></i> CREATE ORDER</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ══ CUSTOMER VIEW MODAL ══ -->
+<div class="v-modal-overlay" id="customer-modal" onclick="if(event.target===this)closeModal('customer-modal')">
+  <div class="v-modal" style="max-width:480px">
+    <div class="v-modal-head">
+      <p class="v-modal-title">Customer <em>Profile</em></p>
+      <button class="d-btn-ghost" onclick="closeModal('customer-modal')"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="v-modal-body">
+      <div style="display:flex;align-items:center;gap:1.5rem;margin-bottom:2rem">
+        <div id="cv-avatar" style="width:60px;height:60px;border-radius:50%;background:var(--gold-grad);display:flex;align-items:center;justify-content:center;font-size:1.4rem;font-weight:700;color:var(--bg);flex-shrink:0"></div>
+        <div><p id="cv-name" style="font-family:var(--font-serif);font-size:1.3rem;color:var(--white)"></p><p id="cv-email" style="font-size:.72rem;color:var(--text-2);margin-top:.2rem"></p></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+        <div class="stat-card"><div class="stat-card-label">Tier</div><div id="cv-tier" style="font-size:.9rem;color:var(--gold);font-weight:600;margin-top:.3rem"></div></div>
+        <div class="stat-card"><div class="stat-card-label">Orders</div><div id="cv-orders" style="font-family:var(--font-serif);font-size:1.6rem;color:var(--white);margin-top:.2rem"></div></div>
+        <div class="stat-card"><div class="stat-card-label">Total Spent</div><div id="cv-spent" style="font-family:var(--font-serif);font-size:1.3rem;color:var(--gold);margin-top:.2rem"></div></div>
+        <div class="stat-card"><div class="stat-card-label">Points</div><div id="cv-points" style="font-size:.9rem;color:var(--gold);margin-top:.3rem"></div></div>
+        <div class="stat-card"><div class="stat-card-label">Member Since</div><div id="cv-joined" style="font-size:.85rem;color:var(--white);margin-top:.3rem"></div></div>
+      </div>
+    </div>
+    <div class="v-modal-foot">
+      <button class="d-btn-ghost" id="cv-email-btn"><i class="fas fa-envelope"></i> SEND EMAIL</button>
+      <button class="d-btn-ghost" onclick="closeModal('customer-modal')">CLOSE</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ EMAIL CUSTOMER MODAL ══ -->
+<div class="v-modal-overlay" id="email-customer-modal" onclick="if(event.target===this)closeModal('email-customer-modal')">
+  <div class="v-modal" style="max-width:520px">
+    <div class="v-modal-head">
+      <p class="v-modal-title">Send <em>Email</em></p>
+      <button class="d-btn-ghost" onclick="closeModal('email-customer-modal')"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="v-modal-body">
+      <p style="font-size:.72rem;color:var(--text-2);margin-bottom:1.5rem">To: <strong id="em-to" style="color:var(--gold)"></strong></p>
+      <form id="em-form">
+        <div class="d-form-group"><label class="d-form-label">Subject *</label><input type="text" class="d-form-input" id="em-subject" placeholder="e.g. Your recent order update" required></div>
+        <div class="d-form-group"><label class="d-form-label">Message *</label><textarea class="d-form-textarea" id="em-body" placeholder="Write your message..." style="min-height:120px" required></textarea></div>
+        <div class="v-modal-foot" style="padding:0;border:none;margin-top:1.5rem">
+          <button type="button" class="d-btn-ghost" onclick="closeModal('email-customer-modal')">CANCEL</button>
+          <button type="submit" class="d-btn"><i class="fas fa-paper-plane"></i> SEND</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ══ RETURN REVIEW MODAL ══ -->
+<div class="v-modal-overlay" id="return-review-modal" onclick="if(event.target===this)closeModal('return-review-modal')">
+  <div class="v-modal" style="max-width:500px">
+    <div class="v-modal-head">
+      <p class="v-modal-title">Return <em id="ret-id"></em></p>
+      <button class="d-btn-ghost" onclick="closeModal('return-review-modal')"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="v-modal-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem">
+        <div><p style="font-size:.56rem;letter-spacing:.18em;color:var(--gold);text-transform:uppercase;margin-bottom:.3rem">Customer</p><p id="ret-customer" style="font-size:.9rem;color:var(--white)"></p></div>
+        <div><p style="font-size:.56rem;letter-spacing:.18em;color:var(--gold);text-transform:uppercase;margin-bottom:.3rem">Product</p><p id="ret-product" style="font-size:.9rem;color:var(--white)"></p></div>
+        <div><p style="font-size:.56rem;letter-spacing:.18em;color:var(--gold);text-transform:uppercase;margin-bottom:.3rem">Reason</p><p id="ret-reason" style="font-size:.9rem;color:var(--white)"></p></div>
+        <div><p style="font-size:.56rem;letter-spacing:.18em;color:var(--gold);text-transform:uppercase;margin-bottom:.3rem">Type</p><p id="ret-type" style="font-size:.9rem;color:var(--white)"></p></div>
+        <div><p style="font-size:.56rem;letter-spacing:.18em;color:var(--gold);text-transform:uppercase;margin-bottom:.3rem">Status</p><span class="badge" id="ret-status-badge"></span></div>
+      </div>
+      <div class="d-form-group"><label class="d-form-label">Update Status</label>
+        <select class="d-form-select" id="ret-status-select"><option>Pending</option><option>Processing</option><option>Resolved</option><option>Rejected</option></select>
+      </div>
+    </div>
+    <div class="v-modal-foot">
+      <button class="d-btn-ghost" onclick="closeModal('return-review-modal')">CLOSE</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ REVIEW DETAIL MODAL ══ -->
+<div class="v-modal-overlay" id="review-modal" onclick="if(event.target===this)closeModal('review-modal')">
+  <div class="v-modal" style="max-width:500px">
+    <div class="v-modal-head">
+      <p class="v-modal-title">Customer <em>Review</em></p>
+      <button class="d-btn-ghost" onclick="closeModal('review-modal')"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="v-modal-body">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.5rem">
+        <div>
+          <p id="rv-customer" style="font-size:1rem;color:var(--white);font-weight:600;margin-bottom:.2rem"></p>
+          <p id="rv-product" style="font-size:.75rem;color:var(--text-2)"></p>
+        </div>
+        <div style="text-align:right">
+          <p id="rv-stars" style="font-size:1.2rem;color:var(--gold)"></p>
+          <p id="rv-date" style="font-size:.65rem;color:var(--gray);margin-top:.2rem"></p>
+        </div>
+      </div>
+      <p id="rv-text" style="font-size:.88rem;color:var(--text-2);line-height:1.8;font-style:italic;border-left:3px solid var(--gold);padding-left:1rem"></p>
+    </div>
+    <div class="v-modal-foot">
+      <button class="d-btn-ghost" onclick="closeModal('review-modal')">CLOSE</button>
+    </div>
+  </div>
+</div>
+
+</body>
 </html>
