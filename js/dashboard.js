@@ -2983,7 +2983,7 @@ function generateReport(type) {
       break;
     case 'products':
       csv = 'Name,SKU,Category,Price,Stock,Sales,Badge\n' +
-        PRODUCTS_DATA.map(p=>[p.name,p.sku,p.cat,'$'+p.price,p.stock,p.sales,p.badge||''].map(v=>`"${v}"`).join(',')).join('\n');
+        (VireonStore.get('vireon_products') || PRODUCTS_DATA).map(p=>[p.name,p.sku,p.cat,'$'+p.price,p.stock,p.sales,p.badge||''].map(v=>`"${v}"`).join(',')).join('\n');
       break;
     case 'tax':
       csv = 'Order ID,Amount,Tax (20%),Net,Date\n' +
