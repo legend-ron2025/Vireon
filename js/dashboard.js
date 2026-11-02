@@ -516,6 +516,8 @@ function showPanel(id) {
     'panel-security':   ['Security','System → Security'],
     'panel-settings':   ['Settings','System → Settings'],
     'panel-credits':    ['Credits','System → Credits'],
+    'panel-lookbook':   ['Lookbook','Catalogue → Lookbook'],
+    'panel-limited':    ['Limited Edition','Marketing → Limited Edition'],
   };
   const info = titles[targetId] || ['Dashboard',''];
   const titleEl = document.getElementById('topbar-title');
@@ -534,12 +536,14 @@ function showPanel(id) {
     if (targetId === 'panel-security')   renderSecurityPanel();
     if (targetId === 'panel-settings')   renderSettingsPanel();
     if (targetId === 'panel-orders')     renderOrdersTable(ORDERS_DATA);
-    if (targetId === 'panel-products')   renderProductsTable(PRODUCTS_DATA);
+    if (targetId === 'panel-products')   renderProductsTable();
     if (targetId === 'panel-customers')  renderCustomersTable(CUSTOMERS_DATA);
     if (targetId === 'panel-inventory')  renderInventoryTable(INVENTORY_DATA);
     if (targetId === 'panel-categories') initCategoriesPanel();
     if (targetId === 'panel-credits')    initCreditsPanel();
     if (targetId === 'panel-support')    updateSupportPanel();
+    if (targetId === 'panel-lookbook')   initLookbookPanel();
+    if (targetId === 'panel-limited')    initLimitedPanel();
   } catch (err) {
     console.error('Panel init failed:', targetId, err);
     toast('This panel opened, but one widget could not load.', 'error');
@@ -596,11 +600,12 @@ function initDashboardPanel() {
   // Top products
   const tp = document.getElementById('dash-top-products');
   if (tp) {
-    tp.innerHTML = PRODUCTS_DATA.slice(0, 5).map((p, i) => `
+    const topList = (VireonStore.get('vireon_products') || PRODUCTS_DATA).slice(0, 5);
+    tp.innerHTML = topList.map((p, i) => `
       <div style="display:flex;align-items:center;gap:1rem;padding:.7rem 0;border-bottom:1px solid var(--border)">
         <span style="font-size:.72rem;color:var(--gray);width:18px;font-weight:700">${i+1}</span>
-        <div style="width:40px;height:50px;background:linear-gradient(135deg,#1a0f05,#2d1a08);border:1px solid var(--border);flex-shrink:0"></div>
-        <div style="flex:1;min-width:0"><p style="font-size:.78rem;color:var(--white);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${p.name}</p><p style="font-size:.65rem;color:var(--gray)">${p.cat} · ${p.sales} sold</p></div>
+        <div style="width:40px;height:50px;background:${p.image ? 'url("'+p.image+'") center/cover' : 'linear-gradient(135deg,#1a0f05,#2d1a08)'};border:1px solid var(--border);flex-shrink:0"></div>
+        <div style="flex:1;min-width:0"><p style="font-size:.78rem;color:var(--white);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${p.name}</p><p style="font-size:.65rem;color:var(--gray)">${p.cat} · ${p.sales||0} sold</p></div>
         <span style="font-family:var(--font-serif);font-size:.95rem;color:var(--gold);white-space:nowrap">$${p.price.toLocaleString()}</span>
       </div>`).join('');
   }
@@ -737,15 +742,17 @@ function createManualOrder() {
 function renderProductsTable(data) {
   const tbody = document.getElementById('products-table-body');
   if (!tbody) return;
-  tbody.innerHTML = data.map(p => {
+  const list = data || VireonStore.get('vireon_products') || [];
+  tbody.innerHTML = list.map(p => {
     const stockColor = p.stock <= 3 ? 'var(--error)' : p.stock <= 8 ? 'var(--warning)' : 'var(--success)';
     const stockStatus = p.stock <= 0 ? 'Out of Stock' : p.stock <= 8 ? 'Low Stock' : 'In Stock';
+    const imgBg = p.image ? `url("${p.image}") center/cover` : 'linear-gradient(135deg,#1a0f05,#2d1a08)';
     return `
     <tr>
       <td><input type="checkbox" style="accent-color:var(--gold)"></td>
       <td>
         <div style="display:flex;align-items:center;gap:.8rem">
-          <div style="width:36px;height:45px;background:linear-gradient(135deg,#1a0f05,#2d1a08);border:1px solid var(--border);flex-shrink:0"></div>
+          <div style="width:36px;height:45px;background:${imgBg};border:1px solid var(--border);flex-shrink:0"></div>
           <div><p style="font-size:.78rem;color:var(--white)">${p.name}</p><p style="font-size:.62rem;color:var(--gray)">${p.badge||''}</p></div>
         </div>
       </td>
@@ -754,7 +761,7 @@ function renderProductsTable(data) {
       <td style="color:var(--gold);font-family:var(--font-serif)">$${p.price.toLocaleString()}</td>
       <td style="color:${stockColor};font-weight:600">${p.stock}</td>
       <td><span class="badge ${STATUS_BADGE[stockStatus]||''}">${stockStatus}</span></td>
-      <td style="color:var(--text-2)">${p.sales}</td>
+      <td style="color:var(--text-2)">${p.sales||0}</td>
       <td>
         <button class="tbl-action" onclick="editProduct(${p.id})"><i class="fas fa-edit"></i></button>
         <button class="tbl-action-del tbl-action" onclick="deleteProduct(${p.id})"><i class="fas fa-trash"></i></button>
@@ -762,14 +769,14 @@ function renderProductsTable(data) {
     </tr>`;
   }).join('');
   const cnt = document.getElementById('prod-count');
-  if (cnt) cnt.textContent = `Showing ${data.length} products`;
+  if (cnt) cnt.textContent = `Showing ${list.length} products`;
 }
 
 function filterProducts() {
   const q      = (document.getElementById('prod-search')?.value||'').toLowerCase();
   const cat    = document.getElementById('prod-cat-filter')?.value || '';
   const status = document.getElementById('prod-status-filter')?.value || '';
-  let list = PRODUCTS_DATA.filter(p => {
+  let list = (VireonStore.get('vireon_products') || []).filter(p => {
     const matchQ = !q || p.name.toLowerCase().includes(q) || p.sku.toLowerCase().includes(q);
     const matchC = !cat || p.cat === cat;
     const s = p.stock <= 0 ? 'Out of Stock' : p.stock <= 8 ? 'Low Stock' : 'In Stock';
@@ -779,11 +786,178 @@ function filterProducts() {
   renderProductsTable(list);
 }
 
-function editProduct(id) { toast(`Editing product #${id} — form loaded.`); openAddProduct(); }
-function deleteProduct(id) { if (confirm(`Delete product #${id}?`)) toast('Product deleted.', 'error'); }
-function openAddProduct() { document.getElementById('add-product-form').style.display = 'block'; document.getElementById('add-product-form').scrollIntoView({ behavior: 'smooth' }); }
-function closeAddProduct() { document.getElementById('add-product-form').style.display = 'none'; }
-function saveProduct() { toast('Product saved successfully.', 'success'); closeAddProduct(); }
+function editProduct(id) {
+  const products = VireonStore.get('vireon_products') || [];
+  const p = products.find(function(x) { return String(x.id) === String(id); });
+  if (!p) { toast('Product not found.', 'error'); return; }
+
+  document.getElementById('prod-name').value         = p.name || '';
+  document.getElementById('prod-sku').value          = p.sku || '';
+  const catSel = document.getElementById('prod-category');
+  if (catSel) catSel.value = p.cat || '';
+  document.getElementById('prod-price').value        = p.price || '';
+  document.getElementById('prod-compare-price').value= p.comparePrice || '';
+  document.getElementById('prod-desc').value         = p.description || p.desc || '';
+  document.getElementById('prod-sizes').value        = Array.isArray(p.sizes) ? p.sizes.join(',') : (p.sizes||'');
+  document.getElementById('prod-colors').value       = Array.isArray(p.colors) ? p.colors.join(',') : (p.colors||'');
+  document.getElementById('prod-stock').value        = p.stock != null ? p.stock : '';
+  const badgeSel = document.getElementById('prod-badge');
+  if (badgeSel) badgeSel.value = p.badge || '';
+
+  const naEl = document.getElementById('prod-new-arrival');
+  if (naEl) naEl.checked = !!p.newArrival;
+  const bsEl = document.getElementById('prod-best-seller');
+  if (bsEl) bsEl.checked = !!p.bestSeller;
+  const acEl = document.getElementById('prod-active');
+  if (acEl) acEl.checked = p.active !== false;
+
+  // Image: restore preview from stored image; clear file data field
+  const urlEl  = document.getElementById('main-img-url');
+  const dataEl = document.getElementById('main-img-data');
+  const prev   = document.getElementById('main-img-preview');
+  if (urlEl)  urlEl.value  = p.image && !p.image.startsWith('data:') ? p.image : '';
+  if (dataEl) dataEl.value = '';
+  if (prev && p.image) {
+    prev.style.backgroundImage   = `url("${p.image}")`;
+    prev.style.backgroundSize    = 'cover';
+    prev.style.backgroundPosition = 'center';
+    prev.innerHTML = `<button onclick="clearImg('main-img-preview','main-img-input')" style="background:rgba(0,0,0,.7);border:1px solid var(--gold);color:var(--gold);padding:.3rem .8rem;font-size:.6rem;letter-spacing:.1em;cursor:pointer">REMOVE</button>`;
+  } else if (prev) {
+    prev.style.backgroundImage = '';
+    prev.innerHTML = '<i class="fas fa-cloud-upload-alt" style="font-size:2rem;color:var(--gold);margin-bottom:.5rem"></i><p style="font-size:.72rem;color:var(--text-2)">Click to upload main image</p><p style="font-size:.62rem;color:var(--gray)">PNG, JPG, WEBP — max 5MB</p>';
+  }
+
+  const form = document.getElementById('add-product-form');
+  if (form) form.dataset.editId = String(id);
+  const titleEl = document.getElementById('prod-form-title');
+  if (titleEl) titleEl.innerHTML = 'Edit <em style="font-style:italic;color:var(--gold)">Product</em>';
+
+  const errEl = document.getElementById('prod-form-error');
+  if (errEl) errEl.style.display = 'none';
+
+  openAddProduct();
+}
+
+function deleteProduct(id) {
+  var products = VireonStore.get('vireon_products') || [];
+  var p = products.find(function(x) { return String(x.id) === String(id); });
+  if (!p) return;
+  if (!confirm('Delete "' + p.name + '"? This cannot be undone.')) return;
+  var oldCat = p.cat;
+  var newList = products.filter(function(x) { return String(x.id) !== String(id); });
+  var ok = VireonStore.save('vireon_products', newList);
+  if (!ok) { toast('Storage quota exceeded — product not deleted.', 'error'); return; }
+  syncCategoryCount(oldCat);
+  renderProductsTable();
+  toast('"' + p.name + '" deleted.', 'error');
+}
+
+function openAddProduct() {
+  const form = document.getElementById('add-product-form');
+  if (!form) return;
+  form.style.display = 'block';
+  form.scrollIntoView({ behavior: 'smooth' });
+}
+
+function closeAddProduct() {
+  const form = document.getElementById('add-product-form');
+  if (!form) return;
+  form.style.display = 'none';
+  form.removeAttribute('data-edit-id');
+  form.reset();
+  // Reset form title
+  const titleEl = document.getElementById('prod-form-title');
+  if (titleEl) titleEl.innerHTML = 'Add <em style="font-style:italic;color:var(--gold)">New Product</em>';
+  // Reset image preview
+  const prev = document.getElementById('main-img-preview');
+  if (prev) {
+    prev.style.backgroundImage = '';
+    prev.innerHTML = '<i class="fas fa-cloud-upload-alt" style="font-size:2rem;color:var(--gold);margin-bottom:.5rem"></i><p style="font-size:.72rem;color:var(--text-2)">Click to upload main image</p><p style="font-size:.62rem;color:var(--gray)">PNG, JPG, WEBP — max 5MB</p>';
+  }
+  const dataEl = document.getElementById('main-img-data');
+  if (dataEl) dataEl.value = '';
+  const errEl = document.getElementById('prod-form-error');
+  if (errEl) errEl.style.display = 'none';
+}
+
+function saveProduct() {
+  const form = document.getElementById('add-product-form');
+  const errEl = document.getElementById('prod-form-error');
+  const showErr = function(msg) {
+    if (errEl) { errEl.textContent = msg; errEl.style.display = 'block'; }
+  };
+  if (errEl) errEl.style.display = 'none';
+
+  const name  = document.getElementById('prod-name')?.value.trim();
+  const sku   = document.getElementById('prod-sku')?.value.trim();
+  const cat   = document.getElementById('prod-category')?.value;
+  const price = document.getElementById('prod-price')?.value.trim();
+
+  if (!name)  { showErr('Product name is required.'); return; }
+  if (!sku)   { showErr('SKU is required.'); return; }
+  if (!cat)   { showErr('Category is required.'); return; }
+  if (!price) { showErr('Price is required.'); return; }
+
+  const dataEl = document.getElementById('main-img-data');
+  const urlEl  = document.getElementById('main-img-url');
+  const image  = (dataEl && dataEl.value) ? dataEl.value
+               : (urlEl  && urlEl.value.trim()) ? urlEl.value.trim()
+               : null;
+
+  const description  = document.getElementById('prod-desc')?.value.trim() || '';
+  const comparePrice = parseFloat(document.getElementById('prod-compare-price')?.value) || null;
+  const sizesRaw     = document.getElementById('prod-sizes')?.value || '';
+  const colorsRaw    = document.getElementById('prod-colors')?.value || '';
+  const stock        = parseInt(document.getElementById('prod-stock')?.value) || 0;
+  const badge        = document.getElementById('prod-badge')?.value || null;
+  const newArrival   = !!(document.getElementById('prod-new-arrival')?.checked);
+  const bestSeller   = !!(document.getElementById('prod-best-seller')?.checked);
+  const active       = document.getElementById('prod-active') ? !!(document.getElementById('prod-active').checked) : true;
+  const sizes        = sizesRaw ? sizesRaw.split(',').map(function(s){ return s.trim(); }).filter(Boolean) : ['S','M','L'];
+  const colors       = colorsRaw ? colorsRaw.split(',').map(function(s){ return s.trim(); }).filter(Boolean) : ['#1a1a1a'];
+
+  const editId = form && form.dataset.editId;
+  var products = VireonStore.get('vireon_products') || [];
+  var oldCat = null;
+
+  // Duplicate SKU check (warn but proceed)
+  var skuDup = products.find(function(x) { return x.sku === sku && String(x.id) !== String(editId); });
+  if (skuDup) toast('Warning: SKU "' + sku + '" already used by "' + skuDup.name + '".');
+
+  var newProduct;
+  if (editId) {
+    var existing = products.find(function(x) { return String(x.id) === String(editId); });
+    oldCat = existing ? existing.cat : null;
+    newProduct = Object.assign({}, existing, {
+      name, sku, cat, price: parseFloat(price), comparePrice, description,
+      sizes, colors, stock, badge: badge || null,
+      newArrival, bestSeller, active, image
+    });
+    products = products.map(function(x) { return String(x.id) === String(editId) ? newProduct : x; });
+  } else {
+    newProduct = {
+      id: Date.now(),
+      name, sku, cat, price: parseFloat(price), comparePrice, description,
+      sizes, colors, stock, badge: badge || null,
+      newArrival, bestSeller, active, image,
+      sales: 0, rating: 5, reviews: 0, gender: 'unisex',
+      grad: 'linear-gradient(160deg,#1a0f05,#2d1a08,#0a0600)',
+      dateAdded: new Date().toISOString()
+    };
+    products.push(newProduct);
+  }
+
+  var ok = VireonStore.save('vireon_products', products);
+  if (!ok) { toast('Storage quota exceeded — product not saved.', 'error'); return; }
+
+  // Sync category counts
+  if (oldCat && oldCat !== cat) syncCategoryCount(oldCat);
+  syncCategoryCount(cat);
+
+  renderProductsTable();
+  closeAddProduct();
+  toast(editId ? '"' + name + '" updated.' : '"' + name + '" added.', 'success');
+}
 
 /* ────── CUSTOMERS TABLE ──────────────────────────────────── */
 function renderCustomersTable(data) {
@@ -1228,14 +1402,25 @@ const DEFAULT_CATEGORIES = [
 ];
 
 function getCategories() {
-  try {
-    const stored = JSON.parse(localStorage.getItem(CATEGORIES_STORE_KEY));
-    return stored && stored.length ? stored : DEFAULT_CATEGORIES;
-  } catch { return DEFAULT_CATEGORIES; }
+  var stored = VireonStore.get('vireon_categories');
+  return stored && stored.length ? stored : DEFAULT_CATEGORIES;
 }
 
 function saveCategories(cats) {
-  localStorage.setItem(CATEGORIES_STORE_KEY, JSON.stringify(cats));
+  VireonStore.save('vireon_categories', cats);
+}
+
+function syncCategoryCount(catName) {
+  if (!catName) return;
+  var products = VireonStore.get('vireon_products') || [];
+  var count = products.filter(function(p) { return p.cat === catName; }).length;
+  var cats = VireonStore.get('vireon_categories') || [];
+  if (!cats.length) cats = DEFAULT_CATEGORIES.slice();
+  var cat = cats.find(function(c) { return c.name.toLowerCase() === catName.toLowerCase(); });
+  if (cat) {
+    cat.products = count;
+    VireonStore.save('vireon_categories', cats);
+  }
 }
 
 function generateCatId() {
@@ -1484,7 +1669,7 @@ window.initCategoriesPanel = function() {
 /* ────────────────────────────────────────────────────────────
    PRODUCT IMAGE UPLOAD HELPERS
    ──────────────────────────────────────────────────────────── */
-function previewProductImage(input, previewId) {
+function previewProductImage(input, previewId, dataId) {
   const file = input.files[0]; if (!file) return;
   const reader = new FileReader();
   reader.onload = function(e) {
@@ -1494,20 +1679,31 @@ function previewProductImage(input, previewId) {
     el.style.backgroundSize   = 'cover';
     el.style.backgroundPosition = 'center';
     el.innerHTML = `<button onclick="clearImg('${previewId}','${input.id}')" style="background:rgba(0,0,0,.7);border:1px solid var(--gold);color:var(--gold);padding:.3rem .8rem;font-size:.6rem;letter-spacing:.1em;cursor:pointer">REMOVE</button>`;
+    if (dataId) {
+      const dataEl = document.getElementById(dataId);
+      if (dataEl) dataEl.value = e.target.result;
+    }
+  };
+  reader.onerror = function() {
+    toast('Image read failed.', 'error');
+    if (dataId) { const d = document.getElementById(dataId); if (d) d.value = ''; }
   };
   reader.readAsDataURL(file);
 }
 
-function updateImgPreviewFromUrl(input, previewId) {
-  const url = input.value.trim(); if (!url) return;
+function updateImgPreviewFromUrl(input, previewId, dataId) {
+  const url = input.value.trim();
   const el = document.getElementById(previewId);
   if (!el) return;
-  el.style.backgroundImage   = `url(${url})`;
-  el.style.backgroundSize    = 'cover';
-  el.style.backgroundPosition = 'center';
-  el.innerHTML = `<button onclick="clearImgUrl('${previewId}','${input.id}')" style="background:rgba(0,0,0,.7);border:1px solid var(--gold);color:var(--gold);padding:.3rem .8rem;font-size:.6rem;cursor:pointer">REMOVE</button>`;
+  if (url) {
+    el.style.backgroundImage   = `url(${url})`;
+    el.style.backgroundSize    = 'cover';
+    el.style.backgroundPosition = 'center';
+    el.innerHTML = `<button onclick="clearImgUrl('${previewId}','${input.id}')" style="background:rgba(0,0,0,.7);border:1px solid var(--gold);color:var(--gold);padding:.3rem .8rem;font-size:.6rem;cursor:pointer">REMOVE</button>`;
+    // Clear data field when URL is typed
+    if (dataId) { const d = document.getElementById(dataId); if (d) d.value = ''; }
+  }
 }
-
 function clearImg(previewId, inputId) {
   const el = document.getElementById(previewId);
   const inp = document.getElementById(inputId);
@@ -1590,7 +1786,7 @@ function addCategoryImageUpload() {
   else formSection.appendChild(group);
 }
 
-function previewCategoryImage(input) {
+function previewCategoryImage(input, dataId) {
   const file = input.files[0]; if (!file) return;
   const reader = new FileReader();
   reader.onload = function(e) {
@@ -1600,6 +1796,11 @@ function previewCategoryImage(input) {
     el.style.backgroundSize    = 'cover';
     el.style.backgroundPosition = 'center';
     el.innerHTML = '';
+    if (dataId) { const d = document.getElementById(dataId); if (d) d.value = e.target.result; }
+  };
+  reader.onerror = function() {
+    toast('Image read failed.', 'error');
+    if (dataId) { const d = document.getElementById(dataId); if (d) d.value = ''; }
   };
   reader.readAsDataURL(file);
 }
@@ -1624,6 +1825,220 @@ window.updateImgPreviewFromUrl = updateImgPreviewFromUrl;
 window.previewGallerySlot    = previewGallerySlot;
 window.addColorVariant       = addColorVariant;
 window.previewColorVariantImg = previewColorVariantImg;
+window.previewCategoryImage  = previewCategoryImage;
+
+/* ═══════════════════════════════════════════════════════════
+   LOOKBOOK MANAGEMENT
+   ═══════════════════════════════════════════════════════════ */
+function getLookbook() { return VireonStore.get('vireon_lookbook') || []; }
+function saveLookbook(list) { return VireonStore.save('vireon_lookbook', list); }
+
+function renderLookbookTable() {
+  const tbody = document.getElementById('lookbook-table-body');
+  if (!tbody) return;
+  const list = getLookbook();
+  if (!list.length) {
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:2rem;color:var(--gray)">No lookbook entries yet</td></tr>';
+    return;
+  }
+  tbody.innerHTML = list.map(function(entry) {
+    return `<tr>
+      <td style="color:var(--gold)">${entry.vol||''}</td>
+      <td style="color:var(--white)">${entry.title||''}</td>
+      <td><span class="badge ${entry.active!==false?'badge-active':'badge-inactive'}">${entry.active!==false?'Active':'Inactive'}</span></td>
+      <td>
+        <button class="tbl-action" onclick="editLookbook('${entry.id}')"><i class="fas fa-edit"></i></button>
+        <button class="tbl-action-del tbl-action" onclick="deleteLookbook('${entry.id}')"><i class="fas fa-trash"></i></button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function editLookbook(id) {
+  const list = getLookbook();
+  const entry = list.find(function(x) { return x.id === id; });
+  if (!entry) return;
+  document.getElementById('look-vol').value   = entry.vol   || '';
+  document.getElementById('look-title').value = entry.title || '';
+  document.getElementById('look-img-url').value = (!entry.image || entry.image.startsWith('data:')) ? '' : entry.image;
+  var dataEl = document.getElementById('look-img-data');
+  if (dataEl) dataEl.value = '';
+  var acEl = document.getElementById('look-active');
+  if (acEl) acEl.checked = entry.active !== false;
+  var form = document.getElementById('lookbook-form');
+  if (form) form.dataset.editId = id;
+  var errEl = document.getElementById('look-form-error');
+  if (errEl) errEl.style.display = 'none';
+}
+
+function deleteLookbook(id) {
+  var list = getLookbook();
+  var entry = list.find(function(x) { return x.id === id; });
+  if (!entry || !confirm('Delete lookbook entry "' + entry.title + '"?')) return;
+  saveLookbook(list.filter(function(x) { return x.id !== id; }));
+  renderLookbookTable();
+  toast('"' + entry.title + '" deleted.', 'error');
+}
+
+function initLookbookPanel() {
+  renderLookbookTable();
+  var form = document.getElementById('lookbook-form');
+  if (form && !form.dataset.lookBound) {
+    form.dataset.lookBound = '1';
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      var errEl = document.getElementById('look-form-error');
+      if (errEl) errEl.style.display = 'none';
+      var vol   = document.getElementById('look-vol')?.value.trim();
+      var title = document.getElementById('look-title')?.value.trim();
+      if (!vol)   { if (errEl) { errEl.textContent='Volume is required.'; errEl.style.display='block'; } return; }
+      if (!title) { if (errEl) { errEl.textContent='Title is required.'; errEl.style.display='block'; } return; }
+      var dataEl = document.getElementById('look-img-data');
+      var urlEl  = document.getElementById('look-img-url');
+      var image  = (dataEl && dataEl.value) ? dataEl.value : (urlEl && urlEl.value.trim()) ? urlEl.value.trim() : null;
+      var active = document.getElementById('look-active')?.checked !== false;
+      var editId = form.dataset.editId;
+      var list   = getLookbook();
+      if (editId) {
+        list = list.map(function(x) { return x.id===editId ? Object.assign({},x,{vol,title,image,active}) : x; });
+        delete form.dataset.editId;
+      } else {
+        list.push({ id: 'look_'+Date.now().toString(36), vol, title, image, active });
+      }
+      var ok = saveLookbook(list);
+      if (!ok) { toast('Storage quota exceeded.','error'); return; }
+      renderLookbookTable();
+      form.reset();
+      if (dataEl) dataEl.value = '';
+      // Reset image preview
+      var prev = document.getElementById('look-img-preview');
+      if (prev) { prev.style.backgroundImage=''; prev.style.backgroundSize=''; prev.innerHTML='<i class="fas fa-image" style="font-size:1.5rem;color:var(--gold)"></i>'; }
+      toast(editId ? 'Lookbook entry updated.' : 'Lookbook entry added.', 'success');
+    });
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   LIMITED EDITION CONFIG
+   ═══════════════════════════════════════════════════════════ */
+function getLimited() { return VireonStore.get('vireon_limited_edition'); }
+function saveLimited(cfg) { return VireonStore.save('vireon_limited_edition', cfg); }
+
+function loadLimitedForm() {
+  var cfg = getLimited();
+  // Populate product select
+  var sel = document.getElementById('lim-product');
+  if (sel) {
+    var products = VireonStore.get('vireon_products') || [];
+    sel.innerHTML = '<option value="">— Select Product —</option>' +
+      products.map(function(p) { return '<option value="'+p.id+'">'+(p.name||'Product #'+p.id)+'</option>'; }).join('');
+    if (cfg && cfg.productId) sel.value = cfg.productId;
+  }
+  if (!cfg) return;
+  var set = function(id, v) { var el = document.getElementById(id); if (el) el.value = v != null ? v : ''; };
+  set('lim-title',     cfg.title||'');
+  set('lim-subtitle',  cfg.subtitle||'');
+  set('lim-desc',      cfg.description||'');
+  set('lim-price',     cfg.price != null ? cfg.price : '');
+  set('lim-total',     cfg.totalPieces != null ? cfg.totalPieces : '');
+  set('lim-remaining', cfg.piecesRemaining != null ? cfg.piecesRemaining : '');
+  // Convert ISO to datetime-local
+  if (cfg.endDate) {
+    try {
+      var d = new Date(cfg.endDate);
+      var local = new Date(d.getTime() - d.getTimezoneOffset()*60000).toISOString().slice(0,16);
+      set('lim-end', local);
+    } catch(e) {}
+  }
+  var acEl = document.getElementById('lim-active');
+  if (acEl) acEl.checked = !!cfg.active;
+  // Restore image preview
+  var prev = document.getElementById('lim-img-preview');
+  if (prev && cfg.image) {
+    prev.style.backgroundImage   = 'url("'+cfg.image+'")';
+    prev.style.backgroundSize    = 'cover';
+    prev.style.backgroundPosition = 'center';
+    prev.innerHTML = '';
+  }
+  // Clear data field
+  var dataEl = document.getElementById('lim-img-data');
+  if (dataEl) dataEl.value = '';
+  // URL field: only set if not dataURL
+  var urlEl = document.getElementById('lim-img-url');
+  if (urlEl) urlEl.value = (cfg.image && !cfg.image.startsWith('data:')) ? cfg.image : '';
+}
+
+function saveLimitedConfig() {
+  var errEl = document.getElementById('lim-form-error');
+  if (errEl) errEl.style.display = 'none';
+  var title = document.getElementById('lim-title')?.value.trim();
+  var endRaw = document.getElementById('lim-end')?.value;
+  if (!title)  { if (errEl) { errEl.textContent='Title is required.'; errEl.style.display='block'; } return; }
+  if (!endRaw) { if (errEl) { errEl.textContent='End date is required.'; errEl.style.display='block'; } return; }
+  var dataEl = document.getElementById('lim-img-data');
+  var urlEl  = document.getElementById('lim-img-url');
+  var image  = (dataEl && dataEl.value) ? dataEl.value : (urlEl && urlEl.value.trim()) ? urlEl.value.trim() : (getLimited()||{}).image || null;
+  var cfg = {
+    productId:      document.getElementById('lim-product')?.value || null,
+    image:          image,
+    title:          title,
+    subtitle:       document.getElementById('lim-subtitle')?.value.trim() || '',
+    description:    document.getElementById('lim-desc')?.value.trim() || '',
+    price:          parseFloat(document.getElementById('lim-price')?.value) || null,
+    totalPieces:    parseInt(document.getElementById('lim-total')?.value) || null,
+    piecesRemaining:parseInt(document.getElementById('lim-remaining')?.value) || null,
+    endDate:        new Date(endRaw).toISOString(),
+    active:         !!(document.getElementById('lim-active')?.checked)
+  };
+  var ok = saveLimited(cfg);
+  if (!ok) { toast('Storage quota exceeded.','error'); return; }
+  toast('Limited Edition config saved.', 'success');
+}
+
+function clearLimitedForm() {
+  var form = document.getElementById('lim-config-form');
+  if (form) form.reset();
+  var prev = document.getElementById('lim-img-preview');
+  if (prev) { prev.style.backgroundImage=''; prev.innerHTML='<i class="fas fa-image" style="font-size:1.5rem;color:var(--gold)"></i>'; }
+  var dataEl = document.getElementById('lim-img-data');
+  if (dataEl) dataEl.value = '';
+}
+
+function initLimitedPanel() {
+  loadLimitedForm();
+}
+
+/* ═══════════════════════════════════════════════════════════
+   BRAND SETTINGS
+   ═══════════════════════════════════════════════════════════ */
+function getBrandSettings() { return VireonStore.get('vireon_brand_settings'); }
+function saveBrandSettings(bs) { return VireonStore.save('vireon_brand_settings', bs); }
+
+function renderBrandSettingsBlock() {
+  var cfg = getBrandSettings();
+  var craftEl = document.getElementById('setting-craft-image');
+  var yearEl  = document.getElementById('setting-founded-year');
+  if (craftEl) craftEl.value = (cfg && cfg.craftImage) ? cfg.craftImage : '';
+  if (yearEl)  yearEl.value  = (cfg && cfg.foundedYear) ? cfg.foundedYear : 2025;
+}
+
+window.saveBrandSettingsFromForm = function() {
+  var craftEl = document.getElementById('setting-craft-image');
+  var yearEl  = document.getElementById('setting-founded-year');
+  var craftImage   = craftEl ? craftEl.value.trim() : '';
+  var foundedYear  = yearEl  ? (parseInt(yearEl.value) || 2025) : 2025;
+  var ok = saveBrandSettings({ craftImage: craftImage, foundedYear: foundedYear });
+  if (!ok) { toast('Storage quota exceeded.','error'); return; }
+  toast('Brand settings saved.', 'success');
+};
+
+/* Extend renderSettingsPanel to also call renderBrandSettingsBlock */
+document.addEventListener('DOMContentLoaded', function() {
+  var __origRS = window.renderSettingsPanel;
+  if (typeof __origRS === 'function') {
+    window.renderSettingsPanel = function() { __origRS(); renderBrandSettingsBlock(); };
+  }
+});
 
 /* ═══════════════════════════════════════════════════════════
    CREDITS MANAGEMENT — Team Members System
@@ -1844,6 +2259,13 @@ window.deleteCredit      = deleteCredit;
 window.toggleCreditVisibility = toggleCreditVisibility;
 window.previewCredImg    = previewCredImg;
 window.updateCredImgFromUrl   = updateCredImgFromUrl;
+// Lookbook, Limited Edition, Brand Settings
+window.editLookbook      = editLookbook;
+window.deleteLookbook    = deleteLookbook;
+window.initLookbookPanel = initLookbookPanel;
+window.saveLimitedConfig = saveLimitedConfig;
+window.clearLimitedForm  = clearLimitedForm;
+window.initLimitedPanel  = initLimitedPanel;
 
 /* Extend showPanel for credits */
 const _origShowPanelFinal = window.showPanel;
