@@ -4,72 +4,40 @@
 'use strict';
 
 /* ────────────────────────────────────────────────────────────
-   PRODUCT DATABASE
+   PRODUCT STORE ACCESSORS
    ──────────────────────────────────────────────────────────── */
-const DB = {
-  products: [
-    {id:1,name:'Sovereign Coat',cat:'Coats',gender:'men',price:1850,old:2400,badge:'LIMITED',rating:5,reviews:42,sku:'VR-C-001',
-     desc:'Hand-tailored in Milan. Double-breasted obsidian wool with 24k gold-button detailing. 200+ hours of craftsmanship.',
-     colors:['#1a1a1a','#2d1a08','#0a0a0a'],sizes:['XS','S','M','L','XL','XXL'],
-     grad:'linear-gradient(160deg,#1a0f05,#2d1a08,#0a0600)',stock:7},
-    {id:2,name:'Noir Velvet Dress',cat:'Dresses',gender:'women',price:2200,old:null,badge:'NEW',rating:5,reviews:28,sku:'VR-D-001',
-     desc:'Floor-length structured velvet. Bespoke couture craftsmanship. Worn by editorial icons worldwide.',
-     colors:['#0d0d20','#1a0a00','#222222'],sizes:['XS','S','M','L','XL'],
-     grad:'linear-gradient(160deg,#050510,#0d0d20,#030308)',stock:12},
-    {id:3,name:'Imperial Suit',cat:'Suits',gender:'men',price:3200,old:null,badge:null,rating:4.8,reviews:19,sku:'VR-S-001',
-     desc:'Savile Row inspired. Peak lapel, full canvas construction. Pure Loro Piana wool.',
-     colors:['#0a0a0a','#1a1900','#2d2d00'],sizes:['36','38','40','42','44','46'],
-     grad:'linear-gradient(160deg,#0a0a00,#1a1900,#050500)',stock:5},
-    {id:4,name:'Obsidian Shoulder Bag',cat:'Bags',gender:'women',price:1450,old:1800,badge:'SALE',rating:4.9,reviews:63,sku:'VR-B-001',
-     desc:'Crocodile-embossed genuine leather. 24k gold hardware. Comes with dust bag and certificate.',
-     colors:['#080008','#1a0a00','#2d2d2d'],sizes:['One Size'],
-     grad:'linear-gradient(160deg,#080008,#150015,#040004)',stock:3},
-    {id:5,name:'Royal Dress Shirt',cat:'Shirts',gender:'men',price:680,old:null,badge:'BESTSELLER',rating:4.7,reviews:87,sku:'VR-SH-001',
-     desc:'Egyptian cotton, 200 thread count. French cuffs, spread collar. Monogram service available.',
-     colors:['#ffffff','#1a1a1a','#0a0505'],sizes:['S','M','L','XL','XXL'],
-     grad:'linear-gradient(160deg,#0a0a0a,#1a1a1a,#111111)',stock:28},
-    {id:6,name:'Evening Gown',cat:'Dresses',gender:'women',price:4800,old:null,badge:'LIMITED',rating:5,reviews:11,sku:'VR-D-002',
-     desc:'Silk charmeuse, bias cut. Bespoke fit available. Worn at the Met Gala afterparty.',
-     colors:['#150a00','#0a0a0a','#1a1a00'],sizes:['XS','S','M','L'],
-     grad:'linear-gradient(160deg,#150a00,#241500,#0a0600)',stock:2},
-    {id:7,name:'Signature Trench',cat:'Coats',gender:'women',price:2600,old:3000,badge:'SALE',rating:4.8,reviews:34,sku:'VR-C-002',
-     desc:'Gabardine with silk lining. Detachable belt, storm flap. An icon reborn.',
-     colors:['#1a0a0a','#0a0a0a','#2d1a08'],sizes:['XS','S','M','L','XL'],
-     grad:'linear-gradient(160deg,#1a0a0a,#2d1515,#0d0606)',stock:9},
-    {id:8,name:'Gold Link Belt',cat:'Accessories',gender:'unisex',price:380,old:null,badge:'NEW',rating:4.6,reviews:25,sku:'VR-A-001',
-     desc:'18k gold-plated brass. Signature double-V buckle. Adjustable to 5 sizes.',
-     colors:['#c9a84c','#1a1a1a'],sizes:['S/M','L/XL'],
-     grad:'linear-gradient(160deg,#1a1500,#2d2500,#0d0d00)',stock:18},
-    {id:9,name:'Crystal Eyewear',cat:'Eyewear',gender:'unisex',price:520,old:null,badge:null,rating:4.7,reviews:41,sku:'VR-E-001',
-     desc:'Acetate frame with anti-reflective sapphire-coated lenses. UV400 protection.',
-     colors:['#001010','#1a0a00','#0a0a0a'],sizes:['One Size'],
-     grad:'linear-gradient(160deg,#001010,#002020,#001a1a)',stock:15},
-    {id:10,name:'Caviar Handbag',cat:'Bags',gender:'women',price:2900,old:null,badge:'LIMITED',rating:5,reviews:16,sku:'VR-B-002',
-     desc:'Quilted caviar leather. Gold chain strap. Numbered certificate of authenticity included.',
-     colors:['#0a0505','#1a1a1a','#2d1a08'],sizes:['One Size'],
-     grad:'linear-gradient(160deg,#0a0500,#1a0d00,#050300)',stock:4},
-    {id:11,name:'Bishop Wool Coat',cat:'Coats',gender:'men',price:2100,old:null,badge:null,rating:4.9,reviews:22,sku:'VR-C-003',
-     desc:'Double-face Merino wool. Clean modernist silhouette. Made in Italy.',
-     colors:['#0a0a14','#1a1a1a','#2d1a08'],sizes:['S','M','L','XL','XXL'],
-     grad:'linear-gradient(160deg,#0a0a14,#141424,#050510)',stock:8},
-    {id:12,name:'Silk Wide Trousers',cat:'Trousers',gender:'women',price:890,old:1100,badge:'SALE',rating:4.6,reviews:38,sku:'VR-T-001',
-     desc:'High-waisted silk crepe. Wide-leg silhouette, invisible zip. Dry clean only.',
-     colors:['#100010','#1a1a1a','#f0f0f0'],sizes:['XS','S','M','L','XL'],
-     grad:'linear-gradient(160deg,#100010,#200020,#0a000a)',stock:11},
-  ],
-  collections: [
-    {id:'signature',name:'Signature Series',desc:'The pinnacle of VIREON craftsmanship.',season:'2026'},
-    {id:'limited',name:'Limited Drops',desc:'Exclusive numbered pieces.',season:'2026'},
-    {id:'editorial',name:'Editorial',desc:'Magazine-worthy couture.',season:'2026'},
-    {id:'evening',name:'Night Luxe',desc:'For evenings that demand presence.',season:'2026'},
-  ]
-};
+const DEFAULT_GRAD = 'linear-gradient(160deg,#1a0f05,#2d1a08,#0a0600)';
+const DEFAULT_COLORS = ['#1a1a1a','#2d1a08','#0a0a0a'];
+const DEFAULT_SIZES = ['S','M','L'];
 
-function getProducts(f={}){
-  let list=[...DB.products];
+function normProduct(p) {
+  return Object.assign({}, p, {
+    old: p.comparePrice !== undefined && p.comparePrice !== null ? p.comparePrice : (p.old !== undefined ? p.old : null),
+    desc: p.description !== undefined ? p.description : (p.desc !== undefined ? p.desc : ''),
+    grad: p.grad || DEFAULT_GRAD,
+    rating: p.rating !== undefined ? p.rating : 5,
+    reviews: p.reviews !== undefined ? p.reviews : 0,
+    colors: p.colors || DEFAULT_COLORS,
+    sizes: p.sizes || DEFAULT_SIZES,
+    gender: p.gender || 'unisex',
+    image: p.image || null,
+  });
+}
+
+function getAllProducts() {
+  return VireonStore.get('vireon_products').filter(function(p){ return p.active !== false; }).map(normProduct);
+}
+
+function findProduct(id) {
+  return getAllProducts().find(function(p){ return String(p.id) === String(id); }) || null;
+}
+
+function getProducts(f){
+  f = f || {};
+  var list = getAllProducts();
   if(f.cat&&f.cat!=='all') list=list.filter(p=>p.cat.toLowerCase()===f.cat.toLowerCase()||p.gender===f.cat.toLowerCase());
   if(f.badge) list=list.filter(p=>p.badge===f.badge);
-  if(f.q) list=list.filter(p=>p.name.toLowerCase().includes(f.q)||p.cat.toLowerCase().includes(f.q)||p.desc.toLowerCase().includes(f.q)||p.sku.toLowerCase().includes(f.q));
+  if(f.q) list=list.filter(p=>p.name.toLowerCase().includes(f.q)||p.cat.toLowerCase().includes(f.q)||(p.desc||'').toLowerCase().includes(f.q)||p.sku.toLowerCase().includes(f.q));
   if(f.sort==='price-low') list.sort((a,b)=>a.price-b.price);
   else if(f.sort==='price-high') list.sort((a,b)=>b.price-a.price);
   else if(f.sort==='name') list.sort((a,b)=>a.name.localeCompare(b.name));
@@ -100,7 +68,7 @@ const wishBus = { fns:[], on(fn){this.fns.push(fn)}, notify(){ this.fns.forEach(
    CART OPERATIONS
    ──────────────────────────────────────────────────────────── */
 function cartAdd(id, qty=1, size='', color=''){
-  const p = DB.products.find(x=>x.id===id); if(!p) return;
+  const p = findProduct(id); if(!p) return;
   const cart = store.cart();
   const key = `${id}__${size}__${color}`;
   const ex = cart.find(i=>i.key===key);
@@ -153,7 +121,7 @@ function pCard(p){
   const stars = '★'.repeat(Math.floor(p.rating))+'☆'.repeat(5-Math.floor(p.rating));
   return `<div class="p-card reveal d${Math.floor(Math.random()*4+1)}" data-id="${p.id}">
     <div class="p-card-img">
-      <div class="p-card-bg" style="background:${p.grad}"></div>
+      <div class="p-card-bg" style="background:${p.image?'url(\"'+p.image+'\") center/cover':p.grad}"></div>
       <div class="p-card-overlay"></div>
       ${badge}
       <div class="p-card-actions">
@@ -216,7 +184,7 @@ window.wishToggle=wishToggle;
    QUICK VIEW MODAL
    ──────────────────────────────────────────────────────────── */
 function quickView(id){
-  const p=DB.products.find(x=>x.id===id); if(!p) return;
+  const p=findProduct(id); if(!p) return;
   let modal=document.getElementById('qv-modal');
   if(!modal){
     modal=document.createElement('div');
@@ -577,7 +545,7 @@ function initShopPage(){
 function initProductPage(){
   if(!document.getElementById('pd-root')) return;
   const u=new URLSearchParams(window.location.search);
-  const p=DB.products.find(x=>x.id===parseInt(u.get('id')))||DB.products[0];
+  const p=findProduct(parseInt(u.get('id')))||getAllProducts()[0];
   let selSize='', selColor='', qty=1;
 
   // Populate fields
@@ -641,14 +609,14 @@ function initProductPage(){
 
   // Recommended
   const rec=document.getElementById('rec-grid');
-  if(rec){ rec.innerHTML=DB.products.filter(x=>x.id!==p.id&&x.cat===p.cat).slice(0,4).concat(DB.products.filter(x=>x.id!==p.id&&x.cat!==p.cat).slice(0,4)).slice(0,4).map(pCard).join(''); attachCardLinks(); }
+  if(rec){ rec.innerHTML=getAllProducts().filter(x=>x.id!==p.id&&x.cat===p.cat).slice(0,4).concat(getAllProducts().filter(x=>x.id!==p.id&&x.cat!==p.cat).slice(0,4)).slice(0,4).map(pCard).join(''); attachCardLinks(); }
 
   // Recently viewed
   let recent=store.recently().filter(id=>id!==p.id);
   recent.unshift(p.id); recent=recent.slice(0,8);
   store.set('vireon_recent',recent);
   const rvg=document.getElementById('recently-viewed');
-  if(rvg){ rvg.innerHTML=recent.filter(id=>id!==p.id).slice(0,4).map(id=>{const pr=DB.products.find(x=>x.id===id);return pr?pCard(pr):''}).join(''); attachCardLinks(); }
+  if(rvg){ rvg.innerHTML=recent.filter(id=>id!==p.id).slice(0,4).map(id=>{const pr=findProduct(id);return pr?pCard(pr):''}).join(''); attachCardLinks(); }
 }
 
 function shakeEl(el){ if(!el) return; el.animate([{transform:'translateX(-4px)'},{transform:'translateX(4px)'},{transform:'translateX(-4px)'},{transform:'translateX(0)'}],{duration:300,easing:'ease-in-out'}); }
@@ -734,7 +702,7 @@ function initWishlistPage(){
   if(!grid) return;
   function render(){
     const ids=store.wish();
-    const prods=DB.products.filter(p=>ids.includes(p.id));
+    const prods=getAllProducts().filter(p=>ids.includes(p.id));
     grid.innerHTML=!prods.length
       ?`<div style="grid-column:1/-1;text-align:center;padding:6rem;color:var(--gray)"><i class="far fa-heart" style="font-size:4rem;color:var(--border);display:block;margin-bottom:2rem"></i><h3 style="font-size:2rem;color:var(--white);font-weight:300;margin-bottom:1rem">Your wishlist is empty</h3><p style="margin-bottom:2.5rem">Save pieces you love and find them here.</p><a href="shop.html" class="btn btn--gold">EXPLORE COLLECTION</a></div>`
       :prods.map(pCard).join('');
@@ -832,7 +800,7 @@ function initAdminDashboard(){
     </tr>`).join('');
 
   const topEl=document.getElementById('top-products-list');
-  if(topEl) topEl.innerHTML=DB.products.slice(0,5).map((p,i)=>`
+  if(topEl) topEl.innerHTML=getAllProducts().slice(0,5).map((p,i)=>`
     <div style="display:flex;align-items:center;gap:1rem;padding:.8rem 0;border-bottom:1px solid var(--border)">
       <span style="font-size:.72rem;color:var(--gray);width:20px;font-weight:700">${i+1}</span>
       <div style="width:44px;height:55px;background:${p.grad};border:1px solid var(--border);flex-shrink:0"></div>

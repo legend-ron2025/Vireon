@@ -19,18 +19,66 @@ const ORDERS_DATA = [
 ];
 
 const PRODUCTS_DATA = [
-  {id:1,name:'Sovereign Coat',sku:'VR-C-001',cat:'Coats',price:1850,stock:7,sales:124,badge:'LIMITED'},
-  {id:2,name:'Noir Velvet Dress',sku:'VR-D-001',cat:'Dresses',price:2200,stock:12,sales:76,badge:'NEW'},
-  {id:3,name:'Imperial Suit',sku:'VR-S-001',cat:'Suits',price:3200,stock:5,sales:58,badge:null},
-  {id:4,name:'Obsidian Shoulder Bag',sku:'VR-B-001',cat:'Bags',price:1450,stock:3,sales:63,badge:'SALE'},
-  {id:5,name:'Royal Dress Shirt',sku:'VR-SH-001',cat:'Shirts',price:680,stock:28,sales:87,badge:'BESTSELLER'},
-  {id:6,name:'Evening Gown',sku:'VR-D-002',cat:'Dresses',price:4800,stock:2,sales:43,badge:'LIMITED'},
-  {id:7,name:'Signature Trench',sku:'VR-C-002',cat:'Coats',price:2600,stock:9,sales:34,badge:'SALE'},
-  {id:8,name:'Gold Link Belt',sku:'VR-A-001',cat:'Accessories',price:380,stock:18,sales:25,badge:'NEW'},
-  {id:9,name:'Crystal Eyewear',sku:'VR-E-001',cat:'Eyewear',price:520,stock:15,sales:41,badge:null},
-  {id:10,name:'Caviar Handbag',sku:'VR-B-002',cat:'Bags',price:2900,stock:4,sales:16,badge:'LIMITED'},
-  {id:11,name:'Bishop Wool Coat',sku:'VR-C-003',cat:'Coats',price:2100,stock:8,sales:22,badge:null},
-  {id:12,name:'Silk Wide Trousers',sku:'VR-T-001',cat:'Trousers',price:890,stock:11,sales:38,badge:'SALE'},
+  {id:1,name:'Sovereign Coat',sku:'VR-C-001',cat:'Coats',price:1850,comparePrice:2400,stock:7,sales:124,badge:'LIMITED',
+   grad:'linear-gradient(160deg,#1a0f05,#2d1a08,#0a0600)',
+   description:'Hand-tailored in Milan. Double-breasted obsidian wool with 24k gold-button detailing. 200+ hours of craftsmanship.',
+   colors:['#1a1a1a','#2d1a08','#0a0a0a'],sizes:['XS','S','M','L','XL','XXL'],
+   rating:5,reviews:42,gender:'men',image:null,newArrival:false,bestSeller:false,active:true,dateAdded:'2026-06-15T09:00:00Z'},
+  {id:2,name:'Noir Velvet Dress',sku:'VR-D-001',cat:'Dresses',price:2200,comparePrice:null,stock:12,sales:76,badge:'NEW',
+   grad:'linear-gradient(160deg,#050510,#0d0d20,#030308)',
+   description:'Floor-length structured velvet. Bespoke couture craftsmanship. Worn by editorial icons worldwide.',
+   colors:['#0d0d20','#1a0a00','#222222'],sizes:['XS','S','M','L','XL'],
+   rating:5,reviews:28,gender:'women',image:null,newArrival:true,bestSeller:false,active:true,dateAdded:'2026-06-16T09:00:00Z'},
+  {id:3,name:'Imperial Suit',sku:'VR-S-001',cat:'Suits',price:3200,comparePrice:null,stock:5,sales:58,badge:null,
+   grad:'linear-gradient(160deg,#0a0a00,#1a1900,#050500)',
+   description:'Savile Row inspired. Peak lapel, full canvas construction. Pure Loro Piana wool.',
+   colors:['#0a0a0a','#1a1900','#2d2d00'],sizes:['36','38','40','42','44','46'],
+   rating:4.8,reviews:19,gender:'men',image:null,newArrival:false,bestSeller:false,active:true,dateAdded:'2026-06-17T09:00:00Z'},
+  {id:4,name:'Obsidian Shoulder Bag',sku:'VR-B-001',cat:'Bags',price:1450,comparePrice:1800,stock:3,sales:63,badge:'SALE',
+   grad:'linear-gradient(160deg,#080008,#150015,#040004)',
+   description:'Crocodile-embossed genuine leather. 24k gold hardware. Comes with dust bag and certificate.',
+   colors:['#080008','#1a0a00','#2d2d2d'],sizes:['One Size'],
+   rating:4.9,reviews:63,gender:'women',image:null,newArrival:false,bestSeller:false,active:true,dateAdded:'2026-06-18T09:00:00Z'},
+  {id:5,name:'Royal Dress Shirt',sku:'VR-SH-001',cat:'Shirts',price:680,comparePrice:null,stock:28,sales:87,badge:'BESTSELLER',
+   grad:'linear-gradient(160deg,#0a0a0a,#1a1a1a,#111111)',
+   description:'Egyptian cotton, 200 thread count. French cuffs, spread collar. Monogram service available.',
+   colors:['#ffffff','#1a1a1a','#0a0505'],sizes:['S','M','L','XL','XXL'],
+   rating:4.7,reviews:87,gender:'men',image:null,newArrival:false,bestSeller:true,active:true,dateAdded:'2026-06-19T09:00:00Z'},
+  {id:6,name:'Evening Gown',sku:'VR-D-002',cat:'Dresses',price:4800,comparePrice:null,stock:2,sales:43,badge:'LIMITED',
+   grad:'linear-gradient(160deg,#150a00,#241500,#0a0600)',
+   description:'Silk charmeuse, bias cut. Bespoke fit available. Worn at the Met Gala afterparty.',
+   colors:['#150a00','#0a0a0a','#1a1a00'],sizes:['XS','S','M','L'],
+   rating:5,reviews:11,gender:'women',image:null,newArrival:false,bestSeller:false,active:true,dateAdded:'2026-06-20T09:00:00Z'},
+  {id:7,name:'Signature Trench',sku:'VR-C-002',cat:'Coats',price:2600,comparePrice:3000,stock:9,sales:34,badge:'SALE',
+   grad:'linear-gradient(160deg,#1a0a0a,#2d1515,#0d0606)',
+   description:'Gabardine with silk lining. Detachable belt, storm flap. An icon reborn.',
+   colors:['#1a0a0a','#0a0a0a','#2d1a08'],sizes:['XS','S','M','L','XL'],
+   rating:4.8,reviews:34,gender:'women',image:null,newArrival:false,bestSeller:false,active:true,dateAdded:'2026-06-21T09:00:00Z'},
+  {id:8,name:'Gold Link Belt',sku:'VR-A-001',cat:'Accessories',price:380,comparePrice:null,stock:18,sales:25,badge:'NEW',
+   grad:'linear-gradient(160deg,#1a1500,#2d2500,#0d0d00)',
+   description:'18k gold-plated brass. Signature double-V buckle. Adjustable to 5 sizes.',
+   colors:['#c9a84c','#1a1a1a'],sizes:['S/M','L/XL'],
+   rating:4.6,reviews:25,gender:'unisex',image:null,newArrival:true,bestSeller:false,active:true,dateAdded:'2026-06-22T09:00:00Z'},
+  {id:9,name:'Crystal Eyewear',sku:'VR-E-001',cat:'Eyewear',price:520,comparePrice:null,stock:15,sales:41,badge:null,
+   grad:'linear-gradient(160deg,#001010,#002020,#001a1a)',
+   description:'Acetate frame with anti-reflective sapphire-coated lenses. UV400 protection.',
+   colors:['#001010','#1a0a00','#0a0a0a'],sizes:['One Size'],
+   rating:4.7,reviews:41,gender:'unisex',image:null,newArrival:false,bestSeller:false,active:true,dateAdded:'2026-06-23T09:00:00Z'},
+  {id:10,name:'Caviar Handbag',sku:'VR-B-002',cat:'Bags',price:2900,comparePrice:null,stock:4,sales:16,badge:'LIMITED',
+   grad:'linear-gradient(160deg,#0a0500,#1a0d00,#050300)',
+   description:'Quilted caviar leather. Gold chain strap. Numbered certificate of authenticity included.',
+   colors:['#0a0505','#1a1a1a','#2d1a08'],sizes:['One Size'],
+   rating:5,reviews:16,gender:'women',image:null,newArrival:false,bestSeller:false,active:true,dateAdded:'2026-06-24T09:00:00Z'},
+  {id:11,name:'Bishop Wool Coat',sku:'VR-C-003',cat:'Coats',price:2100,comparePrice:null,stock:8,sales:22,badge:null,
+   grad:'linear-gradient(160deg,#0a0a14,#141424,#050510)',
+   description:'Double-face Merino wool. Clean modernist silhouette. Made in Italy.',
+   colors:['#0a0a14','#1a1a1a','#2d1a08'],sizes:['S','M','L','XL','XXL'],
+   rating:4.9,reviews:22,gender:'men',image:null,newArrival:false,bestSeller:false,active:true,dateAdded:'2026-06-25T09:00:00Z'},
+  {id:12,name:'Silk Wide Trousers',sku:'VR-T-001',cat:'Trousers',price:890,comparePrice:1100,stock:11,sales:38,badge:'SALE',
+   grad:'linear-gradient(160deg,#100010,#200020,#0a000a)',
+   description:'High-waisted silk crepe. Wide-leg silhouette, invisible zip. Dry clean only.',
+   colors:['#100010','#1a1a1a','#f0f0f0'],sizes:['XS','S','M','L','XL'],
+   rating:4.6,reviews:38,gender:'women',image:null,newArrival:false,bestSeller:false,active:true,dateAdded:'2026-06-26T09:00:00Z'},
 ];
 
 const CUSTOMERS_DATA = [
@@ -945,10 +993,10 @@ async function resendSettingsOTP() {
 
 /* ────── SUPPORT TICKETS ──────────────────────────────────── */
 const TICKET_DATA = {
-  'TKT-091': { customer: 'James Whitmore', subject: 'Order VP-2026-047 not arrived', status: 'Open', priority: 'HIGH', priorityColor: 'var(--error)', messages: [{ from: 'James Whitmore', time: 'Jul 10, 09:12', text: 'Hi, my order VP-2026-047 was supposed to arrive yesterday but still hasn\'t. Can you please check?' }, { from: 'Rockstar (Admin)', time: 'Jul 10, 09:45', text: 'Hello James, I\'m looking into this right now. I\'ll update you within the hour with tracking details.' }] },
-  'TKT-090': { customer: 'Sofia Reyes', subject: 'Wrong size received — Evening Gown', status: 'In Progress', priority: 'MEDIUM', priorityColor: 'var(--warning)', messages: [{ from: 'Sofia Reyes', time: 'Jul 9, 14:30', text: 'I received size L but ordered size S for the Evening Gown. Please arrange an exchange ASAP.' }, { from: 'Vanshika (Admin)', time: 'Jul 9, 15:00', text: 'Sofia, I\'m so sorry about that! I\'ve arranged a collection and will ship the correct size immediately.' }] },
-  'TKT-089': { customer: 'Hugo Laurent', subject: 'Monogram request for Imperial Suit', status: 'In Progress', priority: 'LOW', priorityColor: 'var(--success)', messages: [{ from: 'Hugo Laurent', time: 'Jul 8, 11:00', text: 'I\'d like to add my initials "H.L." to the inside breast pocket of the Imperial Suit I ordered.' }] },
-  'TKT-088': { customer: 'Elara Voss', subject: 'Payment declined — card error', status: 'Open', priority: 'HIGH', priorityColor: 'var(--error)', messages: [{ from: 'Elara Voss', time: 'Jul 8, 18:22', text: 'I\'m trying to checkout but keep getting a payment declined error even though my card details are correct.' }] },
+  'TKT-091': { customer: 'James Whitmore', subject: 'Order VP-2026-047 not arrived', status: 'Open', priority: 'HIGH', priorityColor: 'var(--error)', type: 'Order Issue', assigned: 'Rockstar', created: 'Jul 10, 2026', messages: [{ from: 'James Whitmore', time: 'Jul 10, 09:12', text: 'Hi, my order VP-2026-047 was supposed to arrive yesterday but still hasn\'t. Can you please check?' }, { from: 'Rockstar (Admin)', time: 'Jul 10, 09:45', text: 'Hello James, I\'m looking into this right now. I\'ll update you within the hour with tracking details.' }] },
+  'TKT-090': { customer: 'Sofia Reyes', subject: 'Wrong size received — Evening Gown', status: 'In Progress', priority: 'MEDIUM', priorityColor: 'var(--warning)', type: 'Return Request', assigned: 'Vanshika', created: 'Jul 9, 2026', messages: [{ from: 'Sofia Reyes', time: 'Jul 9, 14:30', text: 'I received size L but ordered size S for the Evening Gown. Please arrange an exchange ASAP.' }, { from: 'Vanshika (Admin)', time: 'Jul 9, 15:00', text: 'Sofia, I\'m so sorry about that! I\'ve arranged a collection and will ship the correct size immediately.' }] },
+  'TKT-089': { customer: 'Hugo Laurent', subject: 'Monogram request for Imperial Suit', status: 'In Progress', priority: 'LOW', priorityColor: 'var(--success)', type: 'Product Query', assigned: 'Lilith', created: 'Jul 8, 2026', messages: [{ from: 'Hugo Laurent', time: 'Jul 8, 11:00', text: 'I\'d like to add my initials "H.L." to the inside breast pocket of the Imperial Suit I ordered.' }] },
+  'TKT-088': { customer: 'Elara Voss', subject: 'Payment declined — card error', status: 'Open', priority: 'HIGH', priorityColor: 'var(--error)', type: 'Payment Issue', assigned: 'Prince', created: 'Jul 8, 2026', messages: [{ from: 'Elara Voss', time: 'Jul 8, 18:22', text: 'I\'m trying to checkout but keep getting a payment declined error even though my card details are correct.' }] },
 };
 let currentTicketId = null;
 
@@ -971,7 +1019,7 @@ function renderSupportTable(q='', typeFilter='', priFilter='') {
   let entries = Object.entries(TICKET_DATA);
   if (q) entries = entries.filter(([,t]) => (t.customer||'').toLowerCase().includes(q) || (t.subject||'').toLowerCase().includes(q) || t.id?.toLowerCase().includes(q));
   if (typeFilter) entries = entries.filter(([,t]) => (t.type||'') === typeFilter);
-  if (priFilter)  entries = entries.filter(([,t]) => (t.priority||'') === priFilter);
+  if (priFilter)  entries = entries.filter(([,t]) => (t.priority||'').toUpperCase() === priFilter.toUpperCase());
   tbody.innerHTML = entries.map(([id, ticket]) => {
     const priority = ticketPriorityMeta(ticket);
     return `
@@ -1135,10 +1183,18 @@ function initTopbar() {
 }
 
 /* ────── MASTER INIT ──────────────────────────────────────── */
+function seedProductsIfEmpty() {
+  var stored = VireonStore.get('vireon_products');
+  if (!stored || !stored.length) {
+    VireonStore.save('vireon_products', PRODUCTS_DATA.map(function(p){ return Object.assign({}, p); }));
+  }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   const step = (name, fn) => {
     try { fn(); } catch (err) { console.error(`${name} failed`, err); }
   };
+  step('Seed products', seedProductsIfEmpty);
   step('Loader', initLoader);
   step('Topbar', initTopbar);
   step('Sidebar', bindSidebar);
@@ -1235,45 +1291,13 @@ function renderCategoriesTable(filter = '') {
 }
 
 function bindCategoryForm() {
-  const form = document.getElementById('cat-add-form');
-  if (!form) return;
-  form.addEventListener('submit', function(e) {
-    e.preventDefault();
-    const name = document.getElementById('cat-name-input')?.value.trim();
-    if (!name) { toast('Please enter a category name', 'error'); return; }
-
-    const cats = getCategories();
-    const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-    const icon = document.getElementById('cat-icon-input')?.value || 'fas fa-tag';
-    const parent = document.getElementById('cat-parent-input')?.value || null;
-    const desc  = document.getElementById('cat-desc-input')?.value || '';
-
-    // Check duplicate
-    if (cats.find(c => c.slug === slug)) { toast(`Category "${name}" already exists`, 'error'); return; }
-
-    const newCat = {
-      id: generateCatId(),
-      name,
-      slug,
-      parent: parent || null,
-      products: 0,
-      status: 'Active',
-      icon,
-      description: desc,
-    };
-    cats.push(newCat);
-    saveCategories(cats);
-    renderCategoriesTable();
-    updateParentDropdown();
-    form.reset();
-    document.getElementById('cat-form-section').style.display = 'none';
-    toast(`Category "${name}" created successfully`, 'success');
-  });
-
-  // Search
-  document.getElementById('cat-search')?.addEventListener('input', function(){
-    renderCategoriesTable(this.value);
-  });
+  // NOTE: form submit is handled by the global document submit listener below.
+  // This function only wires up the search input.
+  const search = document.getElementById('cat-search');
+  if (search && !search.dataset.bound) {
+    search.dataset.bound = '1';
+    search.addEventListener('input', function(){ renderCategoriesTable(this.value); });
+  }
 }
 
 function editCategory(id) {
@@ -1839,11 +1863,11 @@ window.showPanel = function(id) {
    ──────────────────────────────────────────────────────────── */
 function openModal(id) {
   const m = document.getElementById(id);
-  if (m) { m.style.display = 'flex'; document.body.style.overflow = 'hidden'; }
+  if (m) { m.classList.add('open'); document.body.style.overflow = 'hidden'; }
 }
 function closeModal(id) {
   const m = document.getElementById(id);
-  if (m) { m.style.display = 'none'; document.body.style.overflow = ''; }
+  if (m) { m.classList.remove('open'); document.body.style.overflow = ''; }
 }
 window.openModal  = openModal;
 window.closeModal = closeModal;
@@ -1952,7 +1976,11 @@ document.addEventListener('submit', function(e) {
 
 function initCollectionsPanel() {
   renderCollectionsGrid();
-  document.getElementById('col-search')?.addEventListener('input', function() { renderCollectionsGrid(this.value); });
+  const search = document.getElementById('col-search');
+  if (search && !search.dataset.bound) {
+    search.dataset.bound = '1';
+    search.addEventListener('input', function() { renderCollectionsGrid(this.value); });
+  }
 }
 window.renderCollectionsGrid = renderCollectionsGrid;
 window.openCollectionForm    = openCollectionForm;
@@ -2280,7 +2308,11 @@ function renewCoupon(id) {
 }
 function initCouponsPanel() {
   renderCouponsTable();
-  document.getElementById('coup-search')?.addEventListener('input', function(){ renderCouponsTable(this.value); });
+  const search = document.getElementById('coup-search');
+  if (search && !search.dataset.bound) {
+    search.dataset.bound = '1';
+    search.addEventListener('input', function(){ renderCouponsTable(this.value); });
+  }
 }
 window.saveCoupon    = saveCoupon;
 window.editCoupon    = editCoupon;

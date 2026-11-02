@@ -414,21 +414,21 @@ body{padding-top:0;overflow:hidden}
   <!-- Add/Edit Product Form (hidden by default) -->
   <div id="add-product-form" style="display:none;margin-top:2rem">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem">
-      <h3 style="font-size:1.2rem;color:var(--white);font-weight:300">Add <em style="font-style:italic;color:var(--gold)">New Product</em></h3>
+      <h3 id="prod-form-title" style="font-size:1.2rem;color:var(--white);font-weight:300">Add <em style="font-style:italic;color:var(--gold)">New Product</em></h3>
       <button class="d-btn-ghost" onclick="closeAddProduct()"><i class="fas fa-times"></i> CANCEL</button>
     </div>
     <div class="d-form-section">
       <p class="d-form-section-title">Basic Information</p>
       <div class="d-form-grid-2">
-        <div class="d-form-group"><label class="d-form-label">Product Name *</label><input type="text" class="d-form-input" placeholder="e.g. Sovereign Coat"></div>
-        <div class="d-form-group"><label class="d-form-label">SKU *</label><input type="text" class="d-form-input" placeholder="e.g. VR-C-013"></div>
+        <div class="d-form-group"><label class="d-form-label">Product Name *</label><input type="text" class="d-form-input" id="prod-name" placeholder="e.g. Sovereign Coat"></div>
+        <div class="d-form-group"><label class="d-form-label">SKU *</label><input type="text" class="d-form-input" id="prod-sku" placeholder="e.g. VR-C-013"></div>
       </div>
       <div class="d-form-grid-3">
-        <div class="d-form-group"><label class="d-form-label">Category *</label><select class="d-form-select"><option>Coats</option><option>Dresses</option><option>Suits</option><option>Shirts</option><option>Bags</option><option>Eyewear</option><option>Accessories</option></select></div>
-        <div class="d-form-group"><label class="d-form-label">Price *</label><input type="number" class="d-form-input" placeholder="1850"></div>
-        <div class="d-form-group"><label class="d-form-label">Compare Price</label><input type="number" class="d-form-input" placeholder="2400"></div>
+        <div class="d-form-group"><label class="d-form-label">Category *</label><select class="d-form-select" id="prod-category"><option value="Coats">Coats</option><option value="Dresses">Dresses</option><option value="Suits">Suits</option><option value="Shirts">Shirts</option><option value="Bags">Bags</option><option value="Eyewear">Eyewear</option><option value="Accessories">Accessories</option><option value="Trousers">Trousers</option></select></div>
+        <div class="d-form-group"><label class="d-form-label">Price *</label><input type="number" class="d-form-input" id="prod-price" placeholder="1850"></div>
+        <div class="d-form-group"><label class="d-form-label">Compare Price</label><input type="number" class="d-form-input" id="prod-compare-price" placeholder="2400"></div>
       </div>
-      <div class="d-form-group"><label class="d-form-label">Description</label><textarea class="d-form-textarea" placeholder="Product description..."></textarea></div>
+      <div class="d-form-group"><label class="d-form-label">Description</label><textarea class="d-form-textarea" id="prod-desc" placeholder="Product description..."></textarea></div>
     </div>
     <div class="d-form-section">
       <p class="d-form-section-title">Product Images & Colors</p>
@@ -467,18 +467,18 @@ body{padding-top:0;overflow:hidden}
     <div class="d-form-section">
       <p class="d-form-section-title">Variants & Inventory</p>
       <div class="d-form-grid-3">
-        <div class="d-form-group"><label class="d-form-label">Available Sizes</label><input type="text" class="d-form-input" placeholder="XS,S,M,L,XL,XXL"></div>
-        <div class="d-form-group"><label class="d-form-label">Colors</label><input type="text" class="d-form-input" placeholder="#1a1a1a,#2d1a08"></div>
-        <div class="d-form-group"><label class="d-form-label">Stock Quantity</label><input type="number" class="d-form-input" placeholder="10"></div>
+        <div class="d-form-group"><label class="d-form-label">Available Sizes</label><input type="text" class="d-form-input" id="prod-sizes" placeholder="XS,S,M,L,XL,XXL"></div>
+        <div class="d-form-group"><label class="d-form-label">Colors</label><input type="text" class="d-form-input" id="prod-colors" placeholder="#1a1a1a,#2d1a08"></div>
+        <div class="d-form-group"><label class="d-form-label">Stock Quantity</label><input type="number" class="d-form-input" id="prod-stock" placeholder="10"></div>
       </div>
     </div>
     <div class="d-form-section">
       <p class="d-form-section-title">SEO & Labels</p>
       <div class="d-form-grid-2">
-        <div class="d-form-group"><label class="d-form-label">SEO Title</label><input type="text" class="d-form-input" placeholder="VIREON Sovereign Coat — Luxury Menswear"></div>
-        <div class="d-form-group"><label class="d-form-label">Badge</label><select class="d-form-select"><option value="">None</option><option>LIMITED</option><option>NEW</option><option>SALE</option><option>BESTSELLER</option></select></div>
+        <div class="d-form-group"><label class="d-form-label">SEO Title</label><input type="text" class="d-form-input" id="prod-seo-title" placeholder="VIREON Sovereign Coat — Luxury Menswear"></div>
+        <div class="d-form-group"><label class="d-form-label">Badge</label><select class="d-form-select" id="prod-badge"><option value="">None</option><option value="LIMITED">LIMITED</option><option value="NEW">NEW</option><option value="SALE">SALE</option><option value="BESTSELLER">BESTSELLER</option></select></div>
       </div>
-      <div class="d-form-group"><label class="d-form-label">Meta Description</label><textarea class="d-form-textarea" placeholder="SEO meta description..." style="min-height:60px"></textarea></div>
+      <div class="d-form-group"><label class="d-form-label">Meta Description</label><textarea class="d-form-textarea" id="prod-meta-desc" placeholder="SEO meta description..." style="min-height:60px"></textarea></div>
     </div>
     <div style="display:flex;gap:.8rem">
       <button class="d-btn" onclick="saveProduct()"><i class="fas fa-save"></i> SAVE PRODUCT</button>
@@ -698,7 +698,7 @@ body{padding-top:0;overflow:hidden}
       <form id="coup-form">
         <div class="d-form-grid-2">
           <div class="d-form-group"><label class="d-form-label">Coupon Code *</label><input type="text" class="d-form-input" id="coup-code" placeholder="e.g. SUMMER25" style="text-transform:uppercase"></div>
-          <div class="d-form-group"><label class="d-form-label">Discount Type *</label><select class="d-form-select" id="coup-type"><option>Percentage (%)</option><option>Fixed Amount ($)</option><option>Free Shipping</option></select></div>
+          <div class="d-form-group"><label class="d-form-label">Discount Type *</label><select class="d-form-select" id="coup-type"><option value="Percentage">Percentage (%)</option><option value="Fixed Amount">Fixed Amount ($)</option><option value="Free Shipping">Free Shipping</option></select></div>
         </div>
         <div class="d-form-grid-3">
           <div class="d-form-group"><label class="d-form-label">Value *</label><input type="number" class="d-form-input" id="coup-value" placeholder="25"></div>
@@ -1084,7 +1084,7 @@ body{padding-top:0;overflow:hidden}
           <div style="position:relative"><input type="password" class="d-form-input" id="s-conf-pw" placeholder="Repeat new password"></div>
         </div>
       </div>
-      <div id="pw-error-inline" style="display:none;color:var(--error);font-size:.72rem;margin-bottom:.8rem;display:flex;align-items:center;gap:.4rem"><i class="fas fa-exclamation-circle"></i><span id="pw-error-inline-msg"></span></div>
+      <div id="pw-error-inline" style="display:none;color:var(--error);font-size:.72rem;margin-bottom:.8rem;align-items:center;gap:.4rem"><i class="fas fa-exclamation-circle"></i><span id="pw-error-inline-msg"></span></div>
       <button class="d-btn" onclick="requestSettingsPwOTP()"><i class="fas fa-shield-alt"></i> SEND VERIFICATION CODE</button>
     </div>
     <!-- OTP Confirm Step -->
@@ -1252,6 +1252,7 @@ body{padding-top:0;overflow:hidden}
 @media(max-width:900px){.admin-layout{grid-template-columns:1fr}.admin-sidebar{display:none}.d-form-grid-2,.d-form-grid-3{grid-template-columns:1fr}}
 </style>
 
+<script src="js/store.js"></script>
 <script src="js/vireon.js"></script>
 <script src="js/dashboard.js"></script>
 <script src="js/cursor.js"></script>

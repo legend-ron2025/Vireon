@@ -543,6 +543,8 @@ h1,h2,h3,h4,h5,h6 { font-family:var(--font-serif); font-weight:400; line-height:
 .drop-stock { font-size:.75rem; color:var(--gold); margin-bottom:2rem; display:flex; align-items:center; gap:.5rem; }
 .drop-stock i { animation:flicker 1.5s infinite; }
 @keyframes flicker { 0%,100%{opacity:1}50%{opacity:.4} }
+@keyframes flipTick { 0%{transform:rotateX(0);opacity:1} 50%{transform:rotateX(90deg);opacity:0} 100%{transform:rotateX(0);opacity:1} }
+.flip { animation:flipTick 0.3s ease; }
 
 /* Editorial */
 .editorial-grid { display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; height:620px; }
