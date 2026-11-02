@@ -224,15 +224,6 @@
 <script src="js/store.js"></script>
 <script src="js/vireon.js"></script>
 <script>
-// Render featured products from collection
-document.addEventListener('DOMContentLoaded',()=>{
-  const g=document.getElementById('coll-products-grid');
-  if(g&&typeof pCard==='function'&&typeof DB!=='undefined'){
-    g.innerHTML=DB.products.filter(p=>p.badge).slice(0,4).map(pCard).join('');
-    attachCardLinks();
-  }
-  window.addEventListener('scroll',()=>{const el=document.getElementById('scroll-progress');if(el){const p=window.scrollY/(document.body.scrollHeight-window.innerHeight);el.style.width=(p*100)+'%';}},{passive:true});
-});
 // Collection image hover zoom
 document.querySelectorAll('a [style*="transition: transform"]').forEach(img=>{
   const card=img.closest('a');

@@ -82,14 +82,8 @@
 <!-- NEW ARRIVALS GRID -->
 <section class="section" style="background:var(--bg)">
   <div class="v-wrap">
-    <!-- Badge filter pills -->
-    <div style="display:flex;gap:.6rem;margin-bottom:3rem;flex-wrap:wrap" class="reveal">
-      <button class="btn btn--sm btn--gold" onclick="filterNew(this,'all')">ALL NEW</button>
-      <button class="btn btn--sm btn--ghost" onclick="filterNew(this,'men')" style="padding:.5rem 1.2rem">MEN</button>
-      <button class="btn btn--sm btn--ghost" onclick="filterNew(this,'women')" style="padding:.5rem 1.2rem">WOMEN</button>
-      <button class="btn btn--sm btn--ghost" onclick="filterNew(this,'Coats')" style="padding:.5rem 1.2rem">COATS</button>
-      <button class="btn btn--sm btn--ghost" onclick="filterNew(this,'Bags')" style="padding:.5rem 1.2rem">BAGS</button>
-    </div>
+    <!-- Badge filter tabs (dynamic) -->
+    <div id="new-arrivals-tabs" class="reveal"></div>
     <div class="p-grid" id="new-arrivals-full-grid"></div>
     <div style="text-align:center;margin-top:4rem" class="reveal">
       <a href="shop.html" class="btn btn--outline">EXPLORE FULL COLLECTION <i class="fas fa-arrow-right"></i></a>
@@ -106,20 +100,4 @@
 <div id="v-toast"><i class="fas fa-check-circle"></i><span id="v-toast-msg"></span></div>
 <script src="js/store.js"></script>
 <script src="js/vireon.js"></script>
-<script>
-function filterNew(btn, filter) {
-  document.querySelectorAll('[onclick*="filterNew"]').forEach(b=>{b.className='btn btn--sm btn--ghost';b.style.padding='.5rem 1.2rem';});
-  btn.className='btn btn--sm btn--gold';
-  const g=document.getElementById('new-arrivals-full-grid'); if(!g) return;
-  let list=DB.products;
-  if(filter!=='all') list=list.filter(p=>p.gender===filter||p.cat===filter);
-  g.innerHTML=list.slice(0,8).map(pCard).join('');
-  initReveal(); attachCardLinks();
-}
-document.addEventListener('DOMContentLoaded',()=>{
-  const g=document.getElementById('new-arrivals-full-grid');
-  if(g&&typeof pCard==='function') {g.innerHTML=DB.products.slice(0,8).map(pCard).join(''); attachCardLinks();}
-  window.addEventListener('scroll',()=>{const el=document.getElementById('scroll-progress');if(el){const p=window.scrollY/(document.body.scrollHeight-window.innerHeight);el.style.width=(p*100)+'%';}},{passive:true});
-});
-</script>
 <script src="js/cursor.js"></script></body></html>
