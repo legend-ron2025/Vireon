@@ -842,14 +842,15 @@ function deleteProduct(id) {
   var products = VireonStore.get('vireon_products') || [];
   var p = products.find(function(x) { return String(x.id) === String(id); });
   if (!p) return;
-  if (!confirm('Delete "' + p.name + '"? This cannot be undone.')) return;
-  var oldCat = p.cat;
-  var newList = products.filter(function(x) { return String(x.id) !== String(id); });
-  var ok = VireonStore.save('vireon_products', newList);
-  if (!ok) { toast('Storage quota exceeded — product not deleted.', 'error'); return; }
-  syncCategoryCount(oldCat);
-  renderProductsTable();
-  toast('"' + p.name + '" deleted.', 'error');
+  vConfirm('Delete "' + p.name + '"? This cannot be undone.', function() {
+    var oldCat = p.cat;
+    var newList = products.filter(function(x) { return String(x.id) !== String(id); });
+    var ok = VireonStore.save('vireon_products', newList);
+    if (!ok) { toast('Storage quota exceeded — product not deleted.', 'error'); return; }
+    syncCategoryCount(oldCat);
+    renderProductsTable();
+    toast('"' + p.name + '" deleted.', 'error');
+  });
 }
 
 function openAddProduct() {
@@ -1314,9 +1315,10 @@ function saveCoupon()    { toast('Coupon saved successfully.', 'success'); docum
 
 /* ────── LOGOUT ───────────────────────────────────────────── */
 function adminLogout() {
-  if (!confirm('Are you sure you want to logout?')) return;
-  AdminAuth.clearSession();
-  window.location.replace('admin-login.html');
+  vConfirm('Are you sure you want to logout?', function() {
+    AdminAuth.clearSession();
+    window.location.replace('admin-login.html');
+  }, { title: 'Logout', okLabel: 'LOGOUT', okClass: 'd-btn' });
 }
 
 /* ────── SCROLL PROGRESS ──────────────────────────────────── */
@@ -1511,10 +1513,11 @@ function deleteCategory(id) {
   const cats = getCategories();
   const cat = cats.find(c => c.id === id);
   if (!cat) return;
-  if (!confirm(`Delete category "${cat.name}"? This cannot be undone.`)) return;
-  saveCategories(cats.filter(c => c.id !== id));
-  renderCategoriesTable();
-  toast(`"${cat.name}" deleted`, 'error');
+  vConfirm(`Delete category "${cat.name}"? This cannot be undone.`, function() {
+    saveCategories(cats.filter(c => c.id !== id));
+    renderCategoriesTable();
+    toast(`"${cat.name}" deleted`, 'error');
+  });
 }
 
 function toggleCategoryStatus(id) {
@@ -1874,10 +1877,12 @@ function editLookbook(id) {
 function deleteLookbook(id) {
   var list = getLookbook();
   var entry = list.find(function(x) { return x.id === id; });
-  if (!entry || !confirm('Delete lookbook entry "' + entry.title + '"?')) return;
-  saveLookbook(list.filter(function(x) { return x.id !== id; }));
-  renderLookbookTable();
-  toast('"' + entry.title + '" deleted.', 'error');
+  if (!entry) return;
+  vConfirm('Delete lookbook entry "' + entry.title + '"?', function() {
+    saveLookbook(list.filter(function(x) { return x.id !== id; }));
+    renderLookbookTable();
+    toast('"' + entry.title + '" deleted.', 'error');
+  });
 }
 
 function initLookbookPanel() {
@@ -2195,10 +2200,12 @@ document.addEventListener('submit', function(e) {
 function editCredit(id)   { openCreditsForm(id); }
 function deleteCredit(id) {
   const m = getCredits().find(x => x.id === id);
-  if (!m || !confirm(`Remove "${m.name}" from the team?`)) return;
-  saveCredits(getCredits().filter(x => x.id !== id));
-  renderCreditsGrid(); updateAboutPageCredits();
-  toast(`"${m.name}" removed`, 'error');
+  if (!m) return;
+  vConfirm(`Remove "${m.name}" from the team?`, function() {
+    saveCredits(getCredits().filter(x => x.id !== id));
+    renderCreditsGrid(); updateAboutPageCredits();
+    toast(`"${m.name}" removed`, 'error');
+  });
 }
 function toggleCreditVisibility(id) {
   const list = getCredits(); const m = list.find(x => x.id === id); if (!m) return;
@@ -2283,6 +2290,48 @@ window.showPanel = function(id) {
 /* ────────────────────────────────────────────────────────────
    SHARED MODAL HELPERS
    ──────────────────────────────────────────────────────────── */
+
+/* vConfirm — replaces native confirm() with a styled modal.
+   Usage: vConfirm('Are you sure?', onOk, { title, okLabel, okClass })
+   All params except message are optional. */
+function vConfirm(message, onOk, opts) {
+  opts = opts || {};
+  const overlay  = document.getElementById('v-confirm-overlay');
+  const msgEl    = document.getElementById('v-confirm-msg');
+  const titleEl  = document.getElementById('v-confirm-title');
+  const okBtn    = document.getElementById('v-confirm-ok');
+  const cancelBtn= document.getElementById('v-confirm-cancel');
+  if (!overlay || !msgEl || !okBtn || !cancelBtn) {
+    // Fallback to native if modal not in DOM yet
+    if (window.confirm(message)) onOk();
+    return;
+  }
+  if (titleEl)  titleEl.textContent  = opts.title   || 'Confirm Action';
+  msgEl.textContent  = message;
+  okBtn.textContent  = opts.okLabel  || 'DELETE';
+  okBtn.className    = (opts.okClass || 'd-btn-danger') + ' ' + 'tbl-action';
+  okBtn.style.cssText= 'padding:.55rem 1.4rem;font-size:.6rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;cursor:pointer;font-family:var(--font-sans);transition:all .3s';
+  if (opts.okClass === 'd-btn') {
+    okBtn.style.background = 'var(--gold-grad)'; okBtn.style.color = 'var(--bg)';
+    okBtn.style.border = 'none';
+  } else {
+    okBtn.style.background = 'rgba(239,68,68,.1)'; okBtn.style.color = '#EF4444';
+    okBtn.style.border = '1px solid rgba(239,68,68,.3)';
+  }
+  overlay.style.display = 'flex';
+
+  function close() {
+    overlay.style.display = 'none';
+    okBtn.onclick     = null;
+    cancelBtn.onclick = null;
+    overlay.onclick   = null;
+  }
+  okBtn.onclick     = function() { close(); onOk(); };
+  cancelBtn.onclick = function() { close(); };
+  overlay.onclick   = function(e) { if (e.target === overlay) close(); };
+}
+window.vConfirm = vConfirm;
+
 function openModal(id) {
   const m = document.getElementById(id);
   if (m) { m.classList.add('open'); document.body.style.overflow = 'hidden'; }
@@ -2365,10 +2414,12 @@ function editCollection(id) { openCollectionForm(id); }
 function deleteCollection(id) {
   const cols = getCollections();
   const c = cols.find(x=>x.id===id);
-  if (!c || !confirm(`Delete "${c.name}"?`)) return;
-  saveCollections(cols.filter(x=>x.id!==id));
-  renderCollectionsGrid();
-  toast(`"${c.name}" deleted`, 'error');
+  if (!c) return;
+  vConfirm(`Delete "${c.name}"?`, function() {
+    saveCollections(cols.filter(x=>x.id!==id));
+    renderCollectionsGrid();
+    toast(`"${c.name}" deleted`, 'error');
+  });
 }
 
 document.addEventListener('submit', function(e) {
@@ -2714,10 +2765,12 @@ function editCoupon(id) {
 }
 function deleteCoupon(id) {
   const c = getCoupons().find(x=>x.id===id);
-  if (!c||!confirm(`Delete coupon "${c.code}"?`)) return;
-  saveCoupons(getCoupons().filter(x=>x.id!==id));
-  renderCouponsTable();
-  toast(`"${c.code}" deleted`,'error');
+  if (!c) return;
+  vConfirm(`Delete coupon "${c.code}"?`, function() {
+    saveCoupons(getCoupons().filter(x=>x.id!==id));
+    renderCouponsTable();
+    toast(`"${c.code}" deleted`,'error');
+  });
 }
 function renewCoupon(id) {
   const list = getCoupons(); const c = list.find(x=>x.id===id);
@@ -2806,15 +2859,17 @@ function approveReview(id) {
 }
 function rejectReview(id) {
   const list=getReviews(); const r=list.find(x=>x.id===id); if(!r) return;
-  if(!confirm('Reject and remove this review?')) return;
-  saveReviews(list.filter(x=>x.id!==id)); renderReviewsTable();
-  toast('Review rejected','error');
+  vConfirm('Reject and remove this review?', function() {
+    saveReviews(list.filter(x=>x.id!==id)); renderReviewsTable();
+    toast('Review rejected','error');
+  });
 }
 function removeReview(id) {
   const list=getReviews(); const r=list.find(x=>x.id===id); if(!r) return;
-  if(!confirm('Permanently remove this review?')) return;
-  saveReviews(list.filter(x=>x.id!==id)); renderReviewsTable();
-  toast('Review removed','error');
+  vConfirm('Permanently remove this review?', function() {
+    saveReviews(list.filter(x=>x.id!==id)); renderReviewsTable();
+    toast('Review removed','error');
+  });
 }
 function initReviewsPanel() { renderReviewsTable(); }
 window.renderReviewsTable = renderReviewsTable;
@@ -2897,9 +2952,10 @@ function editFlashSale(id) {
 }
 function endFlashSale(id) {
   const list=getFlashSales(); const f=list.find(x=>x.id===id); if(!f) return;
-  if(!confirm(`End flash sale "${f.name}"?`)) return;
-  f.status='Ended'; saveFlashSales(list); renderFlashSalesTable();
-  toast(`"${f.name}" ended`,'');
+  vConfirm(`End flash sale "${f.name}"?`, function() {
+    f.status='Ended'; saveFlashSales(list); renderFlashSalesTable();
+    toast(`"${f.name}" ended`,'');
+  }, { title: 'End Flash Sale', okLabel: 'END SALE', okClass: 'd-btn-danger' });
 }
 function cloneFlashSale(id) {
   const list=getFlashSales(); const f=list.find(x=>x.id===id); if(!f) return;
