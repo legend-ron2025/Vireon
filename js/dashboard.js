@@ -4,144 +4,25 @@
    ═══════════════════════════════════════════════════════════ */
 'use strict';
 
-/* ────── SAMPLE DATA ──────────────────────────────────────── */
-const ORDERS_DATA = [
-  {id:'VP-2026-047',customer:'James Whitmore',product:'Sovereign Coat',amount:1850,date:'Jul 10',delivery:'Express',status:'Processing'},
-  {id:'VP-2026-046',customer:'Sofia Reyes',product:'Evening Gown',amount:4800,date:'Jul 9',delivery:'Standard',status:'Shipped'},
-  {id:'VP-2026-045',customer:'Marcus Bell',product:'Imperial Suit',amount:3200,date:'Jul 8',delivery:'Express',status:'Delivered'},
-  {id:'VP-2026-044',customer:'Elara Voss',product:'Noir Velvet Dress',amount:2200,date:'Jul 7',delivery:'Standard',status:'Processing'},
-  {id:'VP-2026-043',customer:'Hugo Laurent',product:'Obsidian Shoulder Bag',amount:1450,date:'Jul 6',delivery:'Standard',status:'Delivered'},
-  {id:'VP-2026-042',customer:'Isabella Cross',product:'Evening Gown',amount:4800,date:'Jul 5',delivery:'Express',status:'Cancelled'},
-  {id:'VP-2026-041',customer:'Thomas Reed',product:'Crystal Eyewear',amount:520,date:'Jul 4',delivery:'Standard',status:'Delivered'},
-  {id:'VP-2026-040',customer:'Priya Sharma',product:'Royal Dress Shirt',amount:680,date:'Jul 3',delivery:'Standard',status:'Delivered'},
-  {id:'VP-2026-039',customer:'Leon Müller',product:'Gold Link Belt',amount:380,date:'Jul 2',delivery:'Standard',status:'Shipped'},
-  {id:'VP-2026-038',customer:'Camille Blanc',product:'Silk Wide Trousers',amount:890,date:'Jul 1',delivery:'Express',status:'Delivered'},
-];
+/* ────── LIVE DATA (populated from store / admin actions) ──── */
+const ORDERS_DATA = [];
+const CUSTOMERS_DATA = [];
 
-const PRODUCTS_DATA = [
-  {id:1,name:'Sovereign Coat',sku:'VR-C-001',cat:'Coats',price:1850,comparePrice:2400,stock:7,sales:124,badge:'LIMITED',
-   grad:'linear-gradient(160deg,#1a0f05,#2d1a08,#0a0600)',
-   description:'Hand-tailored in Milan. Double-breasted obsidian wool with 24k gold-button detailing. 200+ hours of craftsmanship.',
-   colors:['#1a1a1a','#2d1a08','#0a0a0a'],sizes:['XS','S','M','L','XL','XXL'],
-   rating:5,reviews:42,gender:'men',image:null,newArrival:false,bestSeller:false,active:true,dateAdded:'2026-06-15T09:00:00Z'},
-  {id:2,name:'Noir Velvet Dress',sku:'VR-D-001',cat:'Dresses',price:2200,comparePrice:null,stock:12,sales:76,badge:'NEW',
-   grad:'linear-gradient(160deg,#050510,#0d0d20,#030308)',
-   description:'Floor-length structured velvet. Bespoke couture craftsmanship. Worn by editorial icons worldwide.',
-   colors:['#0d0d20','#1a0a00','#222222'],sizes:['XS','S','M','L','XL'],
-   rating:5,reviews:28,gender:'women',image:null,newArrival:true,bestSeller:false,active:true,dateAdded:'2026-06-16T09:00:00Z'},
-  {id:3,name:'Imperial Suit',sku:'VR-S-001',cat:'Suits',price:3200,comparePrice:null,stock:5,sales:58,badge:null,
-   grad:'linear-gradient(160deg,#0a0a00,#1a1900,#050500)',
-   description:'Savile Row inspired. Peak lapel, full canvas construction. Pure Loro Piana wool.',
-   colors:['#0a0a0a','#1a1900','#2d2d00'],sizes:['36','38','40','42','44','46'],
-   rating:4.8,reviews:19,gender:'men',image:null,newArrival:false,bestSeller:false,active:true,dateAdded:'2026-06-17T09:00:00Z'},
-  {id:4,name:'Obsidian Shoulder Bag',sku:'VR-B-001',cat:'Bags',price:1450,comparePrice:1800,stock:3,sales:63,badge:'SALE',
-   grad:'linear-gradient(160deg,#080008,#150015,#040004)',
-   description:'Crocodile-embossed genuine leather. 24k gold hardware. Comes with dust bag and certificate.',
-   colors:['#080008','#1a0a00','#2d2d2d'],sizes:['One Size'],
-   rating:4.9,reviews:63,gender:'women',image:null,newArrival:false,bestSeller:false,active:true,dateAdded:'2026-06-18T09:00:00Z'},
-  {id:5,name:'Royal Dress Shirt',sku:'VR-SH-001',cat:'Shirts',price:680,comparePrice:null,stock:28,sales:87,badge:'BESTSELLER',
-   grad:'linear-gradient(160deg,#0a0a0a,#1a1a1a,#111111)',
-   description:'Egyptian cotton, 200 thread count. French cuffs, spread collar. Monogram service available.',
-   colors:['#ffffff','#1a1a1a','#0a0505'],sizes:['S','M','L','XL','XXL'],
-   rating:4.7,reviews:87,gender:'men',image:null,newArrival:false,bestSeller:true,active:true,dateAdded:'2026-06-19T09:00:00Z'},
-  {id:6,name:'Evening Gown',sku:'VR-D-002',cat:'Dresses',price:4800,comparePrice:null,stock:2,sales:43,badge:'LIMITED',
-   grad:'linear-gradient(160deg,#150a00,#241500,#0a0600)',
-   description:'Silk charmeuse, bias cut. Bespoke fit available. Worn at the Met Gala afterparty.',
-   colors:['#150a00','#0a0a0a','#1a1a00'],sizes:['XS','S','M','L'],
-   rating:5,reviews:11,gender:'women',image:null,newArrival:false,bestSeller:false,active:true,dateAdded:'2026-06-20T09:00:00Z'},
-  {id:7,name:'Signature Trench',sku:'VR-C-002',cat:'Coats',price:2600,comparePrice:3000,stock:9,sales:34,badge:'SALE',
-   grad:'linear-gradient(160deg,#1a0a0a,#2d1515,#0d0606)',
-   description:'Gabardine with silk lining. Detachable belt, storm flap. An icon reborn.',
-   colors:['#1a0a0a','#0a0a0a','#2d1a08'],sizes:['XS','S','M','L','XL'],
-   rating:4.8,reviews:34,gender:'women',image:null,newArrival:false,bestSeller:false,active:true,dateAdded:'2026-06-21T09:00:00Z'},
-  {id:8,name:'Gold Link Belt',sku:'VR-A-001',cat:'Accessories',price:380,comparePrice:null,stock:18,sales:25,badge:'NEW',
-   grad:'linear-gradient(160deg,#1a1500,#2d2500,#0d0d00)',
-   description:'18k gold-plated brass. Signature double-V buckle. Adjustable to 5 sizes.',
-   colors:['#c9a84c','#1a1a1a'],sizes:['S/M','L/XL'],
-   rating:4.6,reviews:25,gender:'unisex',image:null,newArrival:true,bestSeller:false,active:true,dateAdded:'2026-06-22T09:00:00Z'},
-  {id:9,name:'Crystal Eyewear',sku:'VR-E-001',cat:'Eyewear',price:520,comparePrice:null,stock:15,sales:41,badge:null,
-   grad:'linear-gradient(160deg,#001010,#002020,#001a1a)',
-   description:'Acetate frame with anti-reflective sapphire-coated lenses. UV400 protection.',
-   colors:['#001010','#1a0a00','#0a0a0a'],sizes:['One Size'],
-   rating:4.7,reviews:41,gender:'unisex',image:null,newArrival:false,bestSeller:false,active:true,dateAdded:'2026-06-23T09:00:00Z'},
-  {id:10,name:'Caviar Handbag',sku:'VR-B-002',cat:'Bags',price:2900,comparePrice:null,stock:4,sales:16,badge:'LIMITED',
-   grad:'linear-gradient(160deg,#0a0500,#1a0d00,#050300)',
-   description:'Quilted caviar leather. Gold chain strap. Numbered certificate of authenticity included.',
-   colors:['#0a0505','#1a1a1a','#2d1a08'],sizes:['One Size'],
-   rating:5,reviews:16,gender:'women',image:null,newArrival:false,bestSeller:false,active:true,dateAdded:'2026-06-24T09:00:00Z'},
-  {id:11,name:'Bishop Wool Coat',sku:'VR-C-003',cat:'Coats',price:2100,comparePrice:null,stock:8,sales:22,badge:null,
-   grad:'linear-gradient(160deg,#0a0a14,#141424,#050510)',
-   description:'Double-face Merino wool. Clean modernist silhouette. Made in Italy.',
-   colors:['#0a0a14','#1a1a1a','#2d1a08'],sizes:['S','M','L','XL','XXL'],
-   rating:4.9,reviews:22,gender:'men',image:null,newArrival:false,bestSeller:false,active:true,dateAdded:'2026-06-25T09:00:00Z'},
-  {id:12,name:'Silk Wide Trousers',sku:'VR-T-001',cat:'Trousers',price:890,comparePrice:1100,stock:11,sales:38,badge:'SALE',
-   grad:'linear-gradient(160deg,#100010,#200020,#0a000a)',
-   description:'High-waisted silk crepe. Wide-leg silhouette, invisible zip. Dry clean only.',
-   colors:['#100010','#1a1a1a','#f0f0f0'],sizes:['XS','S','M','L','XL'],
-   rating:4.6,reviews:38,gender:'women',image:null,newArrival:false,bestSeller:false,active:true,dateAdded:'2026-06-26T09:00:00Z'},
-];
+const PRODUCTS_DATA = [];
 
-const CUSTOMERS_DATA = [
-  {name:'Alexandra Rothschild',email:'a.roth@email.com',tier:'VIREON Elite',orders:12,spent:28400,points:2840,joined:'Jan 2025'},
-  {name:'Marcus Bellingham',email:'m.bell@email.com',tier:'VIREON Elite',orders:8,spent:19200,points:1920,joined:'Mar 2025'},
-  {name:'James Whitmore',email:'j.whit@email.com',tier:'Premium',orders:5,spent:8250,points:825,joined:'Sep 2025'},
-  {name:'Sofia Reyes',email:'s.reyes@email.com',tier:'Premium',orders:3,spent:6800,points:680,joined:'Nov 2025'},
-  {name:'Hugo Laurent',email:'h.laur@email.com',tier:'VIREON Elite',orders:15,spent:34100,points:3410,joined:'Dec 2024'},
-  {name:'Isabelle Fontaine',email:'i.font@email.com',tier:'Standard',orders:2,spent:2900,points:290,joined:'Feb 2026'},
-  {name:'Thomas Reed',email:'t.reed@email.com',tier:'Premium',orders:4,spent:5200,points:520,joined:'Apr 2026'},
-  {name:'Priya Sharma',email:'p.shar@email.com',tier:'Standard',orders:1,spent:680,points:68,joined:'Jun 2026'},
-  {name:'Leon Müller',email:'l.mull@email.com',tier:'Premium',orders:6,spent:9840,points:984,joined:'Jul 2025'},
-  {name:'Camille Blanc',email:'c.blan@email.com',tier:'VIREON Elite',orders:11,spent:22300,points:2230,joined:'Aug 2024'},
-];
+const INVENTORY_DATA = [];
 
-const INVENTORY_DATA = [
-  {name:'Sovereign Coat',sku:'VR-C-001',stock:7,threshold:10,status:'Low Stock',warehouse:'London HQ'},
-  {name:'Evening Gown',sku:'VR-D-002',stock:2,threshold:5,status:'Low Stock',warehouse:'London HQ'},
-  {name:'Obsidian Shoulder Bag',sku:'VR-B-001',stock:3,threshold:8,status:'Low Stock',warehouse:'Milan Store'},
-  {name:'Caviar Handbag',sku:'VR-B-002',stock:4,threshold:6,status:'Low Stock',warehouse:'Dubai Store'},
-  {name:'Imperial Suit',sku:'VR-S-001',stock:5,threshold:4,status:'In Stock',warehouse:'London HQ'},
-  {name:'Noir Velvet Dress',sku:'VR-D-001',stock:12,threshold:5,status:'In Stock',warehouse:'London HQ'},
-  {name:'Royal Dress Shirt',sku:'VR-SH-001',stock:28,threshold:10,status:'In Stock',warehouse:'London HQ'},
-  {name:'Gold Link Belt',sku:'VR-A-001',stock:18,threshold:8,status:'In Stock',warehouse:'London HQ'},
-  {name:'Crystal Eyewear',sku:'VR-E-001',stock:15,threshold:5,status:'In Stock',warehouse:'London HQ'},
-  {name:'Bishop Wool Coat',sku:'VR-C-003',stock:8,threshold:5,status:'In Stock',warehouse:'Milan Store'},
-  {name:'Signature Trench',sku:'VR-C-002',stock:9,threshold:5,status:'In Stock',warehouse:'London HQ'},
-  {name:'Silk Wide Trousers',sku:'VR-T-001',stock:11,threshold:5,status:'In Stock',warehouse:'London HQ'},
-];
-
-const AUDIT_LOG = [
-  {time:'Today 09:14',admin:'Rockstar',action:'Logged in successfully',ip:'82.132.45.17',status:'ok'},
-  {time:'Today 09:20',admin:'Rockstar',action:'Viewed Orders panel',ip:'82.132.45.17',status:'ok'},
-  {time:'Today 08:45',admin:'Vanshika',action:'Logged in successfully',ip:'91.240.110.54',status:'ok'},
-  {time:'Today 08:47',admin:'Vanshika',action:'Updated product: Evening Gown',ip:'91.240.110.54',status:'ok'},
-  {time:'Yesterday 18:32',admin:'Lilith',action:'Sent email campaign: July Newsletter',ip:'176.32.88.21',status:'ok'},
-  {time:'Yesterday 17:10',admin:'Prince',action:'Resolved ticket #TKT-085',ip:'192.168.1.14',status:'ok'},
-  {time:'Yesterday 14:22',admin:'Unknown',action:'Failed login attempt: rockstar',ip:'45.33.221.9',status:'error'},
-  {time:'Yesterday 14:23',admin:'Unknown',action:'Failed login attempt: rockstar',ip:'45.33.221.9',status:'error'},
-];
+const AUDIT_LOG = [];
 
 const LIVE_BREAKDOWN = [
-  {page:'Homepage',count:48},
-  {page:'Shop',count:62},
-  {page:'Product Pages',count:32},
+  {page:'Homepage',count:0},
+  {page:'Shop',count:0},
+  {page:'Product Pages',count:0},
 ];
 
-const ACTIVITIES = [
-  {dot:'var(--gold)',text:'New order VP-2026-047 — $1,850',time:'2 min ago'},
-  {dot:'var(--success)',text:'Order VP-2026-043 delivered',time:'18 min ago'},
-  {dot:'var(--info)',text:'New customer: Alexandra R.',time:'45 min ago'},
-  {dot:'var(--gold)',text:'5-star review: Sovereign Coat',time:'1h ago'},
-  {dot:'var(--error)',text:'Return request: VP-2026-031',time:'2h ago'},
-  {dot:'var(--warning)',text:'Low stock: Evening Gown (2 left)',time:'3h ago'},
-  {dot:'var(--success)',text:'Email campaign sent — 2,341 recipients',time:'4h ago'},
-  {dot:'var(--gold)',text:'Coupon VIREON20 used 3 times today',time:'5h ago'},
-];
+const ACTIVITIES = [];
 
-const NOTIFICATIONS_DATA = [
-  { id: 'notif_001', type: 'ticket', title: 'New support ticket from James Whitmore', unread: true, timestamp: 'Just now' },
-  { id: 'notif_002', type: 'order', title: 'Order VP-2026-047 has shipped', unread: true, timestamp: '5 min ago' },
-  { id: 'notif_003', type: 'stock', title: 'Low stock alert: Evening Gown', unread: false, timestamp: '30 min ago' },
-];
+const NOTIFICATIONS_DATA = [];
 
 const NOTIFICATIONS_STORE_KEY = 'vireon_admin_notifications';
 const TICKETS_STORE_KEY = 'vireon_admin_tickets';
@@ -1167,12 +1048,7 @@ async function resendSettingsOTP() {
 }
 
 /* ────── SUPPORT TICKETS ──────────────────────────────────── */
-const TICKET_DATA = {
-  'TKT-091': { customer: 'James Whitmore', subject: 'Order VP-2026-047 not arrived', status: 'Open', priority: 'HIGH', priorityColor: 'var(--error)', type: 'Order Issue', assigned: 'Rockstar', created: 'Jul 10, 2026', messages: [{ from: 'James Whitmore', time: 'Jul 10, 09:12', text: 'Hi, my order VP-2026-047 was supposed to arrive yesterday but still hasn\'t. Can you please check?' }, { from: 'Rockstar (Admin)', time: 'Jul 10, 09:45', text: 'Hello James, I\'m looking into this right now. I\'ll update you within the hour with tracking details.' }] },
-  'TKT-090': { customer: 'Sofia Reyes', subject: 'Wrong size received — Evening Gown', status: 'In Progress', priority: 'MEDIUM', priorityColor: 'var(--warning)', type: 'Return Request', assigned: 'Vanshika', created: 'Jul 9, 2026', messages: [{ from: 'Sofia Reyes', time: 'Jul 9, 14:30', text: 'I received size L but ordered size S for the Evening Gown. Please arrange an exchange ASAP.' }, { from: 'Vanshika (Admin)', time: 'Jul 9, 15:00', text: 'Sofia, I\'m so sorry about that! I\'ve arranged a collection and will ship the correct size immediately.' }] },
-  'TKT-089': { customer: 'Hugo Laurent', subject: 'Monogram request for Imperial Suit', status: 'In Progress', priority: 'LOW', priorityColor: 'var(--success)', type: 'Product Query', assigned: 'Lilith', created: 'Jul 8, 2026', messages: [{ from: 'Hugo Laurent', time: 'Jul 8, 11:00', text: 'I\'d like to add my initials "H.L." to the inside breast pocket of the Imperial Suit I ordered.' }] },
-  'TKT-088': { customer: 'Elara Voss', subject: 'Payment declined — card error', status: 'Open', priority: 'HIGH', priorityColor: 'var(--error)', type: 'Payment Issue', assigned: 'Prince', created: 'Jul 8, 2026', messages: [{ from: 'Elara Voss', time: 'Jul 8, 18:22', text: 'I\'m trying to checkout but keep getting a payment declined error even though my card details are correct.' }] },
-};
+const TICKET_DATA = {};
 let currentTicketId = null;
 
 function ticketPriorityMeta(ticket) {
@@ -1360,9 +1236,32 @@ function initTopbar() {
 
 /* ────── MASTER INIT ──────────────────────────────────────── */
 function seedProductsIfEmpty() {
+  // Clear any previously seeded sample data from old versions
+  const CLEAR_KEYS = ['vireon_products','vireon_categories','vireon_collections',
+    'vireon_returns','vireon_coupons','vireon_reviews','vireon_flash_sales',
+    'vireon_lookbook','vireon_limited_edition'];
+  const cleared = localStorage.getItem('vireon_samples_cleared_v2');
+  if (!cleared) {
+    CLEAR_KEYS.forEach(function(k) {
+      var existing = localStorage.getItem(k);
+      if (existing) {
+        try {
+          var parsed = JSON.parse(existing);
+          // Only clear if it contains old sample data (non-empty arrays seeded before)
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            localStorage.removeItem(k);
+          } else if (parsed && typeof parsed === 'object' && !Array.isArray(parsed) && Object.keys(parsed).length > 0) {
+            localStorage.removeItem(k);
+          }
+        } catch(e) { localStorage.removeItem(k); }
+      }
+    });
+    localStorage.setItem('vireon_samples_cleared_v2', '1');
+  }
+  // No longer seed any products — admin uploads real ones
   var stored = VireonStore.get('vireon_products');
-  if (!stored || !stored.length) {
-    VireonStore.save('vireon_products', PRODUCTS_DATA.map(function(p){ return Object.assign({}, p); }));
+  if (!stored) {
+    VireonStore.save('vireon_products', []);
   }
 }
 
@@ -1390,18 +1289,7 @@ document.addEventListener('DOMContentLoaded', () => {
    ──────────────────────────────────────────────────────────── */
 const CATEGORIES_STORE_KEY = 'vireon_categories';
 
-const DEFAULT_CATEGORIES = [
-  { id: 'cat_001', name: 'Coats',       slug: 'coats',       parent: null,  products: 5,  status: 'Active',   icon: 'fas fa-vest' },
-  { id: 'cat_002', name: 'Dresses',     slug: 'dresses',     parent: null,  products: 4,  status: 'Active',   icon: 'fas fa-female' },
-  { id: 'cat_003', name: 'Suits',       slug: 'suits',       parent: null,  products: 2,  status: 'Active',   icon: 'fas fa-user-tie' },
-  { id: 'cat_004', name: 'Shirts',      slug: 'shirts',      parent: null,  products: 1,  status: 'Active',   icon: 'fas fa-tshirt' },
-  { id: 'cat_005', name: 'Trousers',    slug: 'trousers',    parent: null,  products: 1,  status: 'Active',   icon: 'fas fa-arrows-alt-v' },
-  { id: 'cat_006', name: 'Bags',        slug: 'bags',        parent: null,  products: 2,  status: 'Active',   icon: 'fas fa-shopping-bag' },
-  { id: 'cat_007', name: 'Accessories', slug: 'accessories', parent: null,  products: 3,  status: 'Active',   icon: 'fas fa-ring' },
-  { id: 'cat_008', name: 'Eyewear',     slug: 'eyewear',     parent: null,  products: 1,  status: 'Active',   icon: 'fas fa-glasses' },
-  { id: 'cat_009', name: 'Shoes',       slug: 'shoes',       parent: null,  products: 0,  status: 'Inactive', icon: 'fas fa-shoe-prints' },
-  { id: 'cat_010', name: 'Jewelry',     slug: 'jewelry',     parent: 'cat_007', products: 0, status: 'Inactive', icon: 'fas fa-gem' },
-];
+const DEFAULT_CATEGORIES = [];
 
 function getCategories() {
   var stored = VireonStore.get('vireon_categories');
@@ -2347,11 +2235,7 @@ window.closeModal = closeModal;
    1. COLLECTIONS
    ═══════════════════════════════════════════════════════════ */
 const COLLECTIONS_KEY = 'vireon_collections';
-const DEFAULT_COLLECTIONS = [
-  { id:'col_001', name:'Signature Series', products:12, status:'Active',  gradient:'linear-gradient(135deg,#1a0700,#2d1000)', badge:'ACTIVE'   },
-  { id:'col_002', name:'Limited Drops',    products:4,  status:'Active',  gradient:'linear-gradient(135deg,#050510,#0d0d20)', badge:'LIMITED'  },
-  { id:'col_003', name:'Night Luxe',       products:6,  status:'Active',  gradient:'linear-gradient(135deg,#0a0a00,#1a1900)', badge:'ACTIVE'   },
-];
+const DEFAULT_COLLECTIONS = [];
 
 function getCollections() {
   try { const s=JSON.parse(localStorage.getItem(COLLECTIONS_KEY)); return s && s.length ? s : DEFAULT_COLLECTIONS; } catch { return DEFAULT_COLLECTIONS; }
@@ -2366,9 +2250,11 @@ function renderCollectionsGrid(filter='') {
   if (filter) cols = cols.filter(c => c.name.toLowerCase().includes(filter.toLowerCase()));
 
   const badgeClass = s => s==='Active'?'badge-active':s==='LIMITED'?'badge-limited':'badge-inactive';
-  grid.innerHTML = cols.map(c => `
+  grid.innerHTML = cols.map(c => {
+    const bg = c.image ? `url("${c.image}") center/cover` : (c.gradient || 'linear-gradient(135deg,#1a0f05,#2d1a08)');
+    return `
     <div class="d-form-section" style="transition:all .3s;padding:0;overflow:hidden" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--border)'">
-      <div style="height:120px;background:${c.gradient};border-bottom:1px solid var(--border)"></div>
+      <div style="height:120px;background:${bg};border-bottom:1px solid var(--border);background-size:cover;background-position:center"></div>
       <div style="padding:1.5rem">
         <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.8rem">
           <div>
@@ -2382,7 +2268,8 @@ function renderCollectionsGrid(filter='') {
           <button class="tbl-action-del tbl-action" onclick="deleteCollection('${c.id}')"><i class="fas fa-trash"></i></button>
         </div>
       </div>
-    </div>`).join('') +
+    </div>`;
+  }).join('') +
   `<div class="d-form-section" style="border:2px dashed var(--border);background:transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:220px;cursor:pointer;transition:all .3s" onclick="openCollectionForm()" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--border)'">
     <i class="fas fa-plus" style="font-size:2rem;color:var(--gray);margin-bottom:.8rem"></i>
     <p style="font-size:.72rem;color:var(--gray)">Create New Collection</p>
@@ -2396,21 +2283,42 @@ function openCollectionForm(editId=null) {
   const form  = document.getElementById('col-form');
   form.reset();
   delete form.dataset.editId;
+  // Reset image preview
+  const prev   = document.getElementById('col-img-preview');
+  const dataEl = document.getElementById('col-img-data');
+  const urlEl  = document.getElementById('col-img-url');
+  if (prev)   { prev.style.backgroundImage=''; prev.innerHTML='<i class="fas fa-image" style="font-size:1.5rem;color:var(--gold)"></i>'; }
+  if (dataEl) dataEl.value = '';
+  if (urlEl)  urlEl.value  = '';
   if (title) title.textContent = editId ? 'Edit Collection' : 'New Collection';
-
-  if (editId) {
-    const c = getCollections().find(x=>x.id===editId);
-    if (!c) return;
-    form.dataset.editId = editId;
-    document.getElementById('col-name').value     = c.name;
-    document.getElementById('col-status').value   = c.status;
-    document.getElementById('col-gradient').value = c.gradient;
-    document.getElementById('col-badge').value    = c.badge||'';
-    document.getElementById('col-products').value = c.products;
+  if (editId) { editCollection(editId); return; }
+  openModal('collection-modal');
+}
+function editCollection(id) { 
+  const c = getCollections().find(x=>x.id===id); if (!c) return;
+  const form = document.getElementById('col-form');
+  form.reset();
+  form.dataset.editId = id;
+  document.getElementById('col-modal-title').textContent = 'Edit Collection';
+  document.getElementById('col-name').value     = c.name;
+  document.getElementById('col-status').value   = c.status;
+  document.getElementById('col-gradient').value = c.gradient||'';
+  document.getElementById('col-badge').value    = c.badge||'';
+  document.getElementById('col-products').value = c.products||0;
+  // Pre-fill image
+  const urlEl  = document.getElementById('col-img-url');
+  const dataEl = document.getElementById('col-img-data');
+  const prev   = document.getElementById('col-img-preview');
+  if (urlEl)  urlEl.value  = (c.image && !c.image.startsWith('data:')) ? c.image : '';
+  if (dataEl) dataEl.value = (c.image &&  c.image.startsWith('data:')) ? c.image : '';
+  if (prev && c.image) {
+    prev.style.backgroundImage = `url("${c.image}")`;
+    prev.style.backgroundSize  = 'cover';
+    prev.style.backgroundPosition = 'center';
+    prev.innerHTML = '';
   }
   openModal('collection-modal');
 }
-function editCollection(id) { openCollectionForm(id); }
 function deleteCollection(id) {
   const cols = getCollections();
   const c = cols.find(x=>x.id===id);
@@ -2431,14 +2339,18 @@ document.addEventListener('submit', function(e) {
   const gradient = document.getElementById('col-gradient')?.value || 'linear-gradient(135deg,#1a0f05,#2d1a08)';
   const badge    = document.getElementById('col-badge')?.value || '';
   const products = parseInt(document.getElementById('col-products')?.value)||0;
+  // Image: prefer uploaded dataURL, then URL field
+  const dataEl   = document.getElementById('col-img-data');
+  const urlEl    = document.getElementById('col-img-url');
+  const image    = (dataEl && dataEl.value) ? dataEl.value : (urlEl && urlEl.value.trim()) ? urlEl.value.trim() : null;
   const cols     = getCollections();
   const editId   = e.target.dataset.editId;
   if (editId) {
     const c = cols.find(x=>x.id===editId);
-    if (c) { c.name=name; c.status=status; c.gradient=gradient; c.badge=badge; c.products=products; }
+    if (c) { c.name=name; c.status=status; c.gradient=gradient; c.badge=badge; c.products=products; c.image=image; }
     toast(`"${name}" updated`,'success');
   } else {
-    cols.push({ id:genColId(), name, status, gradient, badge:badge||status, products });
+    cols.push({ id:genColId(), name, status, gradient, badge:badge||status, products, image });
     toast(`"${name}" created`,'success');
   }
   saveCollections(cols);
@@ -2622,11 +2534,7 @@ window.emailCustomer   = emailCustomer;
    5. RETURNS
    ═══════════════════════════════════════════════════════════ */
 const RETURNS_KEY = 'vireon_returns';
-const DEFAULT_RETURNS = [
-  { id:'RET-047', order:'VP-2026-031', customer:'Isabella Cross', product:'Evening Gown',  reason:'Size issue',    type:'Exchange', status:'Pending'    },
-  { id:'RET-046', order:'VP-2026-028', customer:'Thomas Reed',    product:'Imperial Suit', reason:'Changed mind',  type:'Refund',   status:'Processing' },
-  { id:'RET-045', order:'VP-2026-022', customer:'Leon Müller',    product:'Sovereign Coat',reason:'Damaged item',  type:'Refund',   status:'Resolved'   },
-];
+const DEFAULT_RETURNS = [];
 
 function getReturns() {
   try { const s=JSON.parse(localStorage.getItem(RETURNS_KEY)); return s && s.length ? s : DEFAULT_RETURNS; } catch { return DEFAULT_RETURNS; }
@@ -2686,11 +2594,7 @@ window.initReturnsPanel   = initReturnsPanel;
    6. COUPONS
    ═══════════════════════════════════════════════════════════ */
 const COUPONS_KEY = 'vireon_coupons';
-const DEFAULT_COUPONS = [
-  { id:'coup_001', code:'VIREON20', type:'Percentage', value:'20',  used:47,  limit:'500',       expires:'2026-12-31', minOrder:0,  status:'Active'  },
-  { id:'coup_002', code:'ELITE',    type:'Free Shipping', value:'', used:124, limit:'',          expires:'',          minOrder:0,  status:'Active'  },
-  { id:'coup_003', code:'WELCOME10',type:'Percentage', value:'10',  used:238, limit:'1000',      expires:'2026-06-30', minOrder:0, status:'Expired' },
-];
+const DEFAULT_COUPONS = [];
 
 function getCoupons()    { try { const s=JSON.parse(localStorage.getItem(COUPONS_KEY)); return s&&s.length?s:DEFAULT_COUPONS; } catch { return DEFAULT_COUPONS; } }
 function saveCoupons(c)  { localStorage.setItem(COUPONS_KEY, JSON.stringify(c)); }
@@ -2799,12 +2703,7 @@ window.initCouponsPanel = initCouponsPanel;
    7. REVIEWS
    ═══════════════════════════════════════════════════════════ */
 const REVIEWS_KEY = 'vireon_reviews';
-const DEFAULT_REVIEWS = [
-  { id:'rev_001', customer:'Alexandra R.', product:'Sovereign Coat', rating:5, text:'"Absolutely exceptional quality. Every detail speaks to the level of craftsmanship."', date:'Jul 9', status:'Published' },
-  { id:'rev_002', customer:'Marcus B.',    product:'Imperial Suit',  rating:5, text:'"Commands presence the moment you put it on. Worth every penny."',                      date:'Jul 8', status:'Published' },
-  { id:'rev_003', customer:'Sofia V.',     product:'Evening Gown',   rating:4, text:'"Beautiful but delivery took longer than expected."',                                    date:'Jul 7', status:'Pending'   },
-  { id:'rev_004', customer:'Unknown',      product:'Noir Velvet Dress',rating:1,text:'"Spam review content — fake purchase."',                                               date:'Jul 6', status:'Flagged'   },
-];
+const DEFAULT_REVIEWS = [];
 
 function getReviews()   { try { const s=JSON.parse(localStorage.getItem(REVIEWS_KEY)); return s&&s.length?s:DEFAULT_REVIEWS; } catch { return DEFAULT_REVIEWS; } }
 function saveReviews(r) { localStorage.setItem(REVIEWS_KEY, JSON.stringify(r)); }
@@ -2883,10 +2782,7 @@ window.initReviewsPanel = initReviewsPanel;
    8. FLASH SALES
    ═══════════════════════════════════════════════════════════ */
 const FLASH_KEY = 'vireon_flash_sales';
-const DEFAULT_FLASH = [
-  { id:'fs_001', name:'Night Luxe Flash',  discount:25, products:6,  start:'Jul 8, 9:00am',  end:'Jul 11, 11:59pm', orders:31, status:'Live', startDT:'2026-07-08T09:00', endDT:'2026-07-11T23:59', cats:['Night Luxe'] },
-  { id:'fs_002', name:'Summer Clearance',  discount:30, products:12, start:'Jun 20',         end:'Jun 30',          orders:89, status:'Ended',startDT:'2026-06-20T00:00', endDT:'2026-06-30T23:59', cats:['Coats','Dresses'] },
-];
+const DEFAULT_FLASH = [];
 
 function getFlashSales()  { try { const s=JSON.parse(localStorage.getItem(FLASH_KEY)); return s&&s.length?s:DEFAULT_FLASH; } catch { return DEFAULT_FLASH; } }
 function saveFlashSales(f){ localStorage.setItem(FLASH_KEY, JSON.stringify(f)); }

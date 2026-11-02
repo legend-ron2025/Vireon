@@ -339,11 +339,7 @@ body{padding-top:0;overflow:hidden}
     <table class="d-table">
       <thead><tr><th>#</th><th>Product</th><th>Category</th><th>Units Sold</th><th>Revenue</th><th>Avg Rating</th><th>Trend</th></tr></thead>
       <tbody>
-        <tr><td>1</td><td><span class="tbl-img" style="background:linear-gradient(135deg,#1a0f05,#2d1a08)"></span>Sovereign Coat</td><td>Coats</td><td>124</td><td style="color:var(--gold);font-family:var(--font-serif)">$229,400</td><td>⭐ 5.0</td><td><span style="color:var(--success)">▲ 18%</span></td></tr>
-        <tr><td>2</td><td><span class="tbl-img" style="background:linear-gradient(135deg,#150a00,#241500)"></span>Evening Gown</td><td>Dresses</td><td>43</td><td style="color:var(--gold);font-family:var(--font-serif)">$206,400</td><td>⭐ 5.0</td><td><span style="color:var(--success)">▲ 31%</span></td></tr>
-        <tr><td>3</td><td><span class="tbl-img" style="background:linear-gradient(135deg,#0a0a00,#1a1900)"></span>Imperial Suit</td><td>Suits</td><td>58</td><td style="color:var(--gold);font-family:var(--font-serif)">$185,600</td><td>⭐ 4.8</td><td><span style="color:var(--success)">▲ 12%</span></td></tr>
-        <tr><td>4</td><td><span class="tbl-img" style="background:linear-gradient(135deg,#080008,#150015)"></span>Caviar Handbag</td><td>Bags</td><td>63</td><td style="color:var(--gold);font-family:var(--font-serif)">$182,700</td><td>⭐ 5.0</td><td><span style="color:var(--success)">▲ 22%</span></td></tr>
-        <tr><td>5</td><td><span class="tbl-img" style="background:linear-gradient(135deg,#050510,#0d0d20)"></span>Noir Velvet Dress</td><td>Dresses</td><td>76</td><td style="color:var(--gold);font-family:var(--font-serif)">$167,200</td><td>⭐ 5.0</td><td><span style="color:var(--warning)">▼ 4%</span></td></tr>
+        <tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--gray)">Add products to see top performers here.</td></tr>
       </tbody>
     </table>
   </div>
@@ -750,11 +746,8 @@ body{padding-top:0;overflow:hidden}
   <div class="d-table-wrap" style="margin-bottom:1.5rem">
     <table class="d-table">
       <thead><tr><th>Campaign Name</th><th>Type</th><th>Sent To</th><th>Sent Date</th><th>Opens</th><th>Clicks</th><th>Status</th><th>Actions</th></tr></thead>
-      <tbody>
-        <tr><td>Summer Collection Launch</td><td>Promotional</td><td>2,341</td><td>Jun 15, 2026</td><td>71.2%</td><td>28.4%</td><td><span class="badge badge-delivered">Sent</span></td><td><button class="tbl-action">VIEW</button></td></tr>
-        <tr><td>Elite Members Exclusive Drop</td><td>Segmented</td><td>486</td><td>Jun 02, 2026</td><td>84.6%</td><td>41.2%</td><td><span class="badge badge-delivered">Sent</span></td><td><button class="tbl-action">VIEW</button></td></tr>
-        <tr><td>Limited Edition Countdown</td><td>Automated</td><td>2,341</td><td>May 20, 2026</td><td>65.8%</td><td>22.1%</td><td><span class="badge badge-delivered">Sent</span></td><td><button class="tbl-action">VIEW</button></td></tr>
-        <tr><td>July Newsletter Draft</td><td>Newsletter</td><td>—</td><td>—</td><td>—</td><td>—</td><td><span class="badge badge-pending">Draft</span></td><td><button class="tbl-action">EDIT</button> <button class="d-btn" style="padding:.28rem .65rem;font-size:.56rem">SEND</button></td></tr>
+      <tbody id="email-campaigns-table">
+        <tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--gray)">No campaigns yet. Create your first campaign below.</td></tr>
       </tbody>
     </table>
   </div>
@@ -800,9 +793,7 @@ body{padding-top:0;overflow:hidden}
     <table class="d-table">
       <thead><tr><th>Notification Title</th><th>Audience</th><th>Sent</th><th>Clicked</th><th>Date</th><th>Status</th></tr></thead>
       <tbody>
-        <tr><td>🔥 Limited Drop — Only 7 Left!</td><td>All Subscribers</td><td>1,847</td><td>42.1%</td><td>Jul 8, 2026</td><td><span class="badge badge-delivered">Sent</span></td></tr>
-        <tr><td>👑 Your Elite Access is Ready</td><td>Elite Members</td><td>486</td><td>61.4%</td><td>Jul 1, 2026</td><td><span class="badge badge-delivered">Sent</span></td></tr>
-        <tr><td>🛍️ Order VP-2026-031 Shipped</td><td>Automated</td><td>1</td><td>100%</td><td>Jun 30, 2026</td><td><span class="badge badge-delivered">Sent</span></td></tr>
+        <tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--gray)">No push campaigns sent yet.</td></tr>
       </tbody>
     </table>
   </div>
@@ -903,63 +894,13 @@ body{padding-top:0;overflow:hidden}
     <table class="d-table">
       <thead><tr><th>Ticket ID</th><th>Customer</th><th>Subject</th><th>Type</th><th>Priority</th><th>Assigned</th><th>Status</th><th>Actions</th></tr></thead>
       <tbody id="support-table">
-        <tr>
-          <td style="color:var(--gold)">#TKT-091</td>
-          <td>James Whitmore</td>
-          <td>Order VP-2026-047 not arrived</td>
-          <td><span class="d-tag">Order Issue</span></td>
-          <td><span style="color:var(--error);font-size:.68rem;font-weight:700">● HIGH</span></td>
-          <td>Rockstar</td>
-          <td><span class="badge badge-pending">Open</span></td>
-          <td><button class="tbl-action" onclick="openTicket('TKT-091')">OPEN</button></td>
-        </tr>
-        <tr>
-          <td style="color:var(--gold)">#TKT-090</td>
-          <td>Sofia Reyes</td>
-          <td>Wrong size received — Evening Gown</td>
-          <td><span class="d-tag">Return Request</span></td>
-          <td><span style="color:var(--warning);font-size:.68rem;font-weight:700">● MED</span></td>
-          <td>Vanshika</td>
-          <td><span class="badge badge-processing">In Progress</span></td>
-          <td><button class="tbl-action" onclick="openTicket('TKT-090')">OPEN</button></td>
-        </tr>
-        <tr>
-          <td style="color:var(--gold)">#TKT-089</td>
-          <td>Hugo Laurent</td>
-          <td>Monogram request for Imperial Suit</td>
-          <td><span class="d-tag">Product Query</span></td>
-          <td><span style="color:var(--success);font-size:.68rem;font-weight:700">● LOW</span></td>
-          <td>Lilith</td>
-          <td><span class="badge badge-processing">In Progress</span></td>
-          <td><button class="tbl-action" onclick="openTicket('TKT-089')">OPEN</button></td>
-        </tr>
-        <tr>
-          <td style="color:var(--gold)">#TKT-088</td>
-          <td>Elara Voss</td>
-          <td>Payment declined — card error</td>
-          <td><span class="d-tag">Payment Issue</span></td>
-          <td><span style="color:var(--error);font-size:.68rem;font-weight:700">● HIGH</span></td>
-          <td>Prince</td>
-          <td><span class="badge badge-pending">Open</span></td>
-          <td><button class="tbl-action" onclick="openTicket('TKT-088')">OPEN</button></td>
-        </tr>
-        <tr>
-          <td style="color:var(--gold)">#TKT-085</td>
-          <td>Marcus Bell</td>
-          <td>Tracking number not updating</td>
-          <td><span class="d-tag">Order Issue</span></td>
-          <td><span style="color:var(--warning);font-size:.68rem;font-weight:700">● MED</span></td>
-          <td>Rockstar</td>
-          <td><span class="badge badge-delivered">Resolved</span></td>
-          <td><button class="tbl-action">VIEW</button></td>
-        </tr>
       </tbody>
     </table>
   </div>
   <!-- Ticket Detail Modal -->
   <div id="ticket-modal" style="display:none;background:var(--bg-2);border:1px solid var(--border);padding:2rem;margin-bottom:1.5rem">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem">
-      <h3 style="font-family:var(--font-serif);font-size:1.4rem;color:var(--white);font-weight:300">Ticket <em id="ticket-id-display" style="color:var(--gold)">#TKT-091</em></h3>
+      <h3 style="font-family:var(--font-serif);font-size:1.4rem;color:var(--white);font-weight:300">Ticket <em id="ticket-id-display" style="color:var(--gold)"></em></h3>
       <button class="d-btn-ghost" onclick="document.getElementById('ticket-modal').style.display='none'"><i class="fas fa-times"></i> CLOSE</button>
     </div>
     <div style="display:grid;grid-template-columns:1fr 320px;gap:2rem">
@@ -1459,16 +1400,28 @@ body{padding-top:0;overflow:hidden}
     <div class="v-modal-body">
       <form id="col-form">
         <div class="d-form-group"><label class="d-form-label">Collection Name *</label><input type="text" class="d-form-input" id="col-name" placeholder="e.g. Winter Noir" required></div>
+        <div class="d-form-group">
+          <label class="d-form-label">Cover Image URL</label>
+          <input type="url" class="d-form-input" id="col-img-url" placeholder="https://example.com/cover.jpg" oninput="updateImgPreviewFromUrl(this,'col-img-preview','col-img-data')">
+        </div>
+        <div class="d-form-group">
+          <label class="d-form-label">Or Upload Cover Image</label>
+          <div id="col-img-preview" style="width:100%;height:130px;background:var(--bg-3);border:2px dashed rgba(212,175,55,.3);display:flex;align-items:center;justify-content:center;cursor:pointer;margin-bottom:.5rem;background-size:cover;background-position:center;transition:border-color .3s" onclick="document.getElementById('col-img-file').click()" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='rgba(212,175,55,.3)'">
+            <i class="fas fa-image" style="font-size:1.5rem;color:var(--gold)"></i>
+          </div>
+          <input type="file" id="col-img-file" accept="image/*" style="display:none" onchange="previewProductImage(this,'col-img-preview','col-img-data')">
+          <input type="hidden" id="col-img-data">
+        </div>
         <div class="d-form-grid-2">
           <div class="d-form-group"><label class="d-form-label">Status</label>
-            <select class="d-form-select" id="col-status"><option>Active</option><option>Inactive</option></select>
+            <select class="d-form-select" id="col-status"><option value="Active">Active</option><option value="Inactive">Inactive</option></select>
           </div>
           <div class="d-form-group"><label class="d-form-label">Badge</label>
             <select class="d-form-select" id="col-badge"><option value="">None</option><option value="ACTIVE">ACTIVE</option><option value="LIMITED">LIMITED</option><option value="NEW">NEW</option></select>
           </div>
         </div>
         <div class="d-form-grid-2">
-          <div class="d-form-group"><label class="d-form-label">Cover Gradient (CSS)</label><input type="text" class="d-form-input" id="col-gradient" placeholder="linear-gradient(135deg,#1a0700,#2d1000)"></div>
+          <div class="d-form-group"><label class="d-form-label">Cover Gradient (fallback CSS)</label><input type="text" class="d-form-input" id="col-gradient" placeholder="linear-gradient(135deg,#1a0700,#2d1000)"></div>
           <div class="d-form-group"><label class="d-form-label">Products Count</label><input type="number" class="d-form-input" id="col-products" placeholder="0"></div>
         </div>
         <div class="v-modal-foot" style="padding:0;border:none;margin-top:1.5rem">
